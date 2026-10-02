@@ -1,2509 +1,615 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Sklad · Boshqaruv</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
-<style>
-:root{
-  /* Oq/och asosiy fon, havorang — asosiy aksent rang (talab qilingan mockup uslubi) */
-  --bg:#eef1f7;
-  --panel:#ffffff;
-  --surface:#ffffff;
-  --surface-2:#f3f5fa;
-  --surface-solid:#ffffff;
-  --border:rgba(20,30,60,0.10);
-  --border-hi:rgba(47,111,237,0.38);
-  --text:#12162b;
-  --text-dim:#6b7280;
-  --blue:#2f6fed;
-  --cyan:#0891b2;
-  --violet:#7c6df2;
-  --danger:#e11d48;
-  --ok:#16a34a;
-  --warn:#d97706;
-  --mono:'JetBrains Mono',monospace;
-  /* Ekran kengligi qanday bo'lishidan qat'i nazar — doim telefon ko'rinishi */
-  --app-max-width:420px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ombor - Kabel Hisobi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        sidebar {
+            width: 260px;
+            background-color: #0f172a;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+        .logo-area svg {
+            width: 32px;
+            height: 32px;
+            fill: #38bdf8;
+        }
+        .logo-area h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .logo-area span {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: block;
+        }
+        .nav-links {
+            list-style: none;
+            flex-grow: 1;
+        }
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover, .nav-links li.active a {
+            background-color: #2563eb;
+            color: #fff;
+        }
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            padding-top: 15px;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #334155;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        header {
+            background: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        header p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .dashboard-body {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+        }
+        .stats-grid {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .stat-card h3 {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .stat-card .trend {
+            font-size: 0.75rem;
+            color: #16a34a;
+            margin-top: 5px;
+        }
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .drums-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        .drum-item {
+            background: #f8fafc;
+            padding: 15px 10px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .drum-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+        .dot-green { background: #16a34a; }
+        .dot-yellow { background: #ca8a04; }
+        .dot-red { background: #dc2626; }
 
-  /* Yangi dizayn uchun qo'shimcha belgilar — qurilma ikonkasi fonlari va
-     holat plashkalari (mavjud ranglardan olingan, yangi kutubxona/rasm
-     yuklanmaydi — tezlikka ta'sir qilmaydi) */
-  --icon-a-bg:#dcfce7; --icon-a-fg:#15803d;
-  --icon-b-bg:#fef3c7; --icon-b-fg:#b45309;
-  --icon-c-bg:#e0e7ff; --icon-c-fg:#4338ca;
-  --icon-d-bg:#e5e7eb; --icon-d-fg:#4b5563;
-  --header-grad:linear-gradient(120deg,#12213f,#1e3a63 55%,#22507f);
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  margin:0; background:var(--bg); color:var(--text);
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  position:relative;
-  display:flex; justify-content:center;
-}
-h1,h2,.font-display{font-family:'Space Grotesk',sans-serif}
-.mono{font-family:var(--mono)}
+        /* SVG Circular Progress Baraban */
+        .drum-svg-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+        }
+        .drum-svg-container svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .drum-svg-container circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        .drum-bg-circle {
+            stroke: #e2e8f0;
+        }
+        .drum-progress-circle {
+            stroke: #2563eb;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .drum-center-text {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .drum-center-text span {
+            font-size: 0.6rem;
+            color: #64748b;
+            font-weight: 400;
+        }
 
-.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(47,111,237,.18);border-top-color:var(--blue);animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-screen{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;max-width:var(--app-max-width)}
-.loading-spinner{width:36px;height:36px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--blue);animation:spin .8s linear infinite}
-.loading-text{color:var(--text-dim);font-size:13.5px}
-
-/* ===== LOGIN ===== */
-.login-screen{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;width:100%;max-width:var(--app-max-width)}
-.login-card{
-  width:100%;background:var(--surface);backdrop-filter:blur(22px);
-  border:1px solid var(--border);border-radius:22px;padding:32px 26px;
-  box-shadow:0 12px 32px rgba(20,30,60,.10);
-}
-.login-badge{
-  width:46px;height:46px;border-radius:13px;
-  background:linear-gradient(135deg, var(--blue), var(--violet));
-  display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;
-  box-shadow:0 8px 22px rgba(79,141,253,.35);
-}
-.login-title{font-size:21px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em}
-.login-sub{color:var(--text-dim);font-size:13px;margin:0 0 22px}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:6px;font-weight:600}
-.field input, .field select{
-  width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 13px;
-  color:var(--text);font-size:14.5px;font-family:inherit;transition:.15s;
-}
-.field input:focus, .field select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,141,253,.15)}
-.btn{
-  width:100%;background:linear-gradient(120deg, var(--blue), var(--violet));color:#ffffff;border:none;border-radius:12px;
-  padding:13px;font-size:14.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-  font-family:inherit;transition:transform .12s; box-shadow:0 8px 22px rgba(79,141,253,.25);
-}
-.btn:active{transform:scale(.98)}
-.btn:disabled{opacity:.6;cursor:default}
-.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border);box-shadow:none}
-.err-msg{color:var(--danger);font-size:12.5px;margin-top:10px;display:none}
-.err-msg.show{display:block}
-
-/* ===== APP SHELL — bitta telefon uslubi, hech qanday desktop rejimi yo'q ===== */
-#appScreen{position:relative;z-index:1;display:none;min-height:100vh;width:100%;max-width:var(--app-max-width)}
-.shell{width:100%}
-.main{padding:0 16px 108px}
-.top-bar{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  background:var(--header-grad);margin:0 -16px 16px;padding:16px 16px 20px;
-  border-radius:0 0 22px 22px;box-shadow:0 10px 26px rgba(18,33,63,.28);
-}
-.top-bar-id{display:flex;align-items:center;gap:10px;min-width:0}
-.top-bar-badge{
-  width:38px;height:38px;border-radius:11px;flex-shrink:0;
-  background:linear-gradient(135deg, var(--blue), var(--violet));
-  display:flex;align-items:center;justify-content:center;font-size:17px;
-  box-shadow:0 6px 16px rgba(47,111,237,.4);
-}
-.top-bar-text{min-width:0}
-.top-bar-title{font-family:'Space Grotesk',sans-serif;color:#fff;font-size:14.5px;font-weight:700;letter-spacing:-.01em}
-.greet{font-size:11.5px;color:rgba(226,232,255,.75)}
-.greet b{color:#fff;font-weight:700}
-.user-actions{display:flex;gap:8px;flex-shrink:0}
-.icon-btn{
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:11px;width:36px;height:36px;
-  display:flex;align-items:center;justify-content:center;color:#e7ecff;cursor:pointer;transition:.15s;
-}
-.icon-btn:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.2)}
-
-/* Panel ichidagi (och fon ustidagi) filter tugmasi — header'dagi .icon-btn'dan
-   ATAYLAB alohida: u shaffof-oq bo'lgani uchun och fon ustida ko'rinmay
-   qolgan edi. Bu esa aniq chegara va rang bilan ko'rinarli. */
-.filter-btn{
-  background:var(--surface-2);border:1.5px solid var(--border-hi);border-radius:11px;width:38px;height:38px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;color:var(--blue);cursor:pointer;transition:.15s;position:relative;
-}
-.filter-btn:hover{background:#e7efff;border-color:var(--blue)}
-.filter-btn .filter-dot{
-  display:none;position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;
-  background:var(--blue);border:2px solid var(--surface);
-}
-
-.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:-30px 0 18px}
-.stat-box{
-  background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px 10px;
-  position:relative;overflow:hidden;display:flex;align-items:center;gap:8px;
-  box-shadow:0 6px 16px rgba(20,30,60,.08);
-}
-.stat-box .stat-icon{
-  width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-}
-.stat-box .num{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;line-height:1}
-.stat-box .lbl{font-size:9.5px;color:var(--text-dim);margin-top:3px;font-weight:600;line-height:1.2}
-.stat-box.b1 .stat-icon{background:var(--icon-c-bg);color:var(--icon-c-fg)}
-.stat-box.b2 .stat-icon{background:#ede9fe;color:var(--violet)}
-.stat-box.b3 .stat-icon{background:var(--icon-a-bg);color:var(--icon-a-fg)}
-.stat-box.b1 .num{color:var(--cyan)}
-.stat-box.b2 .num{color:var(--violet)}
-.stat-box.b3 .num{color:var(--ok)}
-
-.section-title{font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
-
-.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 14px;margin-bottom:14px}
-.search-box input{flex:1;background:transparent;border:none;color:var(--text);font-size:14px;font-family:inherit}
-.search-box input:focus{outline:none}
-.search-box input::placeholder{color:var(--text-dim)}
-.search-icon{color:var(--text-dim);display:flex}
-.search-clear{background:none;border:none;color:var(--text-dim);cursor:pointer;display:none;font-size:14px}
-
-/* ===== TICKET CARD — Sklad/Mening/Tarix uchun BITTA, bir xil uslub
-   (ikonka + kod + badge'lar yuqorida, tugmalar bitta qatorda pastda) ===== */
-.ticket{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color .15s;box-shadow:0 4px 14px rgba(20,30,60,.05)}
-.ticket.expired{border-color:rgba(251,113,133,.4)}
-.ticket-main{display:flex;align-items:flex-start;gap:11px;padding:14px 14px 12px}
-.ticket-icon{
-  width:42px;height:42px;border-radius:12px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--icon-c-bg);color:var(--icon-c-fg);
-}
-.ticket-icon.tone-a{background:var(--icon-a-bg);color:var(--icon-a-fg)}
-.ticket-icon.tone-b{background:var(--icon-b-bg);color:var(--icon-b-fg)}
-.ticket-icon.tone-d{background:var(--icon-d-bg);color:var(--icon-d-fg)}
-.ticket-body{flex:1;min-width:0}
-.ticket-code{font-family:var(--mono);font-size:14.5px;font-weight:700;letter-spacing:.01em;color:var(--text)}
-.ticket-sub{color:var(--text-dim);font-size:12px;margin-top:3px}
-.ticket-meta{display:flex;flex-wrap:wrap;column-gap:12px;row-gap:2px;margin-top:7px}
-.ticket-meta span{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim)}
-.ticket-meta b{color:var(--text);font-weight:600}
-.ticket-badges{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;margin-left:auto;padding-left:6px}
-.badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:100px;white-space:nowrap;line-height:1.3}
-.badge-tuman{background:var(--icon-a-bg);color:var(--icon-a-fg)}
-.badge-tuman.kogon{background:var(--icon-b-bg);color:var(--icon-b-fg)}
-.badge-duration{background:var(--surface-2);color:var(--text-dim);border:1px solid var(--border)}
-.badge-expired{background:#fde2e2;color:var(--danger)}
-.badge-owner{background:#ede9fe;color:var(--violet)}
-.ticket-note{margin:0 14px 12px;font-size:11px;font-weight:600;padding:7px 11px;border-radius:9px}
-.ticket-note.rejected{background:rgba(251,113,133,.12);color:var(--danger)}
-.ticket-note.blocked{background:rgba(251,113,133,.1);color:var(--danger)}
-.ticket-note.hint{background:var(--surface-2);color:var(--text-dim)}
-
-.ticket-tags{display:none} /* eski uslub — endi ticket-badges ishlatiladi */
-.ticket-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--surface-2);color:var(--cyan);border:1px solid var(--border)}
-.ticket-tag.info{color:var(--text-dim)}
-.ticket-tag.expired{color:var(--danger);border-color:rgba(251,113,133,.35)}
-.ticket-tag.owner{color:var(--violet)}
-
-.action-row{display:flex;flex-wrap:wrap;gap:7px;padding:0 14px 14px}
-.action-row.tight{padding-bottom:0}
-.pill-btn{
-  flex:1 1 0;min-width:84px;border:none;border-radius:11px;padding:10px 8px;font-size:11.5px;font-weight:700;
-  cursor:pointer;font-family:inherit;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:5px;
-  white-space:nowrap;
-}
-.pill-btn.compact{flex:0 0 auto;padding:8px 12px;text-decoration:none}
-.pill-btn:active{transform:scale(.97)}
-.pill-btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
-.pill-green{background:linear-gradient(120deg,#16a34a,#22c55e);color:#fff;box-shadow:0 6px 14px rgba(22,163,74,.28)}
-.pill-blue{background:#e7efff;color:#1d4ed8}
-.pill-red{background:#fdeaee;color:#e11d48}
-.pill-neutral{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
-.pill-outline-danger{background:transparent;color:#e11d48;border:1.5px dashed rgba(225,29,72,.4)}
-
-/* Eski (stack) tugma uslubi — hozir faqat Xabarlar bo'limi va modal ichidagi
-   tugmalar uchun ishlatiladi, shu sabab olib tashlanmagan */
-.action-stack{display:flex;flex-direction:column;gap:8px;padding:14px 14px 14px}
-.big-btn{
-  width:100%;border:none;border-radius:12px;padding:13px 12px;font-size:14px;font-weight:700;
-  cursor:pointer;font-family:inherit;transition:transform .12s;display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.big-btn:active{transform:scale(.98)}
-.big-btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
-.big-btn.primary{background:linear-gradient(120deg, var(--blue), var(--cyan));color:#ffffff;box-shadow:0 8px 20px rgba(79,141,253,.25)}
-.big-btn.neutral{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
-.big-btn.ghost{background:var(--surface-2);color:var(--danger);border:1px solid rgba(251,113,133,.3)}
-.big-btn.outline{background:transparent;color:var(--warn);border:1.5px dashed rgba(251,191,36,.45)}
-.big-btn.outline.pending{color:var(--text-dim);border-style:solid;border-color:var(--border)}
-.big-btn.admin-end{background:transparent;color:var(--danger);border:1.5px dashed rgba(251,113,133,.4)}
-.big-btn.compact{width:auto;align-self:flex-start;padding:8px 14px;font-size:12.5px;border-radius:9px;gap:6px}
-
-.warn-note{color:var(--warn);font-size:11.5px;font-weight:600;margin-top:8px;padding:7px 11px;border-radius:10px;background:rgba(251,191,36,.1);display:inline-block}
-
-.empty-msg{color:var(--text-dim);font-size:13px;text-align:center;padding:52px 10px}
-
-/* ===== PASTKI NAVIGATSIYA ===== */
-.bottom-nav{
-  display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;
-  background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-top:1px solid var(--border);
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom));gap:2px;
-  width:100%;max-width:var(--app-max-width);margin:0 auto;overflow-x:auto;
-}
-.nav-btn{
-  flex:1;flex-direction:column;gap:3px;font-size:9.5px;height:54px;min-width:54px;
-  border-radius:12px;border:1px solid transparent;background:transparent;color:var(--text-dim);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;font-family:inherit;font-weight:600;position:relative;
-}
-.nav-btn svg{width:18px;height:18px}
-.nav-btn.active{background:var(--surface);border-color:var(--border-hi);color:var(--cyan)}
-.nav-btn:not(.active):hover{background:var(--surface);color:var(--text)}
-.nav-btn.danger{color:var(--danger)}
-.nav-btn .count{
-  position:absolute;top:2px;right:8px;background:var(--violet);color:#ffffff;font-size:9px;font-weight:800;
-  min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;
-}
-
-.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.2s;z-index:50}
-.overlay.show{opacity:1;pointer-events:auto}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:var(--app-max-width);padding:22px;max-height:90vh;overflow:auto}
-.modal h2{margin:0 0 4px;font-size:18px;font-weight:700}
-.modal-sub{color:var(--text-dim);font-size:12.5px;margin:0 0 18px}
-.modal-actions{display:flex;gap:10px;margin-top:18px}
-/* O'rnatish kabi uzun formalarda tugmalar tepada, doim ko'rinadigan (sticky)
-   holatda turadi — pastgacha aylantirmasdan ham tasdiqlash/bekor qilish mumkin */
-.modal-actions-sticky{
-  position:sticky;top:0;z-index:5;margin:0 -22px 16px;padding:14px 22px;
-  background:var(--panel);border-bottom:1px solid var(--border);
-}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-.duration-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
-.duration-btn{padding:12px 6px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;text-align:center}
-.duration-btn .d-sub{display:block;font-size:10px;font-weight:600;color:var(--text-dim);margin-top:2px}
-.duration-btn.active{border-color:var(--blue);color:#eaf1ff;background:linear-gradient(120deg, rgba(79,141,253,.28), rgba(139,123,255,.2))}
-.duration-btn.active .d-sub{color:#1d4ed8}
-
-.upload-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
-.upload-slot{aspect-ratio:1;border-radius:14px;border:1.5px dashed var(--border-hi);background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;position:relative;overflow:hidden;color:var(--text-dim);font-size:11px;font-weight:600;text-align:center;padding:8px}
-.upload-slot.filled{border-style:solid;border-color:var(--ok);color:var(--text)}
-.upload-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.upload-slot .req{color:#ffffff;font-size:9px;font-weight:800;position:absolute;top:6px;right:6px;background:rgba(225,29,72,.92);padding:2px 6px;border-radius:100px}
-.upload-slot .opt{color:#ffffff;font-size:9px;font-weight:700;position:absolute;top:6px;right:6px;background:rgba(20,30,60,.75);padding:2px 6px;border-radius:100px}
-.upload-slot input{display:none}
-.upload-slot .check{position:absolute;bottom:6px;right:6px;background:var(--ok);color:#ffffff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
-.upload-slot .remove-btn{position:absolute;top:6px;left:6px;background:rgba(225,29,72,.92);color:#ffffff;border:none;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;cursor:pointer;z-index:3;padding:0;line-height:1}
-.upload-slot .remove-btn:active{transform:scale(.9)}
-
-.bg-progress{
-  position:fixed;bottom:78px;left:50%;transform:translateX(-50%);z-index:25;
-  background:var(--surface-solid);border:1px solid var(--border);border-radius:100px;
-  padding:10px 16px 10px 12px;display:flex;align-items:center;gap:9px;
-  box-shadow:0 8px 22px rgba(20,30,60,.14);font-size:12.5px;font-weight:600;color:var(--text-dim);
-}
-.bg-progress-spinner{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--cyan);animation:spin .7s linear infinite;flex-shrink:0}
-
-.toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;width:calc(100% - 28px);max-width:calc(var(--app-max-width) - 28px)}
-.toast{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 26px rgba(20,30,60,.14);animation:toastIn .2s ease;backdrop-filter:blur(14px)}
-.toast.success{background:rgba(79,141,253,.16);color:#1d4ed8;border:1px solid rgba(79,141,253,.35)}
-.toast.error{background:rgba(251,113,133,.14);color:var(--danger);border:1px solid rgba(251,113,133,.32)}
-@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-
-/* ===== Joylashuv (xarita) tanlash ===== */
-.loc-btn{
-  width:100%;background:var(--surface-2);border:1px dashed var(--border-hi);border-radius:12px;
-  padding:12px;color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;
-}
-.loc-btn.picked{border-style:solid;border-color:var(--ok);color:var(--ok);background:rgba(79,209,165,.08)}
-.map-modal{background:var(--panel);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:var(--app-max-width);padding:16px;max-height:90vh;display:flex;flex-direction:column;gap:12px}
-#leafletMap{width:100%;height:340px;border-radius:14px;overflow:hidden;background:var(--surface-2)}
-.locate-me-btn{
-  position:absolute;bottom:12px;right:12px;z-index:1000;width:38px;height:38px;border-radius:10px;
-  background:#ffffff;border:1px solid var(--border);color:var(--blue);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(20,30,60,.22);
-}
-.locate-me-btn:active{transform:scale(.94)}
-.locate-me-btn.loading{color:var(--text-dim)}
-/* Foydalanuvchining o'z joylashuvi belgisi (ko'k nuqta) */
-.my-location-dot{width:16px;height:16px;border-radius:50%;background:var(--blue);border:3px solid #ffffff;box-shadow:0 0 0 2px rgba(47,111,237,.5), 0 2px 6px rgba(20,30,60,.3)}
-.map-hint{font-size:12px;color:var(--text-dim);text-align:center}
-.map-accuracy-warn{font-size:11.5px;font-weight:700;text-align:center;color:var(--warn);padding:6px 10px;background:rgba(251,191,36,.12);border-radius:9px}
-.map-accuracy-ok{font-size:11.5px;font-weight:700;text-align:center;color:var(--ok);padding:6px 10px;background:rgba(79,209,165,.1);border-radius:9px}
-.map-coords{font-family:var(--mono);font-size:12.5px;text-align:center;color:var(--cyan)}
-
-/* ===== Xabarlar (so'rovlar) — admin ===== */
-.sorov-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;position:relative}
-.sorov-card.pending{border-color:rgba(251,191,36,.4)}
-.sorov-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.sorov-actions{display:flex;gap:8px;margin-top:12px}
-.sorov-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;display:inline-block;margin-top:8px}
-.sorov-status.kutilmoqda{background:rgba(251,191,36,.14);color:var(--warn)}
-.sorov-status.qabul{background:rgba(79,209,165,.14);color:var(--ok)}
-.sorov-status.rad{background:rgba(251,113,133,.14);color:var(--danger)}
-.req-note{font-size:11px;font-weight:700;margin-top:8px;padding:6px 10px;border-radius:9px;display:inline-block}
-.req-note.rejected{background:rgba(251,113,133,.12);color:var(--danger)}
-.xabarlar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 14px;margin-bottom:14px}
-.check-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-dim);cursor:pointer;user-select:none}
-.check-row input[type="checkbox"]{width:17px;height:17px;accent-color:var(--blue);cursor:pointer}
-.sorov-check{position:absolute;top:14px;right:14px;width:18px;height:18px;accent-color:var(--blue);cursor:pointer}
-
-/* Kartaning yuqori-chap burchagidagi kichik tugma (masalan "Muddat so'rash") */
-.corner-btn{
-  position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:9px;
-  border:1px solid rgba(217,119,6,.35);background:rgba(217,119,6,.10);color:var(--warn);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;z-index:2;
-}
-.corner-btn:active{transform:scale(.94)}
-.corner-btn.pending{color:var(--text-dim);background:var(--surface-2);border-color:var(--border);cursor:default}
-.corner-btn:disabled{cursor:default}
-.ticket-main.has-corner{padding-right:52px}
-
-/* Badge ustuni ichiga joylashadigan kichik doira tugma (masalan "Muddat
-   so'rash") — endi mustaqil burchak elementi emas, badge'lar bilan bitta
-   ustunda turadi, shu sabab ular bir-birining ustiga chiqmaydi */
-.badge-icon-btn{
-  width:26px;height:26px;border-radius:9px;flex-shrink:0;
-  border:1px solid rgba(217,119,6,.35);background:rgba(217,119,6,.10);color:var(--warn);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;
-}
-.badge-icon-btn:active{transform:scale(.92)}
-.badge-icon-btn.pending{color:var(--text-dim);background:var(--surface-2);border-color:var(--border);cursor:default}
-.badge-icon-btn.danger{border-color:rgba(225,29,72,.35);background:rgba(225,29,72,.10);color:#e11d48}
-
-/* ===== Muddati o'tgan qurilma — TO'LIQ EKRANNI QULFLASH (xodim ekrani) =====
-   Ma'lumot yuklangan zahoti (login qilinganda, istalgan bo'limda bo'lsa
-   ham) BUTUN ekranni qoplaydi — xodim hech narsa (boshqa bo'lim, tugma,
-   pastki navigatsiya) ko'ra yoki bosa olmaydi, faqat shu xabarni ko'radi.
-   Admin masalani hal qilmaguncha (faollashtirish/qaytarish) yo'qolmaydi —
-   keyingi ma'lumot yangilanishida o'zi yo'qolib, ilova oddiy holatga
-   qaytadi. Faqat MA'LUMOT — hech qanday tugma yo'q, chunki xodim bu
-   holatda hech narsa qila olmaydi. */
-.expired-lock{
-  position:fixed;inset:0;z-index:9999;
-  background:linear-gradient(160deg,#3a0a16,#1a0308 65%);
-  display:none;align-items:center;justify-content:center;
-  padding:26px 20px;
-}
-.expired-lock.show{display:flex}
-.expired-lock-card{
-  width:100%;max-width:380px;text-align:center;
-}
-.expired-lock-icon{
-  width:64px;height:64px;border-radius:20px;margin:0 auto 18px;
-  background:rgba(225,29,72,.18);border:1.5px solid rgba(251,113,133,.4);
-  display:flex;align-items:center;justify-content:center;font-size:30px;
-  box-shadow:0 10px 30px rgba(225,29,72,.25);
-}
-.expired-lock-title{color:#fff;font-size:19px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
-.expired-lock-sub{color:rgba(255,225,230,.75);font-size:13px;margin-bottom:22px;line-height:1.5}
-.expired-lock-list{display:flex;flex-direction:column;gap:10px}
-.expired-lock-item{
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;
-  padding:13px 15px;text-align:left;
-}
-.expired-lock-item .code{font-family:var(--mono);font-weight:700;color:#fff;font-size:14.5px}
-.expired-lock-item .marka{color:rgba(255,225,230,.85);font-size:12px;margin-top:2px;font-weight:600}
-.expired-lock-item .addr{color:rgba(255,225,230,.7);font-size:12px;margin-top:4px}
-.expired-lock-logout{margin-top:22px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.22)}
-.expired-lock-logout:active{transform:scale(.98)}
-</style>
+        .drum-info {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .admin-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-title { font-weight: 600; color: #0f172a; }
+        .list-sub { font-size: 0.75rem; color: #64748b; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+        }
+        .modal-content h3 { margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    </style>
 </head>
 <body>
 
-<div class="loading-screen" id="loadingScreen">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Ma'lumotlar yuklanmoqda...</div>
-</div>
-
-<div class="login-screen" id="loginScreen" style="display:none">
-  <div class="login-card">
-    <div class="login-badge">📦</div>
-    <div class="login-title">Sklad boshqaruvi</div>
-    <p class="login-sub">Davom etish uchun tizimga kiring</p>
-    <div class="field"><label>Login</label><input type="text" id="loginInput" autocomplete="off"></div>
-    <div class="field"><label>Parol</label><input type="password" id="passInput"></div>
-    <button class="btn" id="loginBtn">Kirish</button>
-    <div class="err-msg" id="loginError"></div>
-  </div>
-</div>
-
-<div id="appScreen">
-  <div class="shell">
-    <div class="main">
-      <div class="top-bar">
-        <div class="top-bar-id">
-          <div class="top-bar-badge">📦</div>
-          <div class="top-bar-text">
-            <div class="top-bar-title">Sklad · Boshqaruv</div>
-            <div class="greet">Xush kelibsiz, <b id="userName">—</b></div>
-          </div>
-        </div>
-        <div class="user-actions">
-          <button class="icon-btn" id="refreshBtnTop" title="Yangilash">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="stat-strip">
-        <div class="stat-box b1">
-          <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg></div>
-          <div><div class="num" id="statSklad">0</div><div class="lbl">Skladda</div></div>
-        </div>
-        <div class="stat-box b2">
-          <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.4 14.5 16 10 4 20"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
-          <div><div class="num" id="statMening">0</div><div class="lbl" id="statMeningLbl">Mening olganlarim</div></div>
-        </div>
-        <div class="stat-box b3">
-          <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg></div>
-          <div><div class="num" id="statChiqim">0</div><div class="lbl">O'rnatilgan</div></div>
-        </div>
-      </div>
-
-      <div id="panelSklad">
-        <div class="section-title">Omborda mavjud qurilmalar</div>
-        <div class="search-box">
-          <span class="search-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-          <input type="text" id="skladSearch" placeholder="S/N bo'yicha qidirish...">
-          <button class="search-clear" id="skladSearchClear">✕</button>
-          <button class="filter-btn" id="skladFilterBtn" title="Filter">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            <span class="filter-dot" id="skladFilterDot"></span>
-          </button>
-        </div>
-        <div id="skladResults"></div>
-      </div>
-
-      <div id="panelMening" style="display:none">
-        <div class="section-title" id="meningTitle">Siz olgan, hali o'rnatilmagan qurilmalar</div>
-        <div class="search-box">
-          <span class="search-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-          <input type="text" id="meningSearch" placeholder="S/N bo'yicha qidirish...">
-          <button class="search-clear" id="meningSearchClear">✕</button>
-          <button class="filter-btn" id="meningFilterBtn" title="Filter">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            <span class="filter-dot" id="meningFilterDot"></span>
-          </button>
-        </div>
-        <div id="meningResults"></div>
-      </div>
-
-      <div id="panelTarix" style="display:none">
-        <div class="section-title">O'rnatilgan qurilmalar tarixi</div>
-        <div class="search-box">
-          <span class="search-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-          <input type="text" id="tarixSearch" placeholder="S/N bo'yicha qidirish...">
-          <button class="search-clear" id="tarixSearchClear">✕</button>
-          <button class="filter-btn" id="tarixFilterBtn" title="Filter">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            <span class="filter-dot" id="tarixFilterDot"></span>
-          </button>
-        </div>
-        <div id="tarixResults"></div>
-      </div>
-
-      <div id="panelXabarlar" style="display:none">
-        <div class="section-title">Muddat va qaytarish so'rovlari</div>
-        <div class="xabarlar-toolbar" id="xabarlarToolbar" style="display:none">
-          <label class="check-row">
-            <input type="checkbox" id="xabarlarSelectAll">
-            <span>Hammasini belgilash</span>
-          </label>
-          <button class="big-btn ghost" id="xabarlarDeleteBtn" disabled style="width:auto;padding:9px 16px">🗑 O'chirish (<span id="xabarlarSelectedCount">0</span>)</button>
-        </div>
-        <div id="xabarlarResults"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-nav">
-    <button class="nav-btn active" id="navSklad">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
-      Sklad
-    </button>
-    <button class="nav-btn" id="navMening">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.4 14.5 16 10 4 20"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M19 3v6M22 6h-6"/></svg>
-      Mening
-      <span class="count" id="meningCount" style="display:none">0</span>
-    </button>
-    <button class="nav-btn" id="navTarix">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-      Tarix
-    </button>
-    <button class="nav-btn" id="navXabarlar" style="display:none">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Xabarlar
-      <span class="count" id="xabarlarCount" style="display:none">0</span>
-    </button>
-    <button class="nav-btn" id="addBtn" style="display:none">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-      Yangi
-    </button>
-    <button class="nav-btn danger" id="logoutBtn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-      Chiqish
-    </button>
-  </div>
-</div>
-
-<div class="overlay" id="addOverlay">
-  <div class="modal">
-    <h2>Skladga yangi qurilma</h2>
-    <p class="modal-sub">Ombor ro'yxatiga qo'lda qo'shish</p>
-    <div class="field"><label>S/N (seriya raqami)</label><input type="text" id="newSeria"></div>
-    <div class="field"><label>Marka</label><input type="text" id="newMarka"></div>
-    <div class="field">
-      <label>Tuman</label>
-      <select id="newTuman">
-        <option value="buxoro">Buxoro</option>
-        <option value="kogon">Kogon</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="addCancel">Bekor qilish</button>
-      <button class="btn" id="addConfirm">Qo'shish</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="skladFilterOverlay">
-  <div class="modal">
-    <h2>Filter</h2>
-    <p class="modal-sub">Marka va tuman bo'yicha filterlash</p>
-    <div class="field">
-      <label>Marka</label>
-      <select id="filterMarka">
-        <option value="">Barcha markalar</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Tuman</label>
-      <select id="filterTuman">
-        <option value="all">Barchasi</option>
-        <option value="buxoro">Buxoro</option>
-        <option value="kogon">Kogon</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="filterReset">Tozalash</button>
-      <button class="btn" id="filterApply">Qo'llash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="meningFilterOverlay">
-  <div class="modal">
-    <h2>Filter</h2>
-    <p class="modal-sub">Marka, tuman va holat bo'yicha filterlash</p>
-    <div class="field">
-      <label>Marka</label>
-      <select id="meningFilterMarka">
-        <option value="">Barcha markalar</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Tuman</label>
-      <select id="meningFilterTuman">
-        <option value="all">Barchasi</option>
-        <option value="buxoro">Buxoro</option>
-        <option value="kogon">Kogon</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Holat</label>
-      <select id="meningFilterHolat">
-        <option value="all">Barchasi</option>
-        <option value="faol">Faol</option>
-        <option value="tugagan">Muddati tugagan</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="meningFilterReset">Tozalash</button>
-      <button class="btn" id="meningFilterApply">Qo'llash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="tarixFilterOverlay">
-  <div class="modal">
-    <h2>Filter</h2>
-    <p class="modal-sub">Tuman va xodim bo'yicha filterlash</p>
-    <div class="field">
-      <label>Tuman</label>
-      <select id="tarixFilterTuman">
-        <option value="all">Barchasi</option>
-        <option value="buxoro">Buxoro</option>
-        <option value="kogon">Kogon</option>
-      </select>
-    </div>
-    <div class="field" id="tarixFilterXodimField">
-      <label>Xodim</label>
-      <select id="tarixFilterXodim">
-        <option value="">Barchasi</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="tarixFilterReset">Tozalash</button>
-      <button class="btn" id="tarixFilterApply">Qo'llash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="faollashtirishOverlay">
-  <div class="modal">
-    <h2>Qurilmani faollashtirish</h2>
-    <p class="modal-sub">Muddati tugagan qurilmaga yangi muddat belgilang — qurilma xodimning qo'lida qoladi</p>
-    <div class="field">
-      <label>Yangi muddat</label>
-      <div class="duration-grid" id="faollashtirishDurationGrid">
-        <button type="button" class="duration-btn" data-hours="24">1 kun<span class="d-sub">24 soat</span></button>
-        <button type="button" class="duration-btn" data-hours="48">2 kun<span class="d-sub">48 soat</span></button>
-        <button type="button" class="duration-btn" data-hours="72">3 kun<span class="d-sub">72 soat</span></button>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="faollashtirishCancel">Bekor qilish</button>
-      <button class="btn" id="faollashtirishConfirm">Faollashtirish</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="olishOverlay">
-  <div class="modal">
-    <h2 id="olishTitle">Qurilmani olish</h2>
-    <p class="modal-sub">Manzil va muddatni kiriting</p>
-    <div class="field"><label>Manzil</label><input type="text" id="olishManzil" placeholder="Masalan: Amir temur ko'chasi 2- uy"></div>
-    <div class="field">
-      <label>Muddat (ma'lumot uchun — "necha soatga olingan" deb ko'rsatiladi)</label>
-      <div class="duration-grid" id="olishDurationGrid">
-        <button type="button" class="duration-btn" data-hours="24">1 kun<span class="d-sub">24 soat</span></button>
-        <button type="button" class="duration-btn" data-hours="48">2 kun<span class="d-sub">48 soat</span></button>
-        <button type="button" class="duration-btn" data-hours="72">3 kun<span class="d-sub">72 soat</span></button>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="olishCancel">Bekor qilish</button>
-      <button class="btn" id="olishConfirm">Tasdiqlash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="installOverlay">
-  <div class="modal">
-    <h2>Qurilma o'rnatildi</h2>
-    <p class="modal-sub">O'rnatish ma'lumotlarini va rasmlarni to'ldiring</p>
-    <div style="display:flex;gap:10px">
-      <div class="field" style="flex:1"><label>Manzil</label><input type="text" id="installManzil" placeholder="Ko'cha nomi"></div>
-      <div class="field" style="width:80px;flex-shrink:0"><label>Uy raqami</label><input type="text" id="installUy" placeholder="12"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>OLT</label><input type="text" id="installOlt" placeholder="OLT nomi"></div>
-      <div class="field"><label>Port</label><input type="text" id="installPort" placeholder="Port raqami"></div>
-    </div>
-    <div class="field">
-      <label>Masofa (1/4 dan, metrda)</label>
-      <input type="text" id="installMasofa" placeholder="Masalan: 120" inputmode="numeric" pattern="[0-9]*">
-    </div>
-    <div class="field">
-      <label>Joylashuv <span style="color:var(--danger)">*</span></label>
-      <button type="button" class="loc-btn" id="locBtn">📍 Joylashuvni belgilash</button>
-    </div>
-    <div class="field">
-      <label>Rasmlar (2 ta majburiy, 2 ta ixtiyoriy)</label>
-      <div class="upload-grid">
-        <label class="upload-slot" id="instSlot1"><span class="req">Majburiy</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>1-rasm</span><input type="file" accept="image/*"></label>
-        <label class="upload-slot" id="instSlot2"><span class="req">Majburiy</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>2-rasm</span><input type="file" accept="image/*"></label>
-        <label class="upload-slot" id="instSlot3"><span class="opt">Ixtiyoriy</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>3-rasm</span><input type="file" accept="image/*"></label>
-        <label class="upload-slot" id="instSlot4"><span class="opt">Ixtiyoriy</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>4-rasm</span><input type="file" accept="image/*"></label>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="installCancel">Bekor qilish</button>
-      <button class="btn" id="installConfirm">Tasdiqlash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="qaytarishOverlay">
-  <div class="modal">
-    <h2>Omborga qaytarish</h2>
-    <p class="modal-sub">Nima uchun qaytarayotganingizni yozing</p>
-    <div class="field"><label>Sabab</label><input type="text" id="qaytarishSabab" placeholder="Masalan: noto'g'ri qurilma olindi"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="qaytarishCancel">Bekor qilish</button>
-      <button class="btn" id="qaytarishConfirm">Qaytarish</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="ornatishBekorOverlay">
-  <div class="modal">
-    <h2>O'rnatishni bekor qilish</h2>
-    <p class="modal-sub">Qurilma o'rnatgan xodimning "Mening" bo'limiga qaytadi, Telegram xabari ham yangilanadi.</p>
-    <div class="field"><label>Sabab</label><input type="text" id="ornatishBekorSabab" placeholder="Masalan: noto'g'ri manzilga o'rnatilgan"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="ornatishBekorCancel">Bekor qilish</button>
-      <button class="btn" id="ornatishBekorConfirm">Tasdiqlash</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="yonaltirishOverlay">
-  <div class="modal">
-    <h2>Boshqa xodimga yo'naltirish</h2>
-    <p class="modal-sub">Qurilma tanlangan xodimga o'tkaziladi, Telegram xabari ham yangilanadi</p>
-    <div class="field">
-      <label>Xodim</label>
-      <select id="yonaltirishXodim">
-        <option value="">Xodimni tanlang</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="yonaltirishCancel">Bekor qilish</button>
-      <button class="btn" id="yonaltirishConfirm">Yo'naltirish</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="sorovOverlay">
-  <div class="modal">
-    <h2>Qo'shimcha muddat so'rash</h2>
-    <p class="modal-sub">Maksimal 1 kun (24 soat) gacha so'rashingiz mumkin. So'rov adminga yuboriladi.</p>
-    <div class="field">
-      <label>Qo'shimcha muddat</label>
-      <div class="duration-grid" id="sorovDurationGrid">
-        <button type="button" class="duration-btn" data-hours="6">6 soat</button>
-        <button type="button" class="duration-btn" data-hours="12">12 soat</button>
-        <button type="button" class="duration-btn" data-hours="24">24 soat<span class="d-sub">(1 kun, max)</span></button>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="sorovCancel">Bekor qilish</button>
-      <button class="btn" id="sorovConfirm">So'rov yuborish</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="mapOverlay">
-  <div class="map-modal">
-    <h2 style="margin:0">Joylashuvni tanlang</h2>
-    <p class="map-hint">Xarita GPS orqali taxminiy joyni ko'rsatadi — belgini (📍) surib yoki xaritaga bosib aniq nuqtani ko'rsating.</p>
-    <div style="position:relative">
-      <div id="leafletMap"></div>
-      <button type="button" class="locate-me-btn" id="locateMeBtn" title="Mening joylashuvim">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-      </button>
-    </div>
-    <div class="map-coords" id="mapCoordsText">Aniqlanmoqda...</div>
-    <div class="map-accuracy-warn" id="mapAccuracyWarn" style="display:none"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="mapCancel">Bekor qilish</button>
-      <button class="btn" id="mapConfirm">Joylashuvni tasdiqlash</button>
-    </div>
-  </div>
-</div>
-
-<div class="expired-lock" id="expiredLock">
-  <div class="expired-lock-card">
-    <div class="expired-lock-icon">⚠️</div>
-    <div class="expired-lock-title">Sizda muddati o'tgan qurilma bor</div>
-    <div class="expired-lock-sub">Ilovadan foydalanish uchun administrator qurilmani faollashtirishi yoki omborga qaytarishi kerak. Admin bilan bog'laning.</div>
-    <div class="expired-lock-list" id="expiredLockList"></div>
-    <button type="button" class="btn btn-secondary expired-lock-logout" id="expiredLockLogout">Chiqish</button>
-  </div>
-</div>
-
-<div class="bg-progress" id="bgProgressBadge" style="display:none">
-  <div class="bg-progress-spinner"></div>
-  <span id="bgProgressText">Yuborilmoqda...</span>
-</div>
-
-<div class="toast-wrap" id="toastWrap"></div>
-
-<script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTjE4zHu_-UL4Lml-RFesU0TAh2HGvV951VM31LGIxk-gGS1ICulC1kJH-DzVr_l1mOg/exec";
-const EMPLOYEES_URL = APPS_SCRIPT_URL + "?action=employees";
-const BOOTSTRAP_URL = APPS_SCRIPT_URL + "?action=bootstrap";
-
-let employees = [], sklad = [], kirim = [], chiqim = [], sorovlar = [], tugaganlar = [];
-let currentUser = null;
-let skladTumanFilter = 'all';
-let skladMarkaFilter = '';
-
-function normalize(s){ return (s||'').toString().trim().toLowerCase(); }
-function normalizeTuman(raw){
-  const s = normalize(raw);
-  if(s.indexOf('buxoro') > -1) return 'buxoro';
-  if(s.indexOf('kogon') > -1) return 'kogon';
-  return s;
-}
-function tumanLabel(raw){
-  const t = normalizeTuman(raw);
-  return t==='buxoro' ? 'Buxoro' : t==='kogon' ? 'Kogon' : escapeHtml(raw||'');
-}
-function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s??''; return d.innerHTML; }
-function barcodeSpans(n){ let h=''; for(let i=0;i<n;i++) h+='<span></span>'; return h; }
-
-// Karta ikonkasi — yagona kichik SVG (qo'shimcha rasm/tarmoq so'rovi yo'q,
-// shu sabab tezlikka ta'sir qilmaydi), fon rangi tuman bo'yicha almashadi.
-const DEVICE_ICON_SVG = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="9" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><circle cx="12" cy="12.5" r="1.6"/></svg>';
-function deviceIconTone(tuman){
-  const t = normalizeTuman(tuman);
-  return t === 'kogon' ? 'tone-b' : 'tone-a';
-}
-
-// Optimistik yangilanishlar uchun — bugungi sana klient tomonda ham serverdagi
-// bilan bir xil formatda ("uz-UZ") kerak bo'ladi.
-function todaySanaClient(){
-  return new Date().toLocaleDateString('uz-UZ', {day:'2-digit', month:'2-digit', year:'numeric'});
-}
-
-function toast(msg, type){
-  const wrap = document.getElementById('toastWrap');
-  const el = document.createElement('div');
-  el.className = 'toast ' + (type||'success');
-  el.textContent = msg;
-  wrap.appendChild(el);
-  setTimeout(()=>el.remove(), type==='error' ? 20000 : 3200);
-}
-
-// TEZLASHTIRISH VA XAVFSIZLIK: har bir so'rov uchun cheklangan vaqt
-// (timeout) — agar server (yoki tarmoq) belgilangan vaqt ichida javob
-// bermasa, so'rov ABADIY osilib qolmaydi, aniq xato bilan tugaydi. Bu
-// "cheksiz yuklanish" muammosining oldini oladi.
-function fetchWithTimeout_(url, options, timeoutMs){
-  const controller = new AbortController();
-  const timer = setTimeout(()=> controller.abort(), timeoutMs);
-  return fetch(url, Object.assign({}, options, { signal: controller.signal }))
-    .catch(err=>{
-      if(err.name === 'AbortError') throw new Error("Server javob bermadi (vaqt tugadi) — internetni tekshirib, qayta urinib ko'ring.");
-      throw err;
-    })
-    .finally(()=> clearTimeout(timer));
-}
-
-// TEZLASHTIRISH VA MUSTAHKAMLIK: bu FAQAT o'qish (GET) so'rovi, hech
-// narsani o'zgartirmaydi, shuning uchun necha marta takrorlansa ham
-// xavfsiz. Avval bor-yo'g'i 2 marta urinilardi (bittasi + bitta qayta
-// urinish) — Apps Script vaqtincha band bo'lganda (bir nechta odam bir
-// vaqtda kirganda) shu 2 urinish ham yetmasdi va "Ma'lumotlarni
-// yuklashda xatolik" chiqib qolardi. Endi 4 marta, orada kutish vaqti
-// har safar oshib boradi (400ms, 1200ms, 2500ms) — vaqtinchalik
-// bandlik deyarli har doim shu ichida tuzaladi.
-async function fetchJson(url){
-  const delays = [0, 400, 1200, 2500];
-  let lastErr;
-  for(let i = 0; i < delays.length; i++){
-    if(delays[i]) await new Promise(r=>setTimeout(r, delays[i]));
-    try{
-      const resp = await fetchWithTimeout_(url, { method:'GET', cache:'no-store' }, 15000);
-      if(!resp.ok) throw new Error('HTTP '+resp.status);
-      return await resp.json();
-    }catch(err){
-      lastErr = err;
-    }
-  }
-  throw lastErr;
-}
-
-async function postAction(payload){
-  const resp = await fetchWithTimeout_(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) }, 20000);
-  let result;
-  try{ result = await resp.json(); }catch(e){ throw new Error("Server javobini o'qib bo'lmadi"); }
-  if(!result.success) throw new Error(result.error || "Noma'lum xatolik");
-  return result;
-}
-
-// ============ MUDDAT — ENDI FAQAT MA'LUMOT, AVTOMATIK TUGAMAYDI ============
-// Qurilma "muddati o'tgan" holatiga FAQAT admin qo'lda belgilaganda o'tadi —
-// endi bu Kirim'dan Tugagan varag'iga ko'chirish orqali amalga oshadi
-// (alohida "expired" bayrog'i shart emas — qaysi varaqda turgani holatni bildiradi).
-function muddatInfoText(d){
-  if(!d.MuddatSoat) return '';
-  const soat = Number(d.MuddatSoat);
-  if(!soat) return '';
-  if(soat >= 24 && soat % 24 === 0){
-    const kun = soat / 24;
-    return kun + ' kun (' + soat + ' soat)ga olingan';
-  }
-  return soat + ' soatga olingan';
-}
-
-function getLatestRequest(seria, turi){
-  const login = normalize(currentUser.login);
-  let latest = null;
-  for(const r of sorovlar){
-    if(normalize(r.seria) === normalize(seria) && (r.turi||'').toString().trim() === turi && normalize(r.login) === login){
-      latest = r;
-    }
-  }
-  return latest;
-}
-
-// ============ MUDDATI O'TGAN QURILMA BANNERI (xodim ekrani) ============
-// Ma'lumot yuklangan ZAHOTI (updateStats() har safar chaqirilganda —
-// login, yangilash, fon rejimidagi sinxronlash va h.k. paytlarida) ishga
-// tushadi. Admin uchun ko'rsatilmaydi (u "Mening" bo'limida hammasini
-// ko'radi). Faqat MA'LUMOT — hech qanday tugma yo'q, chunki xodim bu
-// holatda hech narsa qila olmaydi (faollashtirish/qaytarish faqat admin
-// qo'lida). Admin masalani hal qilib, qurilma tugaganlar ro'yxatidan
-// chiqqan zahoti, banner keyingi yangilanishda o'zi yo'qoladi.
-function renderExpiredBanner(){
-  const el = document.getElementById('expiredLock');
-  const listEl = document.getElementById('expiredLockList');
-  if(!el || !currentUser) return;
-  if(currentUser.role === 'admin'){ el.classList.remove('show'); return; }
-  const mine = tugaganlar.filter(d => normalize(d.login) === normalize(currentUser.login));
-  if(mine.length === 0){ el.classList.remove('show'); listEl.innerHTML = ''; return; }
-  listEl.innerHTML = mine.map(d => `
-    <div class="expired-lock-item">
-      <div class="code">${escapeHtml(d['S/N']||'')}</div>
-      ${d.marka ? `<div class="marka">${escapeHtml(d.marka)}</div>` : ''}
-      <div class="addr">${escapeHtml(d.manzil||'')}</div>
-    </div>`).join('');
-  el.classList.add('show');
-}
-document.getElementById('expiredLockLogout').addEventListener('click', ()=>{
-  stopSessionWatch();
-  localStorage.removeItem('sklad_user');
-  location.reload();
-});
-
-// ============ FON REJIMIDAGI JARAYON KO'RSATKICHI ============
-let bgTaskCount = 0;
-function bgTaskStart(label){
-  bgTaskCount++;
-  const badge = document.getElementById('bgProgressBadge');
-  document.getElementById('bgProgressText').textContent = label;
-  badge.style.display = 'flex';
-}
-function bgTaskEnd(){
-  bgTaskCount = Math.max(0, bgTaskCount - 1);
-  if(bgTaskCount === 0) document.getElementById('bgProgressBadge').style.display = 'none';
-}
-
-function fileToCompressedBase64(file, maxDim){
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      const img = new Image();
-      img.onload = ()=>{
-        let w = img.width, h = img.height;
-        const scale = Math.min(1, maxDim / Math.max(w,h));
-        w = Math.round(w*scale); h = Math.round(h*scale);
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.75));
-      };
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// loadAll natijani true/false qaytaradi — muvaffaqiyatli yuklandimi yoki
-// yo'qmi, chaqiruvchi shu asosda qaror qabul qiladi (masalan initApp
-// bo'sh ekran o'rniga "qayta urinish" tugmasini ko'rsatadi).
-async function loadAll(){
-  try{
-    const data = await fetchJson(BOOTSTRAP_URL);
-    // Server kutilmagan xatolikda ham to'g'ri JSON qaytaradi, lekin
-    // { success:false, error:... } ko'rinishida — bunday holatda mavjud
-    // ma'lumotlarni BO'SH massivlar bilan almashtirib yubormaymiz, aks
-    // holda ekran bir zumga "hech narsa yo'q" bo'lib ko'rinib ketadi.
-    if(data && data.success === false){
-      throw new Error(data.error || "Server xatoligi");
-    }
-    employees = data.employees || employees;
-    sklad = data.sklad || []; kirim = data.kirim || []; chiqim = data.chiqim || []; sorovlar = data.sorovlar || []; tugaganlar = data.tugaganlar || [];
-    return true;
-  }catch(err){
-    toast("Ma'lumotlarni yuklashda xatolik", 'error');
-    return false;
-  }
-}
-
-// ============ ILOVAGA KIRISH — FAQAT MA'LUMOT TO'LIQ YUKLANGANDAN KEYIN ============
-// Login (yoki avtomatik kirish) ekrani hech qachon ma'lumot yuklanishidan
-// oldin ko'rsatilmaydi — foydalanuvchi bo'sh/eskirgan ro'yxat ko'rmasligi kerak.
-// MUHIM: agar 4 marta urinishdan keyin ham yuklanmasa (masalan internet
-// butunlay yo'q), foydalanuvchi bo'sh/abadiy "yuklanmoqda" holatida
-// qolib ketmasligi uchun aniq xabar va "Qayta urinish" tugmasi ko'rsatiladi.
-async function initApp(){
-  // TEZLASHTIRISH: avval ikkita alohida so'rov (bootstrap + employees) yuborilardi —
-  // har birining o'z "sovuq boshlanish" kechikishi bo'lardi. Endi employees ham
-  // bootstrap javobi ichida keladi — bitta so'rov, tezroq yuklanish.
-  const ok = await loadAll();
-  document.getElementById('loadingScreen').style.display = 'none';
-  if(!ok){
-    const ls = document.getElementById('loadingScreen');
-    ls.innerHTML = `
-      <div class="loading-text" style="text-align:center;max-width:260px">Ma'lumotlarni yuklab bo'lmadi.<br>Internetni tekshirib, qayta urining.</div>
-      <button class="btn" style="width:auto;padding:11px 22px" onclick="location.reload()">↻ Qayta urinish</button>
-    `;
-    ls.style.display = 'flex';
-    return;
-  }
-  const saved = localStorage.getItem('sklad_user');
-  if(saved){
-    try{
-      currentUser = JSON.parse(saved);
-      // MUHIM: ilova ochilgan zahoti — hozirgina bootstrap orqali yuklangan
-      // ENG YANGI Login ro'yxati asosida — bu foydalanuvchi hali ham
-      // ro'yxatda bormi tekshiriladi. Agar admin uni Login varag'idan
-      // o'chirgan bo'lsa (ishdan bo'shatilgan xodim), localStorage'da
-      // eski sessiya saqlanib qolgan bo'lsa ham, ilova uni AVTOMATIK
-      // chiqarib yuboradi — brauzerni yopib-ochish yoki cache tozalash
-      // shart emas.
-      if(!syncCurrentUserWithEmployees()){
-        forceLogout("Sizning hisobingiz o'chirilgan yoki o'zgartirilgan. Administrator bilan bog'laning.");
-        return;
-      }
-      enterApp();
-      startSessionWatch();
-      return;
-    }catch(e){}
-  }
-  document.getElementById('loginScreen').style.display = 'flex';
-}
-
-// Joriy foydalanuvchini ENG YANGI employees ro'yxati bilan solishtiradi.
-// Agar login topilmasa — false qaytaradi (chiqarib yuborish kerak).
-// Topilsa — ism/tuman/rol o'zgargan bo'lishi mumkin (masalan admin
-// huquqi olib tashlangan yoki boshqa tumanga o'tkazilgan), shu holatda
-// currentUser va localStorage YANGILANADI, shunda ochiq sessiya ham
-// eng so'nggi huquqlarga mos ishlaydi.
-function syncCurrentUserWithEmployees(){
-  const found = employees.find(e => normalize(e.LOGIN) === normalize(currentUser.login));
-  if(!found) return false;
-  const freshUser = {
-    ism: found.ISM,
-    login: found.LOGIN,
-    tuman: (found.tuman||'').toString().trim(),
-    role: (found.dostup||'xodim').toString().trim().toLowerCase()
-  };
-  const changed = JSON.stringify(freshUser) !== JSON.stringify(currentUser);
-  currentUser = freshUser;
-  if(changed){
-    localStorage.setItem('sklad_user', JSON.stringify(currentUser));
-    if(document.getElementById('appScreen').style.display !== 'none') applyRoleUI();
-  }
-  return true;
-}
-
-// Sessiyani majburan tugatadi — hisob o'chirilgan/o'zgartirilgan holatlar
-// uchun. Oddiy "Chiqish" tugmasidan farqi: sabab ko'rsatuvchi xabar chiqadi.
-function forceLogout(message){
-  stopSessionWatch();
-  localStorage.removeItem('sklad_user');
-  currentUser = null;
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginInput').value = '';
-  document.getElementById('passInput').value = '';
-  if(message){
-    const errEl = document.getElementById('loginError');
-    errEl.textContent = message;
-    errEl.classList.add('show');
-  }
-}
-
-// Ochiq (allaqachon kirilgan) sessiyalar uchun ham xuddi shu tekshiruv
-// davriy ravishda ishlaydi — shunda admin xodimni Login varag'idan
-// o'chirgan zahoti, xodim brauzerini yopmasa ham, bir necha soniya
-// ichida avtomatik chiqarib yuboriladi (sahifani yangilashi shart emas).
-let sessionWatchIntervalId = null;
-function startSessionWatch(){
-  stopSessionWatch();
-  sessionWatchIntervalId = setInterval(async ()=>{
-    if(!currentUser) return;
-    const ok = await loadAll();
-    if(!ok) return; // tarmoq xatosi — sessiyani bekor qilmaymiz, keyingi urinishda tekshiramiz
-    if(!syncCurrentUserWithEmployees()){
-      forceLogout("Sizning hisobingiz o'chirilgan yoki o'zgartirilgan. Administrator bilan bog'laning.");
-      return;
-    }
-    renderActive();
-    updateStats();
-  }, 45000);
-}
-function stopSessionWatch(){
-  if(sessionWatchIntervalId != null){ clearInterval(sessionWatchIntervalId); sessionWatchIntervalId = null; }
-}
-
-document.getElementById('loginBtn').addEventListener('click', doLogin);
-document.getElementById('passInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-
-async function doLogin(){
-  const loginVal = document.getElementById('loginInput').value.trim();
-  const passVal = document.getElementById('passInput').value.trim();
-  const errEl = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-  errEl.classList.remove('show');
-  if(!loginVal || !passVal){ errEl.textContent="Login va parolni to'liq kiriting"; errEl.classList.add('show'); return; }
-  btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
-  try{
-    if(employees.length === 0){ employees = await fetchJson(EMPLOYEES_URL); }
-    const found = employees.find(e => normalize(e.LOGIN) === normalize(loginVal) && (e.PAROL||'').toString().trim() === passVal);
-    if(found){
-      currentUser = { ism: found.ISM, login: found.LOGIN, tuman: (found.tuman||'').toString().trim(), role: (found.dostup||'xodim').toString().trim().toLowerCase() };
-      localStorage.setItem('sklad_user', JSON.stringify(currentUser));
-      // Ma'lumot allaqachon sahifa ochilganda yuklangan (initApp/loadAll) —
-      // shuning uchun bu yerda qayta yuklash shart emas, darhol kiramiz.
-      // (Yangilash tugmasi orqali istalgan payt qo'lda yangilash mumkin.)
-      enterApp();
-      startSessionWatch();
-    }else{
-      errEl.textContent = "Login yoki parol noto'g'ri"; errEl.classList.add('show');
-    }
-  }catch(err){
-    errEl.textContent = "Xatolik yuz berdi, qayta urinib ko'ring"; errEl.classList.add('show');
-  }finally{
-    btn.disabled = false; btn.textContent = 'Kirish';
-  }
-}
-
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
-  stopSessionWatch();
-  localStorage.removeItem('sklad_user');
-  location.reload();
-});
-
-// Rol/tuman asosidagi UI elementlarini (admin tugmalari, sarlavhalar)
-// yangilaydi — enterApp() birinchi kirishda, syncCurrentUserWithEmployees()
-// esa keyinchalik rol o'zgarganda shu funksiyani qayta chaqiradi.
-function applyRoleUI(){
-  document.getElementById('userName').textContent = currentUser.ism;
-  const isAdmin = currentUser.role === 'admin';
-  document.getElementById('addBtn').style.display = isAdmin ? 'flex' : 'none';
-  document.getElementById('navXabarlar').style.display = isAdmin ? 'flex' : 'none';
-  document.getElementById('statMeningLbl').textContent = isAdmin ? 'Qabul qilingan' : 'Mening olganlarim';
-  document.getElementById('meningTitle').textContent = isAdmin
-    ? "Barcha qabul qilingan qurilmalar (kimda turgani bilan)"
-    : "Siz olgan, hali o'rnatilmagan qurilmalar";
-}
-
-function enterApp(){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'block';
-  applyRoleUI();
-  renderActive();
-  updateStats();
-}
-
-async function refreshData(){
-  const ok = await loadAll();
-  if(ok && currentUser && !syncCurrentUserWithEmployees()){
-    forceLogout("Sizning hisobingiz o'chirilgan yoki o'zgartirilgan. Administrator bilan bog'laning.");
-    return;
-  }
-  renderActive();
-  updateStats();
-  if(ok) toast('Yangilandi', 'success');
-}
-document.getElementById('refreshBtnTop').addEventListener('click', refreshData);
-
-function updateStats(){
-  document.getElementById('statSklad').textContent = sklad.length;
-  const isAdmin = currentUser.role === 'admin';
-  const meningCount = isAdmin
-    ? kirim.length + tugaganlar.length
-    : kirim.filter(d=>normalize(d.login)===normalize(currentUser.login)).length + tugaganlar.filter(d=>normalize(d.login)===normalize(currentUser.login)).length;
-  document.getElementById('statMening').textContent = meningCount;
-  document.getElementById('statChiqim').textContent = chiqim.length;
-  const countEl = document.getElementById('meningCount');
-  if(meningCount > 0){ countEl.style.display='flex'; countEl.textContent = meningCount; } else { countEl.style.display='none'; }
-  const pending = sorovlar.filter(r => (r.holat||'').toString().trim() === 'kutilmoqda').length;
-  const xEl = document.getElementById('xabarlarCount');
-  if(isAdmin && pending > 0){ xEl.style.display='flex'; xEl.textContent = pending; } else { xEl.style.display='none'; }
-  // Ma'lumot yuklangan/yangilangan HAR SAFAR — bannerni ham qayta baholaymiz.
-  renderExpiredBanner();
-}
-
-const panelSklad = document.getElementById('panelSklad');
-const panelMening = document.getElementById('panelMening');
-const panelTarix = document.getElementById('panelTarix');
-const panelXabarlar = document.getElementById('panelXabarlar');
-const navBtns = {
-  sklad: document.getElementById('navSklad'),
-  mening: document.getElementById('navMening'),
-  tarix: document.getElementById('navTarix'),
-  xabarlar: document.getElementById('navXabarlar')
-};
-let activePanel = 'sklad';
-
-// ============ SKLAD FILTER (marka + tuman) ============
-const skladFilterOverlay = document.getElementById('skladFilterOverlay');
-document.getElementById('skladFilterBtn').addEventListener('click', ()=>{
-  const markaSel = document.getElementById('filterMarka');
-  const uniqueMarkalar = Array.from(new Set(sklad.map(d => (d.marka||'').toString().trim()).filter(Boolean))).sort();
-  markaSel.innerHTML = '<option value="">Barcha markalar</option>' +
-    uniqueMarkalar.map(m => `<option value="${escapeHtml(m)}"${m===skladMarkaFilter?' selected':''}>${escapeHtml(m)}</option>`).join('');
-  document.getElementById('filterTuman').value = skladTumanFilter;
-  skladFilterOverlay.classList.add('show');
-});
-skladFilterOverlay.addEventListener('click', e=>{ if(e.target===skladFilterOverlay) skladFilterOverlay.classList.remove('show'); });
-document.getElementById('filterApply').addEventListener('click', ()=>{
-  skladMarkaFilter = document.getElementById('filterMarka').value;
-  skladTumanFilter = document.getElementById('filterTuman').value;
-  skladFilterOverlay.classList.remove('show');
-  renderSklad();
-});
-document.getElementById('filterReset').addEventListener('click', ()=>{
-  skladMarkaFilter = '';
-  skladTumanFilter = 'all';
-  document.getElementById('filterMarka').value = '';
-  document.getElementById('filterTuman').value = 'all';
-  skladFilterOverlay.classList.remove('show');
-  renderSklad();
-});
-
-function renderActive(){
-  if(activePanel==='sklad') renderSklad();
-  else if(activePanel==='mening') renderMening();
-  else if(activePanel==='tarix') renderTarix();
-  else renderXabarlar();
-}
-
-function showPanel(name){
-  activePanel = name;
-  Object.values(navBtns).forEach(b=>b.classList.remove('active'));
-  navBtns[name].classList.add('active');
-  panelSklad.style.display = name==='sklad' ? 'block':'none';
-  panelMening.style.display = name==='mening' ? 'block':'none';
-  panelTarix.style.display = name==='tarix' ? 'block':'none';
-  panelXabarlar.style.display = name==='xabarlar' ? 'block':'none';
-  renderActive();
-}
-Object.keys(navBtns).forEach(name=> navBtns[name].addEventListener('click', ()=>showPanel(name)));
-
-const skladSearch = document.getElementById('skladSearch');
-const skladSearchClear = document.getElementById('skladSearchClear');
-skladSearch.addEventListener('input', ()=>{ skladSearchClear.style.display = skladSearch.value?'flex':'none'; renderSklad(); });
-skladSearchClear.addEventListener('click', ()=>{ skladSearch.value=''; skladSearchClear.style.display='none'; renderSklad(); });
-
-// ===== SKLAD — bitta umumiy vertikal ticket uslubida =====
-function renderSklad(){
-  const q = normalize(skladSearch.value.trim());
-  let list = sklad.slice();
-  if(skladTumanFilter !== 'all') list = list.filter(d => normalizeTuman(d.tuman) === skladTumanFilter);
-  if(skladMarkaFilter) list = list.filter(d => normalize(d.marka) === normalize(skladMarkaFilter));
-  if(q.length >= 2) list = list.filter(d => normalize(d['S/N']).includes(q));
-  document.getElementById('skladFilterDot').style.display = skladMarkaFilter ? 'block' : 'none';
-  const el = document.getElementById('skladResults');
-  if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${q ? "Hech narsa topilmadi" : "Skladda qurilma yo'q"}</div>`; return; }
-  const isAdmin = currentUser.role === 'admin';
-  el.innerHTML = list.slice(0,3000).map(d => {
-    const ownTuman = normalizeTuman(d.tuman) === normalizeTuman(currentUser.tuman);
-    const canTake = isAdmin || ownTuman;
-    const tumanCls = normalizeTuman(d.tuman) === 'kogon' ? ' kogon' : '';
-    return `
-    <div class="ticket">
-      <div class="ticket-main">
-        <div class="ticket-icon ${deviceIconTone(d.tuman)}">${DEVICE_ICON_SVG}</div>
-        <div class="ticket-body">
-          <div class="ticket-code">${escapeHtml(d['S/N']||'')}</div>
-          <div class="ticket-sub">${escapeHtml(d.marka||'')}</div>
-        </div>
-        <div class="ticket-badges">
-          <span class="badge badge-tuman${tumanCls}">${tumanLabel(d.tuman)}</span>
-        </div>
-      </div>
-      <div class="action-row">
-        ${canTake
-          ? `<button class="pill-btn pill-green" onclick="openOlish('${encodeURIComponent(d['S/N'])}')">✓ Oldim</button>`
-          : `<div class="ticket-sub" style="padding:0 0 4px">Bu qurilma boshqa tumanga tegishli</div>`}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-let olishSeria = null, olishMuddatSoat = null;
-const olishOverlay = document.getElementById('olishOverlay');
-function openOlish(seriaEnc){
-  olishSeria = decodeURIComponent(seriaEnc);
-  olishMuddatSoat = null;
-  document.getElementById('olishTitle').textContent = 'Qurilmani olish — ' + olishSeria;
-  document.getElementById('olishManzil').value = '';
-  document.querySelectorAll('#olishDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-  olishOverlay.classList.add('show');
-}
-window.openOlish = openOlish;
-document.querySelectorAll('#olishDurationGrid .duration-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#olishDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    olishMuddatSoat = btn.dataset.hours;
-  });
-});
-document.getElementById('olishCancel').addEventListener('click', ()=> olishOverlay.classList.remove('show'));
-olishOverlay.addEventListener('click', e=>{ if(e.target===olishOverlay) olishOverlay.classList.remove('show'); });
-
-// ==== "Oldim" tugmasi — OPTIMISTIK: server javobini kutmasdan darhol Sklad -> Kirim ko'chiradi ====
-document.getElementById('olishConfirm').addEventListener('click', ()=>{
-  const manzil = document.getElementById('olishManzil').value.trim();
-  if(!manzil){ toast('Manzilni kiriting', 'error'); return; }
-  if(!olishMuddatSoat){ toast('Muddatni tanlang', 'error'); return; }
-  const seria = olishSeria;
-  const muddat_soat = olishMuddatSoat;
-  const manzilVal = manzil;
-  olishOverlay.classList.remove('show');
-
-  // Darhol lokal massivlarni yangilaymiz va qayta chizamiz
-  const skladIdx = sklad.findIndex(d => d['S/N'] === seria);
-  const removed = skladIdx > -1 ? sklad.splice(skladIdx, 1)[0] : null;
-  kirim.push({
-    'S/N': seria,
-    marka: removed ? removed.marka : '',
-    manzil: manzilVal,
-    login: currentUser.login,
-    sana: todaySanaClient(),
-    tuman: removed ? removed.tuman : currentUser.tuman,
-    MsgId: '', MsgChatId: '',
-    Ism: currentUser.ism,
-    MuddatSoat: muddat_soat,
-    OlinganVaqt: new Date().toISOString()
-  });
-  renderActive();
-  updateStats();
-
-  bgTaskStart('Biriktirilmoqda: ' + seria);
-  postAction({ action:'olish', seria, login: currentUser.login, ism: currentUser.ism, role: currentUser.role, tuman: currentUser.tuman, manzil: manzilVal, muddat_soat })
-    .then((res)=>{
-      if(res.telegram_debug){ toast('TELEGRAM: ' + res.telegram_debug, 'error'); }
-      // Fonda haqiqiy ma'lumot bilan sokin sinxronlaymiz
-      loadAll().then(()=>{ renderActive(); updateStats(); });
-    })
-    .catch(err=>{
-      toast(err.message, 'error'); // xato bo'lsa — haqiqiy holatni serverdan qayta yuklab, orqaga qaytaramiz
-      loadAll().then(()=>{ renderActive(); updateStats(); });
-    })
-    .finally(()=>{ bgTaskEnd(); });
-});
-
-// ===== MENING — muddat endi statik ma'lumot, faollashtirish/qaytarish faqat admin =====
-// ===== MENING — faol (Kirim) VA muddati tugagan (Tugagan) qurilmalar
-// BITTA ro'yxatda ko'rsatiladi. Muddati tugaganlar pastda, alohida
-// (qizil) uslubda va cheklangan amallar bilan chiqadi. =====
-let meningTumanFilter = 'all';
-let meningMarkaFilter = '';
-let meningHolatFilter = 'all';
-
-function renderMening(){
-  const isAdmin = currentUser.role === 'admin';
-  const activeList = (isAdmin ? kirim.slice() : kirim.filter(d => normalize(d.login) === normalize(currentUser.login)))
-    .map(d => Object.assign({}, d, { _expired: false }));
-  const expiredList = (isAdmin ? tugaganlar.slice() : tugaganlar.filter(d => normalize(d.login) === normalize(currentUser.login)))
-    .map(d => Object.assign({}, d, { _expired: true }));
-  let list = activeList.concat(expiredList);
-
-  const q = normalize(document.getElementById('meningSearch').value.trim());
-  if(meningHolatFilter === 'faol') list = list.filter(d => !d._expired);
-  else if(meningHolatFilter === 'tugagan') list = list.filter(d => d._expired);
-  if(meningTumanFilter !== 'all') list = list.filter(d => normalizeTuman(d.tuman) === meningTumanFilter);
-  if(meningMarkaFilter) list = list.filter(d => normalize(d.marka) === normalize(meningMarkaFilter));
-  if(q.length >= 2) list = list.filter(d => normalize(d['S/N']).includes(q));
-  document.getElementById('meningFilterDot').style.display = (meningTumanFilter!=='all' || meningMarkaFilter || meningHolatFilter!=='all') ? 'block' : 'none';
-
-  const el = document.getElementById('meningResults');
-  if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${q || meningMarkaFilter || meningTumanFilter!=='all' || meningHolatFilter!=='all' ? "Hech narsa topilmadi" : (isAdmin ? "Hozircha hech kimda qurilma yo'q" : "Siz hali hech qanday qurilma olmagansiz")}</div>`; return; }
-
-  el.innerHTML = list.slice(0,3000).map(d => {
-    const expired = d._expired;
-    const isOwner = normalize(d.login) === normalize(currentUser.login);
-    const muddatText = muddatInfoText(d);
-    const tumanCls = normalizeTuman(d.tuman) === 'kogon' ? ' kogon' : '';
-
-    // --- Muddat so'rovi holati (faqat egasiga, faol qurilmada) ---
-    const latestMuddat = (isOwner && !expired) ? getLatestRequest(d['S/N'], 'muddat') : null;
-    const muddatPending = !!(latestMuddat && (latestMuddat.holat||'').trim() === 'kutilmoqda');
-    const muddatRejected = !!(latestMuddat && (latestMuddat.holat||'').trim() === 'rad etilgan');
-    let muddatBtnHtml = '';
-    if(isOwner && !isAdmin && !expired){
-      muddatBtnHtml = `<button class="badge-icon-btn${muddatPending?' pending':''}" ${muddatPending?'disabled':''} title="${muddatPending?"Muddat so'rovi kutilmoqda":"Muddat qo'shishni so'rash"}" onclick="openSorov('${encodeURIComponent(d['S/N'])}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      </button>`;
-    }
-
-    // --- Qaytarish: admin uchun bevosita amal, xodim uchun so'rov (faqat faol qurilmada) ---
-    const latestReturn = (isOwner && !expired) ? getLatestRequest(d['S/N'], 'qaytarish') : null;
-    const returnPending = !!(latestReturn && (latestReturn.holat||'').trim() === 'kutilmoqda');
-    const returnRejected = !!(latestReturn && (latestReturn.holat||'').trim() === 'rad etilgan');
-
-    // --- Admin uchun: muddatni majburan tugatish — endi kichik burchak
-    // tugmasi (X), badge'lar qatorida turadi, alohida qator egallamaydi ---
-    let adminEndBtnHtml = '';
-    if(isAdmin && !expired){
-      adminEndBtnHtml = `<button class="badge-icon-btn danger" title="Muddatni majburan tugatish" onclick="muddatTugatish('${encodeURIComponent(d['S/N'])}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>`;
-    }
-
-    let actionsHtml;
-    if(expired && isAdmin){
-      actionsHtml = `
-      <div class="action-row">
-        <button class="pill-btn pill-green" onclick="openFaollashtirish('${encodeURIComponent(d['S/N'])}')">🔓 Faollashtirish</button>
-        <button class="pill-btn pill-red" onclick="qaytarish('${encodeURIComponent(d['S/N'])}')">↩ Qaytarish</button>
-      </div>`;
-    } else if(expired && !isAdmin){
-      actionsHtml = `<div class="ticket-note blocked" style="margin:0 14px 12px">⛔ Muddat tugadi — hech qanday amal bajara olmaysiz, admin bilan bog'laning</div>`;
-    } else if(isAdmin){
-      actionsHtml = `
-      <div class="action-row">
-        <button class="pill-btn pill-green" ${returnPending?'disabled':''} onclick="openInstall('${encodeURIComponent(d['S/N'])}')">✓ O'rnatish</button>
-        <button class="pill-btn pill-blue" onclick="openYonaltirish('${encodeURIComponent(d['S/N'])}')">↗ Yo'naltirish</button>
-        <button class="pill-btn pill-red" onclick="qaytarish('${encodeURIComponent(d['S/N'])}')">↩ Qaytarish</button>
-      </div>`;
-    } else {
-      const returnBtnLabel = returnPending ? "⏳ Yuborilgan" : "↩ Qaytarish";
-      actionsHtml = `
-      <div class="action-row">
-        <button class="pill-btn pill-green" ${returnPending?'disabled':''} onclick="openInstall('${encodeURIComponent(d['S/N'])}')">✓ O'rnatish</button>
-        <button class="pill-btn pill-red" ${returnPending?'disabled':''} onclick="qaytarish('${encodeURIComponent(d['S/N'])}')">${returnBtnLabel}</button>
-      </div>`;
-    }
-
-    return `
-    <div class="ticket${expired?' expired':''}">
-      <div class="ticket-main">
-        <div class="ticket-icon ${deviceIconTone(d.tuman)}">${DEVICE_ICON_SVG}</div>
-        <div class="ticket-body">
-          <div class="ticket-code">${escapeHtml(d['S/N']||'')}</div>
-          <div class="ticket-sub">${escapeHtml(d.marka||'')}</div>
-          <div class="ticket-meta">
-            ${d.manzil ? `<span>📍 ${escapeHtml(d.manzil)}</span>` : ''}
-            ${isAdmin ? `<span>👤 <b>${escapeHtml(d.Ism||d.login||'')}</b></span>` : ''}
-            <span>📅 Olingan: ${escapeHtml(d.sana||'')}</span>
-          </div>
-        </div>
-        <div class="ticket-badges">
-          ${expired ? `<span class="badge badge-expired">Muddati tugagan</span>` : `<span class="badge badge-tuman${tumanCls}">${tumanLabel(d.tuman)}</span>`}
-          ${muddatText ? `<span class="badge badge-duration">${muddatText}</span>` : ''}
-          ${muddatBtnHtml}
-          ${adminEndBtnHtml}
-        </div>
-      </div>
-      ${!isAdmin && !expired && returnRejected ? `<div class="ticket-note rejected">✕ So'nggi qaytarish so'rovingiz rad etildi</div>` : ''}
-      ${!isAdmin && !expired && muddatRejected ? `<div class="ticket-note rejected">✕ So'nggi muddat so'rovingiz rad etildi</div>` : ''}
-      ${actionsHtml}
-    </div>`;
-  }).join('');
-}
-
-// --- Mening qidiruv maydoni ---
-const meningSearch = document.getElementById('meningSearch');
-const meningSearchClear = document.getElementById('meningSearchClear');
-meningSearch.addEventListener('input', ()=>{ meningSearchClear.style.display = meningSearch.value?'flex':'none'; renderMening(); });
-meningSearchClear.addEventListener('click', ()=>{ meningSearch.value=''; meningSearchClear.style.display='none'; renderMening(); });
-
-// --- Mening filter oynasi (marka + tuman + holat) ---
-const meningFilterOverlay = document.getElementById('meningFilterOverlay');
-document.getElementById('meningFilterBtn').addEventListener('click', ()=>{
-  const isAdmin = currentUser.role === 'admin';
-  const sourceList = isAdmin ? kirim.concat(tugaganlar) : kirim.filter(d=>normalize(d.login)===normalize(currentUser.login)).concat(tugaganlar.filter(d=>normalize(d.login)===normalize(currentUser.login)));
-  const markaSel = document.getElementById('meningFilterMarka');
-  const uniqueMarkalar = Array.from(new Set(sourceList.map(d => (d.marka||'').toString().trim()).filter(Boolean))).sort();
-  markaSel.innerHTML = '<option value="">Barcha markalar</option>' +
-    uniqueMarkalar.map(m => `<option value="${escapeHtml(m)}"${m===meningMarkaFilter?' selected':''}>${escapeHtml(m)}</option>`).join('');
-  document.getElementById('meningFilterTuman').value = meningTumanFilter;
-  document.getElementById('meningFilterHolat').value = meningHolatFilter;
-  meningFilterOverlay.classList.add('show');
-});
-meningFilterOverlay.addEventListener('click', e=>{ if(e.target===meningFilterOverlay) meningFilterOverlay.classList.remove('show'); });
-document.getElementById('meningFilterApply').addEventListener('click', ()=>{
-  meningMarkaFilter = document.getElementById('meningFilterMarka').value;
-  meningTumanFilter = document.getElementById('meningFilterTuman').value;
-  meningHolatFilter = document.getElementById('meningFilterHolat').value;
-  meningFilterOverlay.classList.remove('show');
-  renderMening();
-});
-document.getElementById('meningFilterReset').addEventListener('click', ()=>{
-  meningMarkaFilter = '';
-  meningTumanFilter = 'all';
-  meningHolatFilter = 'all';
-  document.getElementById('meningFilterMarka').value = '';
-  document.getElementById('meningFilterTuman').value = 'all';
-  document.getElementById('meningFilterHolat').value = 'all';
-  meningFilterOverlay.classList.remove('show');
-  renderMening();
-});
-
-
-let qaytarishSeria = null;
-const qaytarishOverlay = document.getElementById('qaytarishOverlay');
-function qaytarish(seriaEnc){
-  qaytarishSeria = decodeURIComponent(seriaEnc);
-  document.getElementById('qaytarishSabab').value = '';
-  qaytarishOverlay.classList.add('show');
-}
-window.qaytarish = qaytarish;
-document.getElementById('qaytarishCancel').addEventListener('click', ()=> qaytarishOverlay.classList.remove('show'));
-qaytarishOverlay.addEventListener('click', e=>{ if(e.target===qaytarishOverlay) qaytarishOverlay.classList.remove('show'); });
-
-// ============ FAOLLASHTIRISH — FAQAT ADMIN ============
-let faollashtirishSeria = null;
-let faollashtirishMuddatSoat = null;
-const faollashtirishOverlay = document.getElementById('faollashtirishOverlay');
-function openFaollashtirish(seriaEnc){
-  faollashtirishSeria = decodeURIComponent(seriaEnc);
-  faollashtirishMuddatSoat = null;
-  document.querySelectorAll('#faollashtirishDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-  faollashtirishOverlay.classList.add('show');
-}
-window.openFaollashtirish = openFaollashtirish;
-document.getElementById('faollashtirishCancel').addEventListener('click', ()=> faollashtirishOverlay.classList.remove('show'));
-faollashtirishOverlay.addEventListener('click', e=>{ if(e.target===faollashtirishOverlay) faollashtirishOverlay.classList.remove('show'); });
-document.querySelectorAll('#faollashtirishDurationGrid .duration-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#faollashtirishDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    faollashtirishMuddatSoat = btn.dataset.hours;
-  });
-});
-// ==== "Faollashtirish" — OPTIMISTIK: Tugagan -> Kirim darhol ko'chadi ====
-document.getElementById('faollashtirishConfirm').addEventListener('click', ()=>{
-  if(!faollashtirishMuddatSoat){ toast('Muddatni tanlang', 'error'); return; }
-  const seria = faollashtirishSeria, muddat_soat = faollashtirishMuddatSoat;
-  faollashtirishOverlay.classList.remove('show');
-
-  const idx = tugaganlar.findIndex(d => d['S/N'] === seria);
-  const removed = idx > -1 ? tugaganlar.splice(idx, 1)[0] : null;
-  if(removed){
-    kirim.push(Object.assign({}, removed, { MuddatSoat: muddat_soat, OlinganVaqt: new Date().toISOString() }));
-  }
-  renderActive();
-  updateStats();
-
-  bgTaskStart('Faollashtirilmoqda: ' + seria);
-  postAction({ action:'faollashtirish', seria, muddat_soat, role: currentUser.role, login: currentUser.login })
-    .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .finally(()=>{ bgTaskEnd(); });
-});
-
-// ============ ADMIN: QO'LDA "MUDDATI TUGAGAN" DEB BELGILASH ============
-// ==== OPTIMISTIK: Kirim -> Tugagan darhol ko'chadi ====
-function muddatTugatish(seriaEnc){
-  const seria = decodeURIComponent(seriaEnc);
-  if(!confirm("Ushbu qurilmani muddati tugagan deb belgilaysizmi?\nXodim bu qurilma bilan endi ishlay olmaydi.")) return;
-
-  const idx = kirim.findIndex(d => d['S/N'] === seria);
-  const removed = idx > -1 ? kirim.splice(idx, 1)[0] : null;
-  if(removed){
-    tugaganlar.push(Object.assign({}, removed, { TugatilganVaqt: new Date().toLocaleString('uz-UZ') }));
-  }
-  renderActive();
-  updateStats();
-
-  bgTaskStart('Muddat tugatilmoqda: ' + seria);
-  postAction({ action:'muddat_tugatish', seria, role: currentUser.role, login: currentUser.login })
-    .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .finally(()=>{ bgTaskEnd(); });
-}
-window.muddatTugatish = muddatTugatish;
-
-// ==== "Qaytarish" — admin: OPTIMISTIK darhol Sklad'ga qaytadi. Xodim: OPTIMISTIK so'rov "kutilmoqda" holatida qo'shiladi ====
-document.getElementById('qaytarishConfirm').addEventListener('click', ()=>{
-  const sabab = document.getElementById('qaytarishSabab').value.trim();
-  if(!sabab){ toast('Sababni kiriting', 'error'); return; }
-  const seria = qaytarishSeria;
-  qaytarishOverlay.classList.remove('show');
-  const isAdmin = currentUser.role === 'admin';
-
-  if(isAdmin){
-    let idx = kirim.findIndex(d => d['S/N'] === seria);
-    let removed = null;
-    if(idx > -1){ removed = kirim.splice(idx, 1)[0]; }
-    else {
-      idx = tugaganlar.findIndex(d => d['S/N'] === seria);
-      if(idx > -1) removed = tugaganlar.splice(idx, 1)[0];
-    }
-    if(removed){
-      sklad.push({ 'S/N': removed['S/N'], marka: removed.marka, tuman: removed.tuman });
-    }
-    renderActive();
-    updateStats();
-
-    bgTaskStart('Omborga qaytarilmoqda: ' + seria);
-    postAction({ action:'qaytarish', seria, login: currentUser.login, role: currentUser.role, sabab })
-      .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-      .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-      .finally(()=>{ bgTaskEnd(); });
-  } else {
-    sorovlar.push({
-      ID: 'temp_' + Date.now(),
-      turi: 'qaytarish',
-      seria, login: currentUser.login, Ism: currentUser.ism, tuman: currentUser.tuman,
-      soat: '', sabab, holat: 'kutilmoqda', vaqt: new Date().toLocaleString('uz-UZ')
-    });
-    renderActive();
-    updateStats();
-
-    bgTaskStart("So'rov yuborilmoqda: " + seria);
-    postAction({ action:'qaytarish_sorash', seria, login: currentUser.login, ism: currentUser.ism, tuman: currentUser.tuman, sabab })
-      .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-      .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-      .finally(()=>{ bgTaskEnd(); });
-  }
-});
-
-// ============ ADMIN: BOSHQA XODIMGA YO'NALTIRISH ============
-let yonaltirishSeria = null;
-const yonaltirishOverlay = document.getElementById('yonaltirishOverlay');
-function openYonaltirish(seriaEnc){
-  yonaltirishSeria = decodeURIComponent(seriaEnc);
-  const d = kirim.find(x => x['S/N'] === yonaltirishSeria);
-  const sel = document.getElementById('yonaltirishXodim');
-  const currentLogin = d ? normalize(d.login) : '';
-  const list = employees
-    .filter(e => normalize(e.LOGIN) !== currentLogin)
-    .sort((a,b) => (a.ISM||'').localeCompare(b.ISM||''));
-  sel.innerHTML = '<option value="">Xodimni tanlang</option>' +
-    list.map(e => `<option value="${escapeHtml(e.LOGIN)}" data-ism="${escapeHtml(e.ISM)}">${escapeHtml(e.ISM)} (${tumanLabel(e.tuman)})</option>`).join('');
-  yonaltirishOverlay.classList.add('show');
-}
-window.openYonaltirish = openYonaltirish;
-document.getElementById('yonaltirishCancel').addEventListener('click', ()=> yonaltirishOverlay.classList.remove('show'));
-yonaltirishOverlay.addEventListener('click', e=>{ if(e.target===yonaltirishOverlay) yonaltirishOverlay.classList.remove('show'); });
-
-// ==== "Yo'naltirish" — OPTIMISTIK: egasi darhol yangi xodimga almashadi ====
-document.getElementById('yonaltirishConfirm').addEventListener('click', ()=>{
-  const sel = document.getElementById('yonaltirishXodim');
-  const yangiLogin = sel.value;
-  if(!yangiLogin){ toast('Xodimni tanlang', 'error'); return; }
-  const yangiIsm = sel.options[sel.selectedIndex].getAttribute('data-ism') || yangiLogin;
-  const seria = yonaltirishSeria;
-  yonaltirishOverlay.classList.remove('show');
-
-  const d = kirim.find(x => x['S/N'] === seria);
-  const eskiIsm = d ? (d.Ism || d.login) : '';
-  if(d){ d.login = yangiLogin; d.Ism = yangiIsm; }
-  renderActive();
-  updateStats();
-
-  bgTaskStart("Yo'naltirilmoqda: " + seria);
-  postAction({ action:'yonaltirish', seria, yangi_login: yangiLogin, yangi_ism: yangiIsm, role: currentUser.role, admin_login: currentUser.login })
-    .then(()=>{
-      toast(eskiIsm + " → " + yangiIsm + " ga yo'naltirildi", 'success');
-      loadAll().then(()=>{ renderActive(); updateStats(); });
-    })
-    .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .finally(()=>{ bgTaskEnd(); });
-});
-
-const sorovOverlay = document.getElementById('sorovOverlay');
-function openSorov(seriaEnc){
-  sorovSeria = decodeURIComponent(seriaEnc);
-  sorovSoat = null;
-  document.querySelectorAll('#sorovDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-  sorovOverlay.classList.add('show');
-}
-window.openSorov = openSorov;
-document.querySelectorAll('#sorovDurationGrid .duration-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#sorovDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    sorovSoat = btn.dataset.hours;
-  });
-});
-document.getElementById('sorovCancel').addEventListener('click', ()=> sorovOverlay.classList.remove('show'));
-sorovOverlay.addEventListener('click', e=>{ if(e.target===sorovOverlay) sorovOverlay.classList.remove('show'); });
-// ==== "Muddat so'rash" — OPTIMISTIK: so'rov darhol "kutilmoqda" holatida qo'shiladi ====
-document.getElementById('sorovConfirm').addEventListener('click', ()=>{
-  if(!sorovSoat){ toast('Muddatni tanlang (max 24 soat)', 'error'); return; }
-  const seria = sorovSeria, soat = sorovSoat;
-  sorovOverlay.classList.remove('show');
-
-  sorovlar.push({
-    ID: 'temp_' + Date.now(),
-    turi: 'muddat',
-    seria, login: currentUser.login, Ism: currentUser.ism, tuman: currentUser.tuman,
-    soat, sabab: '', holat: 'kutilmoqda', vaqt: new Date().toLocaleString('uz-UZ')
-  });
-  renderActive();
-  updateStats();
-
-  bgTaskStart("Muddat so'rovi yuborilmoqda: " + seria);
-  postAction({ action:'muddat_sorash', seria, login: currentUser.login, ism: currentUser.ism, tuman: currentUser.tuman, soat })
-    .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .finally(()=>{ bgTaskEnd(); });
-});
-
-// ============ ADMIN: XABARLAR (SO'ROVLAR) ============
-let selectedSorovIds = new Set();
-
-function renderXabarlar(){
-  const el = document.getElementById('xabarlarResults');
-  const toolbar = document.getElementById('xabarlarToolbar');
-  if(sorovlar.length === 0){
-    toolbar.style.display = 'none';
-    el.innerHTML = `<div class="empty-msg">Hozircha so'rovlar yo'q</div>`;
-    return;
-  }
-  toolbar.style.display = 'flex';
-  const validIds = new Set(sorovlar.map(r=>r.ID));
-  selectedSorovIds.forEach(id=>{ if(!validIds.has(id)) selectedSorovIds.delete(id); });
-
-  const sorted = sorovlar.slice().reverse();
-
-  el.innerHTML = sorted.map(r=>{
-    const holat = (r.holat||'').toString().trim();
-    const isPending = holat === 'kutilmoqda';
-    const statusCls = holat==='kutilmoqda' ? 'kutilmoqda' : (holat==='qabul qilingan' ? 'qabul' : 'rad');
-    const turi = (r.turi||'muddat').toString().trim();
-    const isMuddat = turi === 'muddat';
-    const checked = selectedSorovIds.has(r.ID) ? 'checked' : '';
-    const detailLine = isMuddat
-      ? `So'ralgan: <b style="color:var(--text)">${escapeHtml(r.soat||'')} soat</b>`
-      : `Sabab: <b style="color:var(--text)">${escapeHtml(r.sabab||'')}</b>`;
-    return `
-    <div class="sorov-card${isPending?' pending':''}">
-      <input type="checkbox" class="sorov-check" data-id="${escapeHtml(r.ID)}" ${checked} onchange="toggleSorovSelect('${encodeURIComponent(r.ID)}', this.checked)">
-      <div class="sorov-row">
+    <sidebar>
         <div>
-          <div class="ticket-tag" style="margin:0 0 6px 0">${isMuddat ? '🕐 Muddat so\'rovi' : '↩️ Qaytarish so\'rovi'}</div>
-          <div class="ticket-code" style="font-size:14px"><span class="bar">${barcodeSpans(6)}</span>${escapeHtml(r.seria||'')}</div>
-          <div class="ticket-sub">👤 ${escapeHtml(r.Ism||r.login||'')} · ${tumanLabel(r.tuman)}</div>
-          <div class="ticket-sub">${detailLine} · ${escapeHtml(r.vaqt||'')}</div>
+            <div class="logo-area">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                <div>
+                    <h2>Ombor</h2>
+                    <span>Kabel hisobi</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#">Bosh sahifa</a></li>
+                <li><a href="#" onclick="openModal()">Baraban qo'shish</a></li>
+                <li><a href="#" onclick="openWorkModal()">Sarf kiritish</a></li>
+            </ul>
         </div>
-      </div>
-      <span class="sorov-status ${statusCls}">${holat==='kutilmoqda'?'Kutilmoqda':holat==='qabul qilingan'?'Qabul qilingan':'Rad etilgan'}</span>
-      ${isPending ? `
-      <div class="sorov-actions">
-        <button class="big-btn primary" onclick="sorovQabul('${encodeURIComponent(r.ID)}')">✔ Ruxsat berish</button>
-        <button class="big-btn ghost" onclick="sorovRad('${encodeURIComponent(r.ID)}')">✕ Rad etish</button>
-      </div>` : ''}
-    </div>`;
-  }).join('');
-
-  updateXabarlarToolbar();
-}
-
-function updateXabarlarToolbar(){
-  const countEl = document.getElementById('xabarlarSelectedCount');
-  const delBtn = document.getElementById('xabarlarDeleteBtn');
-  const selectAll = document.getElementById('xabarlarSelectAll');
-  countEl.textContent = selectedSorovIds.size;
-  delBtn.disabled = selectedSorovIds.size === 0;
-  selectAll.checked = sorovlar.length > 0 && selectedSorovIds.size === sorovlar.length;
-}
-
-function toggleSorovSelect(idEnc, checked){
-  const id = decodeURIComponent(idEnc);
-  if(checked) selectedSorovIds.add(id); else selectedSorovIds.delete(id);
-  updateXabarlarToolbar();
-}
-window.toggleSorovSelect = toggleSorovSelect;
-
-document.getElementById('xabarlarSelectAll').addEventListener('change', (e)=>{
-  if(e.target.checked){ sorovlar.forEach(r=>selectedSorovIds.add(r.ID)); }
-  else { selectedSorovIds.clear(); }
-  renderXabarlar();
-});
-
-// ==== Xabarlarni o'chirish — OPTIMISTIK: darhol ro'yxatdan olib tashlanadi ====
-document.getElementById('xabarlarDeleteBtn').addEventListener('click', async ()=>{
-  if(selectedSorovIds.size === 0) return;
-  const ids = Array.from(selectedSorovIds);
-
-  const removedItems = [];
-  sorovlar = sorovlar.filter(r=>{
-    if(ids.indexOf(r.ID) > -1){ removedItems.push(r); return false; }
-    return true;
-  });
-  selectedSorovIds.clear();
-  renderActive();
-  updateStats();
-
-  try{
-    await postAction({ action:'sorov_ochirish', ids, role: currentUser.role });
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }catch(err){
-    toast(err.message, 'error');
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }
-});
-
-// ==== "Ruxsat berish" — OPTIMISTIK: holatni darhol o'zgartiradi va (qaytarish so'rovi bo'lsa) qurilmani ko'chiradi ====
-async function sorovQabul(idEnc){
-  const id = decodeURIComponent(idEnc);
-
-  const r = sorovlar.find(x => x.ID === id);
-  if(r){
-    r.holat = 'qabul qilingan';
-    if((r.turi||'').trim() === 'qaytarish'){
-      let idx = kirim.findIndex(d => d['S/N'] === r.seria);
-      let movedDevice = null;
-      if(idx > -1) movedDevice = kirim.splice(idx, 1)[0];
-      else {
-        idx = tugaganlar.findIndex(d => d['S/N'] === r.seria);
-        if(idx > -1) movedDevice = tugaganlar.splice(idx, 1)[0];
-      }
-      if(movedDevice) sklad.push({ 'S/N': movedDevice['S/N'], marka: movedDevice.marka, tuman: movedDevice.tuman });
-    }
-  }
-  renderActive();
-  updateStats();
-
-  try{
-    await postAction({ action:'sorov_qabul', id, role: currentUser.role });
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }catch(err){
-    toast(err.message, 'error');
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }
-}
-// ==== "Rad etish" — OPTIMISTIK: holatni darhol "rad etilgan" qiladi ====
-async function sorovRad(idEnc){
-  const id = decodeURIComponent(idEnc);
-
-  const r = sorovlar.find(x => x.ID === id);
-  if(r) r.holat = 'rad etilgan';
-  renderActive();
-  updateStats();
-
-  try{
-    await postAction({ action:'sorov_rad', id, role: currentUser.role });
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }catch(err){
-    toast(err.message, 'error');
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }
-}
-window.sorovQabul = sorovQabul;
-window.sorovRad = sorovRad;
-
-let installSeria = null;
-const installOverlay = document.getElementById('installOverlay');
-const instSlotIds = ['instSlot1','instSlot2','instSlot3','instSlot4'];
-let instFiles = [null,null,null,null];
-
-function resetInstallSlots(){
-  instFiles = [null,null,null,null];
-  instSlotIds.forEach((id, idx)=>{
-    const required = idx < 2;
-    const slot = document.getElementById(id);
-    slot.classList.remove('filled');
-    slot.innerHTML = `<span class="${required?'req':'opt'}">${required?'Majburiy':'Ixtiyoriy'}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>${idx+1}-rasm</span><input type="file" accept="image/*"></label>`;
-    slot.querySelector('input').addEventListener('change', (e)=>onInstallFile(e, idx, required));
-  });
-}
-async function onInstallFile(e, idx, required){
-  const file = e.target.files[0];
-  if(!file) return;
-  const data = await fileToCompressedBase64(file, 1280);
-  instFiles[idx] = data;
-  const slot = document.getElementById(instSlotIds[idx]);
-  slot.classList.add('filled');
-  slot.innerHTML = `<img src="${data}"><span class="check">✓</span><button type="button" class="remove-btn" onclick="removeInstImage(event, ${idx}, ${required})">✕</button><input type="file" accept="image/*">`;
-  slot.querySelector('input').addEventListener('change', (e2)=>onInstallFile(e2, idx, required));
-}
-// Xato yuklangan rasmni o'chirib, slotni bo'sh (yuklash mumkin) holatga qaytaradi.
-// stopPropagation shart — chunki slot <label> ichida, aks holda tugma bosilganda
-// fayl tanlash oynasi ham ochilib ketardi.
-function removeInstImage(e, idx, required){
-  e.preventDefault();
-  e.stopPropagation();
-  instFiles[idx] = null;
-  const slot = document.getElementById(instSlotIds[idx]);
-  slot.classList.remove('filled');
-  slot.innerHTML = `<span class="${required?'req':'opt'}">${required?'Majburiy':'Ixtiyoriy'}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg><span>${idx+1}-rasm</span><input type="file" accept="image/*">`;
-  slot.querySelector('input').addEventListener('change', (e2)=>onInstallFile(e2, idx, required));
-}
-window.removeInstImage = removeInstImage;
-
-function openInstall(seriaEnc){
-  installSeria = decodeURIComponent(seriaEnc);
-  document.getElementById('installManzil').value = '';
-  document.getElementById('installUy').value = '';
-  document.getElementById('installOlt').value = '';
-  document.getElementById('installPort').value = '';
-  document.getElementById('installMasofa').value = '';
-  resetInstallSlots();
-  resetLocation();
-  installOverlay.classList.add('show');
-}
-
-document.getElementById('installMasofa').addEventListener('input', (e)=>{
-  e.target.value = e.target.value.replace(/[^0-9]/g, '');
-});
-window.openInstall = openInstall;
-document.getElementById('installCancel').addEventListener('click', ()=> installOverlay.classList.remove('show'));
-installOverlay.addEventListener('click', e=>{ if(e.target===installOverlay) installOverlay.classList.remove('show'); });
-
-// ==== "O'rnatish" — OPTIMISTIK: Kirim -> Chiqim darhol ko'chadi ====
-document.getElementById('installConfirm').addEventListener('click', ()=>{
-  const manzilBase = document.getElementById('installManzil').value.trim();
-  const uy = document.getElementById('installUy').value.trim();
-  const manzil = uy ? (manzilBase + ', ' + uy + '-uy') : manzilBase;
-  const olt = document.getElementById('installOlt').value.trim();
-  const port = document.getElementById('installPort').value.trim();
-  const masofa = document.getElementById('installMasofa').value.trim();
-  if(!manzilBase || !olt || !port || !masofa){ toast("Barcha maydonlarni to'ldiring", 'error'); return; }
-  if(!pickedLatLng){ toast("Joylashuvni xaritadan belgilang", 'error'); return; }
-  if(!instFiles[0] || !instFiles[1]){ toast('Kamida 2 ta majburiy rasmni yuklang', 'error'); return; }
-  const seria = installSeria;
-  const rasmlar = instFiles.filter(Boolean);
-  const lokatsiya = pickedLatLng ? (pickedLatLng.lat.toFixed(6) + ', ' + pickedLatLng.lng.toFixed(6)) : '';
-  installOverlay.classList.remove('show');
-
-  const kirimIdx = kirim.findIndex(d => d['S/N'] === seria);
-  const removed = kirimIdx > -1 ? kirim.splice(kirimIdx, 1)[0] : null;
-  chiqim.push({
-    'S/N': seria,
-    marka: removed ? removed.marka : '',
-    manzil, OLT: olt, Port: port, Masofa: masofa, Lokatsiya: lokatsiya,
-    login: currentUser.login,
-    sana: todaySanaClient(),
-    tuman: removed ? removed.tuman : currentUser.tuman,
-    Ism: currentUser.ism
-  });
-  renderActive();
-  updateStats();
-
-  bgTaskStart("O'rnatilmoqda: " + seria);
-  postAction({ action:'ornatish', seria, login: currentUser.login, ism: currentUser.ism, role: currentUser.role, manzil, olt, port, masofa, lokatsiya, rasmlar })
-    .then(()=>{
-      loadAll().then(()=>{ renderActive(); updateStats(); });
-    })
-    .catch(err=>{
-      toast(err.message, 'error');
-      loadAll().then(()=>{ renderActive(); updateStats(); });
-    })
-    .finally(()=>{ bgTaskEnd(); });
-});
-
-// ============ JOYLASHUV (XARITA) ============
-// MUHIM (aniqlik muammosi uchun tuzatish): telefonlarning GPS/tarmoq orqali
-// joylashuvni aniqlashi ba'zida noaniq (10-100+ metr xato) bo'lishi mumkin,
-// ayniqsa yopiq joy yoki zaif signal bo'lsa. Avvalgi versiya faqat BITTA
-// marta (getCurrentPosition) o'qib, shu natijaga to'liq ishonib, belgini
-// darhol qo'yib qo'yardi — xodim buni tekshirmasdan tasdiqlasa, noto'g'ri
-// joy saqlanib qolardi. Endi:
-//  1) navigator.geolocation.watchPosition orqali bir necha soniya davomida
-//     joylashuv DOIMIY yangilanadi (odatda vaqt o'tgani sayin aniqroq
-//     bo'lib boradi), shuning uchun bitta xato o'qishga emas.
-//  2) Xaritada GPS aniqlik radiusi (aylana) chizib ko'rsatiladi — xodim
-//     haqiqatan qayerda ekanini bu doira ichida ko'rib, kerak bo'lsa
-//     belgini aniq joyga o'zi surishi mumkin.
-//  3) Aniqlik yomon bo'lsa (> 30 metr), ekranda aniq ogohlantirish
-//     chiqadi: "belgini qo'lda to'g'rilang".
-//  4) Xodim belgini o'zi bir marta surgan yoki xaritaga bosgan zahoti,
-//     tizim endi uni "qo'lda to'g'rilangan" deb hisoblab, avtomatik GPS
-//     yangilanishini to'xtatadi (aks holda qo'lda tuzatilgan joy яна GPS
-//     tomonidan qayta almashtirilib qolishi mumkin edi).
-let leafletMapInstance = null, leafletMarker = null, pickedLatLng = null, myLocationMarker = null;
-let geoWatchId = null, accuracyCircle = null, userAdjustedMarker = false, currentAccuracy = null;
-const mapOverlay = document.getElementById('mapOverlay');
-const locBtn = document.getElementById('locBtn');
-const locateMeBtn = document.getElementById('locateMeBtn');
-const mapConfirmBtn = document.getElementById('mapConfirm');
-const DEFAULT_CENTER = [39.7747, 64.4286];
-const ACCURACY_WARN_METERS = 30;
-// "Joylashuvni tasdiqlash" tugmasi GPS aniq joyni ko'rsatmaguncha yoki
-// xodim belgini o'zi qo'lda to'g'irlamaguncha BOSILMAYDI — shu bilan
-// xodim tasodifan noaniq joyni tasdiqlab qo'ymaydi.
-function updateMapConfirmState(){
-  const accurateEnough = currentAccuracy != null && currentAccuracy <= ACCURACY_WARN_METERS;
-  const ready = userAdjustedMarker || accurateEnough;
-  mapConfirmBtn.disabled = !ready;
-  mapConfirmBtn.textContent = ready ? 'Joylashuvni tasdiqlash' : '⏳ Aniq joy kutilmoqda...';
-}
-
-function resetLocation(){
-  pickedLatLng = null;
-  userAdjustedMarker = false;
-  currentAccuracy = null;
-  locBtn.textContent = '📍 Joylashuvni belgilash';
-  locBtn.classList.remove('picked');
-  clearAccuracyWatch();
-  if(accuracyCircle){ accuracyCircle.remove(); accuracyCircle = null; }
-  document.getElementById('mapAccuracyWarn').style.display = 'none';
-  updateMapConfirmState();
-}
-
-function updateCoordsText(lat, lng, accuracy){
-  let txt = lat.toFixed(6) + ', ' + lng.toFixed(6);
-  if(accuracy != null){ txt += '  ·  aniqlik ±' + Math.round(accuracy) + ' m'; currentAccuracy = accuracy; }
-  document.getElementById('mapCoordsText').textContent = txt;
-
-  const warnEl = document.getElementById('mapAccuracyWarn');
-  if(accuracy != null && !userAdjustedMarker){
-    if(accuracy > ACCURACY_WARN_METERS){
-      warnEl.className = 'map-accuracy-warn';
-      warnEl.textContent = '⚠️ GPS aniqligi past (±' + Math.round(accuracy) + ' m) — belgini (📍) qo\'lda aniq joyga suring';
-      warnEl.style.display = 'block';
-    } else {
-      warnEl.className = 'map-accuracy-ok';
-      warnEl.textContent = '✓ Aniqlik yetarli — kerak bo\'lsa baribir belgini tekshiring';
-      warnEl.style.display = 'block';
-    }
-  } else if(userAdjustedMarker){
-    warnEl.style.display = 'none';
-  }
-  updateMapConfirmState();
-}
-
-// GPS o'qishni bir necha soniya davomida kuzatib, marker va aniqlik
-// doirasini yangilab turadi. Xodim belgini o'zi surmagan ekan, avtomatik
-// eng so'nggi (odatda eng aniq) o'qishga ko'chiradi. Batareyani tejash
-// uchun 18 soniyadan keyin o'zi to'xtaydi.
-function startAccuracyWatch(){
-  if(!navigator.geolocation) return;
-  clearAccuracyWatch();
-  document.getElementById('mapCoordsText').textContent = 'GPS orqali aniqlanmoqda...';
-  geoWatchId = navigator.geolocation.watchPosition(
-    (pos)=>{
-      const c = [pos.coords.latitude, pos.coords.longitude];
-      const acc = pos.coords.accuracy;
-      updateAccuracyCircle(c, acc);
-      // Xodimning HAQIQIY turgan joyi (ko'k nuqta) — belgini qo'lda
-      // surgandan keyin ham ko'rsatilib turadi, shunda xodim o'z joyi
-      // bilan belgilangan nuqtani solishtirib ko'ra oladi.
-      showMyLocationDot(c);
-      if(!userAdjustedMarker){
-        leafletMarker.setLatLng(c);
-        const curZoom = leafletMapInstance.getZoom();
-        leafletMapInstance.setView(c, curZoom < 17 ? 17 : curZoom);
-        updateCoordsText(c[0], c[1], acc);
-      }
-    },
-    (err)=>{
-      if(!userAdjustedMarker){
-        document.getElementById('mapCoordsText').textContent = leafletMarker.getLatLng().lat.toFixed(6) + ', ' + leafletMarker.getLatLng().lng.toFixed(6);
-        const warnEl = document.getElementById('mapAccuracyWarn');
-        warnEl.className = 'map-accuracy-warn';
-        warnEl.textContent = "⚠️ GPS orqali joy aniqlanmadi — xaritaga bosib yoki belgini (📍) surib, aniq joyni o'zingiz ko'rsating";
-        warnEl.style.display = 'block';
-      }
-    },
-    { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-  );
-  setTimeout(clearAccuracyWatch, 18000);
-}
-
-function clearAccuracyWatch(){
-  if(geoWatchId != null){
-    navigator.geolocation.clearWatch(geoWatchId);
-    geoWatchId = null;
-  }
-}
-
-function updateAccuracyCircle(latlng, accuracy){
-  if(!leafletMapInstance) return;
-  if(accuracyCircle){
-    accuracyCircle.setLatLng(latlng);
-    accuracyCircle.setRadius(accuracy);
-  } else {
-    accuracyCircle = L.circle(latlng, {
-      radius: accuracy, color: '#2f6fed', weight: 1.5,
-      fillColor: '#2f6fed', fillOpacity: 0.12
-    }).addTo(leafletMapInstance);
-  }
-}
-
-// Xodim belgini qo'lda surgan yoki xaritaga bosgan payt chaqiriladi —
-// shu bilan GPS avtomatik yangilanishi to'xtaydi, chunki xodim ongli
-// ravishda aniq joyni ko'rsatgan bo'ladi.
-function markUserAdjusted(){
-  userAdjustedMarker = true;
-  clearAccuracyWatch();
-  if(accuracyCircle){ accuracyCircle.remove(); accuracyCircle = null; }
-  document.getElementById('mapAccuracyWarn').style.display = 'none';
-  updateMapConfirmState();
-}
-
-let leafletLoadPromise = null;
-function ensureLeafletLoaded(){
-  if(window.L) return Promise.resolve();
-  if(leafletLoadPromise) return leafletLoadPromise;
-  leafletLoadPromise = new Promise((resolve, reject)=>{
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
-    document.head.appendChild(cssLink);
-
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Xarita kutubxonasini yuklab bo'lmadi. Internetni tekshiring."));
-    document.head.appendChild(script);
-  });
-  return leafletLoadPromise;
-}
-
-function openMapPicker(){
-  mapOverlay.classList.add('show');
-  document.getElementById('mapCoordsText').textContent = 'Xarita yuklanmoqda...';
-  if(!pickedLatLng) updateMapConfirmState();
-  ensureLeafletLoaded().then(initLeafletMap).catch(err=>{
-    toast(err.message, 'error');
-    mapOverlay.classList.remove('show');
-  });
-}
-
-function initLeafletMap(){
-  setTimeout(()=>{
-    const startCenter = pickedLatLng ? [pickedLatLng.lat, pickedLatLng.lng] : DEFAULT_CENTER;
-    if(!leafletMapInstance){
-      leafletMapInstance = L.map('leafletMap').setView(startCenter, 15);
-      const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19, attribution: '© OpenStreetMap'
-      }).addTo(leafletMapInstance);
-      const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19, attribution: 'Tiles © Esri'
-      });
-      L.control.layers({ '🗺️ Xarita': streetLayer, '🛰️ Sputnik': satelliteLayer }, null, { position: 'topright', collapsed: false }).addTo(leafletMapInstance);
-      // Masshtab chizg'ich (leneyka) — masofani metr/km da ko'rsatadi.
-      L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(leafletMapInstance);
-      leafletMarker = L.marker(startCenter, { draggable: true }).addTo(leafletMapInstance);
-      leafletMarker.on('dragend', ()=>{
-        const p = leafletMarker.getLatLng();
-        markUserAdjusted();
-        updateCoordsText(p.lat, p.lng);
-      });
-      leafletMapInstance.on('click', (e)=>{
-        leafletMarker.setLatLng(e.latlng);
-        markUserAdjusted();
-        updateCoordsText(e.latlng.lat, e.latlng.lng);
-      });
-    } else {
-      leafletMapInstance.invalidateSize();
-      leafletMapInstance.setView(startCenter, 15);
-      leafletMarker.setLatLng(startCenter);
-    }
-    updateCoordsText(startCenter[0], startCenter[1]);
-
-    if(!pickedLatLng){
-      // Avval bir martalik getCurrentPosition o'rniga — bir necha soniya
-      // davomida yangilanib, aniqlik doirasini ham ko'rsatadigan
-      // watchPosition ishlatiladi (yuqoridagi izohga qarang).
-      startAccuracyWatch();
-    }
-  }, 50);
-}
-
-// Foydalanuvchining O'ZI qayerda turganini xaritada ko'k nuqta bilan
-// belgilaydi — bu qurilma o'rnatiladigan (sudraladigan) belgidan alohida.
-function showMyLocationDot(latlng){
-  if(!leafletMapInstance) return;
-  const icon = L.divIcon({ className: 'my-location-dot', iconSize: [16,16] });
-  if(myLocationMarker){
-    myLocationMarker.setLatLng(latlng);
-  } else {
-    myLocationMarker = L.marker(latlng, { icon, interactive: false, zIndexOffset: 1000 }).addTo(leafletMapInstance);
-  }
-}
-
-// "Mening joylashuvim" tugmasi — GPS orqali xaritani foydalanuvchi turgan
-// joyga markazlashtiradi va ko'k nuqta bilan belgilaydi (qurilma belgisini
-// harakatlantirmaydi — faqat ko'rish uchun).
-function locateMe(){
-  if(!navigator.geolocation){ toast('Brauzeringiz joylashuvni aniqlay olmaydi', 'error'); return; }
-  locateMeBtn.classList.add('loading');
-  navigator.geolocation.getCurrentPosition(
-    (pos)=>{
-      const c = [pos.coords.latitude, pos.coords.longitude];
-      leafletMapInstance.setView(c, 17);
-      showMyLocationDot(c);
-      locateMeBtn.classList.remove('loading');
-    },
-    ()=>{
-      toast("Joylashuvni aniqlab bo'lmadi — GPS ruxsatini tekshiring", 'error');
-      locateMeBtn.classList.remove('loading');
-    },
-    { enableHighAccuracy: true, timeout: 8000 }
-  );
-}
-locateMeBtn.addEventListener('click', locateMe);
-
-locBtn.addEventListener('click', openMapPicker);
-document.getElementById('mapCancel').addEventListener('click', ()=> mapOverlay.classList.remove('show'));
-mapOverlay.addEventListener('click', e=>{ if(e.target===mapOverlay) mapOverlay.classList.remove('show'); });
-document.getElementById('mapConfirm').addEventListener('click', ()=>{
-  const p = leafletMarker.getLatLng();
-  pickedLatLng = { lat: p.lat, lng: p.lng };
-  locBtn.textContent = '✓ ' + p.lat.toFixed(5) + ', ' + p.lng.toFixed(5);
-  locBtn.classList.add('picked');
-  mapOverlay.classList.remove('show');
-});
-
-const tarixSearch = document.getElementById('tarixSearch');
-const tarixSearchClear = document.getElementById('tarixSearchClear');
-tarixSearch.addEventListener('input', ()=>{ tarixSearchClear.style.display = tarixSearch.value?'flex':'none'; renderTarix(); });
-tarixSearchClear.addEventListener('click', ()=>{ tarixSearch.value=''; tarixSearchClear.style.display='none'; renderTarix(); });
-
-// --- Tarix filter (Tuman hammaga, Xodim FAQAT admin uchun) ---
-let tarixTumanFilter = 'all';
-let tarixXodimFilter = '';
-const tarixFilterOverlay = document.getElementById('tarixFilterOverlay');
-document.getElementById('tarixFilterBtn').addEventListener('click', ()=>{
-  const isAdmin = currentUser.role === 'admin';
-  document.getElementById('tarixFilterXodimField').style.display = isAdmin ? 'block' : 'none';
-  if(isAdmin){
-    const sel = document.getElementById('tarixFilterXodim');
-    const uniqueLogins = Array.from(new Set(chiqim.map(d => (d.login||'').toString().trim()).filter(Boolean)));
-    const optsHtml = uniqueLogins.map(login => {
-      const emp = employees.find(e => normalize(e.LOGIN) === normalize(login));
-      const label = emp ? emp.ISM : login;
-      return `<option value="${escapeHtml(login)}"${login===tarixXodimFilter?' selected':''}>${escapeHtml(label)}</option>`;
-    }).join('');
-    sel.innerHTML = '<option value="">Barchasi</option>' + optsHtml;
-  }
-  document.getElementById('tarixFilterTuman').value = tarixTumanFilter;
-  tarixFilterOverlay.classList.add('show');
-});
-tarixFilterOverlay.addEventListener('click', e=>{ if(e.target===tarixFilterOverlay) tarixFilterOverlay.classList.remove('show'); });
-document.getElementById('tarixFilterApply').addEventListener('click', ()=>{
-  tarixTumanFilter = document.getElementById('tarixFilterTuman').value;
-  tarixXodimFilter = currentUser.role === 'admin' ? document.getElementById('tarixFilterXodim').value : '';
-  tarixFilterOverlay.classList.remove('show');
-  renderTarix();
-});
-document.getElementById('tarixFilterReset').addEventListener('click', ()=>{
-  tarixTumanFilter = 'all';
-  tarixXodimFilter = '';
-  document.getElementById('tarixFilterTuman').value = 'all';
-  document.getElementById('tarixFilterXodim').value = '';
-  tarixFilterOverlay.classList.remove('show');
-  renderTarix();
-});
-
-function renderTarix(){
-  const q = normalize(tarixSearch.value.trim());
-  const isAdmin = currentUser.role === 'admin';
-  let list = (isAdmin ? chiqim.slice() : chiqim.filter(d => normalize(d.login) === normalize(currentUser.login))).reverse();
-  if(tarixTumanFilter !== 'all') list = list.filter(d => normalizeTuman(d.tuman) === tarixTumanFilter);
-  if(isAdmin && tarixXodimFilter) list = list.filter(d => normalize(d.login) === normalize(tarixXodimFilter));
-  if(q.length >= 2) list = list.filter(d => normalize(d['S/N']).includes(q));
-  document.getElementById('tarixFilterDot').style.display = (tarixTumanFilter!=='all' || tarixXodimFilter) ? 'block' : 'none';
-  const el = document.getElementById('tarixResults');
-  const filterActive = q || tarixTumanFilter!=='all' || tarixXodimFilter;
-  if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${filterActive ? "Topilmadi" : (isAdmin ? "Hali hech qanday qurilma o'rnatilmagan" : "Siz hali hech narsa o'rnatmagansiz")}</div>`; return; }
-  el.innerHTML = list.slice(0,3000).map(d => {
-    const mapLinkHtml = d.Lokatsiya
-      ? `<a class="pill-btn pill-blue compact" href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank">🗺 Xaritadan ko'rish</a>`
-      : '';
-    const cancelBtnHtml = isAdmin
-      ? `<button class="pill-btn pill-red compact" onclick="openOrnatishBekor('${encodeURIComponent(d['S/N'])}')">↩ Bekor qilish</button>`
-      : '';
-    return `
-    <div class="ticket">
-      <div class="ticket-main">
-        <div class="ticket-icon tone-d">${DEVICE_ICON_SVG}</div>
-        <div class="ticket-body">
-          <div class="ticket-code">${escapeHtml(d['S/N']||'')}</div>
-          <div class="ticket-sub">${escapeHtml(d.marka||'')} · ${escapeHtml(d.manzil||'')}</div>
-          <div class="ticket-meta">
-            <span>OLT: <b>${escapeHtml(d.OLT||'')}</b></span>
-            <span>Port: <b>${escapeHtml(d.Port||'')}</b></span>
-            <span>Masofa: <b>${escapeHtml(d.Masofa||'')}</b></span>
-          </div>
-          <div class="ticket-meta">
-            <span>👤 ${escapeHtml(d.Ism||d.login||'')}</span>
-            <span>📅 ${escapeHtml(d.sana||'')}</span>
-            ${d.Lokatsiya ? `<span>📍 ${escapeHtml(d.Lokatsiya)}</span>` : ''}
-          </div>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <img src="https://via.placeholder.com/36" alt="Admin">
+                <div>
+                    <div style="font-weight: 600; font-size: 0.85rem;">Admin</div>
+                    <span style="font-size: 0.75rem; color: #64748b;">Administrator</span>
+                </div>
+            </div>
         </div>
-        <div class="ticket-badges">
-          <span class="badge badge-tuman${normalizeTuman(d.tuman)==='kogon'?' kogon':''}">${tumanLabel(d.tuman)}</span>
+    </sidebar>
+
+    <div class="main-content">
+        <header>
+            <div>
+                <h1>Bosh sahifa</h1>
+                <p>Ombordagi kabel qoldiqlari va so'nggi ishlar</p>
+            </div>
+            <div class="header-right" id="currentDate">
+                <span>📅 Sana yuklanmoqda...</span>
+            </div>
+        </header>
+
+        <div class="dashboard-body">
+            <div class="left-column">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Jami kabel qoldig'i</h3>
+                        <div class="value" id="totalStock">0 m</div>
+                        <div class="trend">Faol ombor balansi</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Barabanlar soni</h3>
+                        <div class="value" id="totalDrumsCount">0 ta</div>
+                        <div class="trend" style="color: #64748b;">Faol barabanlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kabel turlari</h3>
+                        <div class="value" id="cableTypesCount">0 ta</div>
+                        <div class="trend">Asosiy turlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kam qoldiq barabanlar</h3>
+                        <div class="value" id="lowStockCount" style="color: #dc2626;">0 ta</div>
+                        <div class="trend" style="color: #dc2626;">10% dan kam</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Barabanlar</h2>
+                        <button class="btn-primary" onclick="openModal()">+ Baraban qo'shish</button>
+                    </div>
+                    <div class="drums-grid" id="drumsContainer"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Admin Boshqaruvi</h2>
+                    </div>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Yangi baraban kiritish yoki kabel sarfini qayd etish uchun quyidagi tugmalardan foydalaning.</p>
+                    <div class="admin-actions">
+                        <button class="btn-primary" onclick="openModal()">Yangi Baraban Qo'shish</button>
+                        <button class="btn-primary" style="background: #16a34a;" onclick="openWorkModal()">Kabel Sarfini Kiritish</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Kam qoldiq ogohlantirishlari</h2>
+                    </div>
+                    <div id="warningsContainer"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>So'nggi kabel tortish ishlari</h2>
+                    </div>
+                    <div id="worksContainer"></div>
+                </div>
+            </div>
         </div>
-      </div>
-      ${(mapLinkHtml || cancelBtnHtml) ? `<div class="action-row">${mapLinkHtml}${cancelBtnHtml}</div>` : ''}
-    </div>`;
-  }).join('');
-}
+    </div>
 
-// ============ ADMIN: O'RNATISHNI BEKOR QILISH ============
-let ornatishBekorSeria = null;
-const ornatishBekorOverlay = document.getElementById('ornatishBekorOverlay');
-function openOrnatishBekor(seriaEnc){
-  ornatishBekorSeria = decodeURIComponent(seriaEnc);
-  document.getElementById('ornatishBekorSabab').value = '';
-  ornatishBekorOverlay.classList.add('show');
-}
-window.openOrnatishBekor = openOrnatishBekor;
-document.getElementById('ornatishBekorCancel').addEventListener('click', ()=> ornatishBekorOverlay.classList.remove('show'));
-ornatishBekorOverlay.addEventListener('click', e=>{ if(e.target===ornatishBekorOverlay) ornatishBekorOverlay.classList.remove('show'); });
+    <!-- Modal: Baraban qo'shish -->
+    <div class="modal" id="drumModal">
+        <div class="modal-content">
+            <h3>Yangi Baraban Qo'shish</h3>
+            <div class="form-group">
+                <label>Baraban raqami / Nomi</label>
+                <input type="text" id="newDrumName" placeholder="Masalan: BAR-006">
+            </div>
+            <div class="form-group">
+                <label>Kabel turi</label>
+                <input type="text" id="newDrumType" placeholder="Masalan: UTP Cat6">
+            </div>
+            <div class="form-group">
+                <label>Boshlang'ich uzunlik (metr)</label>
+                <input type="number" id="newDrumInitial" value="5000">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-primary" style="background: #cbd5e1; color: #1e293b;" onclick="closeModal()">Bekor qilish</button>
+                <button class="btn-primary" onclick="saveDrum()">Saqlash</button>
+            </div>
+        </div>
+    </div>
 
-// ==== "O'rnatishni bekor qilish" — OPTIMISTIK: Chiqim -> Kirim darhol ko'chadi,
-// o'sha xodimning "Mening" bo'limida qayta paydo bo'ladi ====
-document.getElementById('ornatishBekorConfirm').addEventListener('click', ()=>{
-  const sabab = document.getElementById('ornatishBekorSabab').value.trim();
-  if(!sabab){ toast('Sababni kiriting', 'error'); return; }
-  const seria = ornatishBekorSeria;
-  ornatishBekorOverlay.classList.remove('show');
+    <!-- Modal: Sarf kiritish -->
+    <div class="modal" id="workModal">
+        <div class="modal-content">
+            <h3>Kabel Sarfini Kiritish</h3>
+            <div class="form-group">
+                <label>Barabanni tanlang</label>
+                <select id="workDrumSelect"></select>
+            </div>
+            <div class="form-group">
+                <label>Obyekt / Loyiha nomi</label>
+                <input type="text" id="workProject" placeholder="Masalan: Markaziy ko'cha">
+            </div>
+            <div class="form-group">
+                <label>Tortilgan kabel (metr)</label>
+                <input type="number" id="workAmount" placeholder="Masalan: 300">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-primary" style="background: #cbd5e1; color: #1e293b;" onclick="closeWorkModal()">Bekor qilish</button>
+                <button class="btn-primary" onclick="saveWork()">Saqlash</button>
+            </div>
+        </div>
+    </div>
 
-  const idx = chiqim.findIndex(d => d['S/N'] === seria);
-  const removed = idx > -1 ? chiqim.splice(idx, 1)[0] : null;
-  if(removed){
-    kirim.push({
-      'S/N': removed['S/N'], marka: removed.marka, manzil: removed.manzil,
-      login: removed.login, sana: todaySanaClient(), tuman: removed.tuman,
-      MsgId: removed.MsgId || '', MsgChatId: removed.MsgChatId || '',
-      Ism: removed.Ism, MuddatSoat: removed.MuddatSoat || '24',
-      OlinganVaqt: new Date().toISOString()
-    });
-  }
-  renderActive();
-  updateStats();
+    <script>
+        const now = new Date();
+        const dateStr = String(now.getDate()).padStart(2, '0') + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + now.getFullYear() + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentDate').innerHTML = `<span>📅 ${dateStr}</span>`;
 
-  bgTaskStart("O'rnatish bekor qilinmoqda: " + seria);
-  postAction({ action:'ornatish_bekor', seria, sabab, role: currentUser.role, login: currentUser.login })
-    .then(()=>{ loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .catch(err=>{ toast(err.message, 'error'); loadAll().then(()=>{ renderActive(); updateStats(); }); })
-    .finally(()=>{ bgTaskEnd(); });
-});
+        let drums = JSON.parse(localStorage.getItem('adminDrums')) || [
+            { id: 'BAR-001', type: 'UTP Cat6', initial: 5000, remaining: 3900 },
+            { id: 'BAR-002', type: 'FTP Cat6', initial: 5000, remaining: 2800 },
+            { id: 'BAR-003', type: 'Optik kabel', initial: 5000, remaining: 1600 },
+            { id: 'BAR-004', type: 'RG6', initial: 5000, remaining: 400 },
+            { id: 'BAR-005', type: 'Power kabel', initial: 5000, remaining: 3200 }
+        ];
 
-const addOverlay = document.getElementById('addOverlay');
-document.getElementById('addBtn').addEventListener('click', ()=>{
-  document.getElementById('newSeria').value=''; document.getElementById('newMarka').value='';
-  addOverlay.classList.add('show');
-});
-document.getElementById('addCancel').addEventListener('click', ()=> addOverlay.classList.remove('show'));
-addOverlay.addEventListener('click', e=>{ if(e.target===addOverlay) addOverlay.classList.remove('show'); });
+        let works = JSON.parse(localStorage.getItem('adminWorks')) || [
+            { project: '"Yangi bino" loyihasi', amount: '2 500 m', drums: '3 baraban', date: '28.04.2025' },
+            { project: '"Shahar tarmog\'i"', amount: '1 200 m', drums: '2 baraban', date: '26.04.2025' }
+        ];
 
-// ==== "Skladga yangi qurilma qo'shish" — OPTIMISTIK: darhol Sklad ro'yxatiga qo'shiladi ====
-document.getElementById('addConfirm').addEventListener('click', async ()=>{
-  const seria = document.getElementById('newSeria').value.trim();
-  const marka = document.getElementById('newMarka').value.trim();
-  const tuman = document.getElementById('newTuman').value;
-  if(!seria){ toast('Seriya raqamini kiriting', 'error'); return; }
-  addOverlay.classList.remove('show');
+        function renderDrums() {
+            const container = document.getElementById('drumsContainer');
+            const select = document.getElementById('workDrumSelect');
+            const warningsContainer = document.getElementById('warningsContainer');
+            
+            container.innerHTML = '';
+            select.innerHTML = '';
+            warningsContainer.innerHTML = '';
 
-  sklad.push({ 'S/N': seria, marka, tuman });
-  renderActive();
-  updateStats();
+            let totalRem = 0;
+            let lowStockCount = 0;
+            let typesSet = new Set();
 
-  try{
-    await postAction({ action:'yangi_sklad', seria, marka, tuman, role: currentUser.role });
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }catch(err){
-    toast(err.message, 'error');
-    loadAll().then(()=>{ renderActive(); updateStats(); });
-  }
-});
+            drums.forEach(d => {
+                let percent = Math.round((d.remaining / d.initial) * 100);
+                let dotClass = percent > 30 ? 'dot-green' : (percent > 10 ? 'dot-yellow' : 'dot-red');
+                let strokeColor = percent > 30 ? '#2563eb' : (percent > 10 ? '#ca8a04' : '#dc2626');
+                
+                totalRem += d.remaining;
+                typesSet.add(d.type);
 
-initApp();
-</script>
-<!-- ===== CODEXURE USLUBI — shu blokni </body> dan OLDIN, eng oxiriga qo'ying ===== -->
-<style id="codexure-style">
-:root{
-  color-scheme:dark;
-  --bg:#0f0b17;--panel:#17111f;--surface:#1a1426;--surface-2:#221a31;--surface-solid:#1a1426;
-  --border:rgba(255,255,255,.09);--border-hi:rgba(185,182,236,.42);
-  --text:#f4f0ff;--text-dim:#9a93b0;
-  --blue:#B9B6EC;--cyan:#cfc9ff;--violet:#8f86f0;--danger:#ff6b8b;--ok:#8fe3b0;--warn:#ffc46b;
-  --icon-a-bg:rgba(143,227,176,.14);--icon-a-fg:#8fe3b0;
-  --icon-b-bg:rgba(255,196,107,.14);--icon-b-fg:#ffc46b;
-  --icon-c-bg:rgba(185,182,236,.16);--icon-c-fg:#cfc9ff;
-  --icon-d-bg:rgba(255,255,255,.08);--icon-d-fg:#b8b2cc;
-  --header-grad:linear-gradient(120deg,#1d1330,#2b1d4d 60%,#3a2766);
-}
-body{background:radial-gradient(ellipse 70% 32% at 50% 6%,rgba(185,182,236,.18),transparent 72%),var(--bg) fixed}
-h1,h2,.top-bar-title,.login-title,.num{font-family:Inter,sans-serif;letter-spacing:-.03em}
-.top-bar-title{font-weight:800;font-size:16px}
-.login-title{font-weight:800;font-size:26px}
-.top-bar{box-shadow:0 14px 34px rgba(0,0,0,.45);border:1px solid var(--border);border-top:0}
-.top-bar-badge,.login-badge{background:var(--blue);color:#1b1630;box-shadow:0 0 28px rgba(185,182,236,.45)}
-.login-card,.stat-box,.ticket,.search-box,.sorov-card,.xabarlar-toolbar{background:var(--surface);border-color:var(--border);box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.stat-box .num{font-weight:800;font-size:19px}
-.stat-box.b2 .stat-icon{background:rgba(143,134,240,.2)}
-.section-title{text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-dim)}
-.ticket-code{letter-spacing:0}
-.ticket.expired{border-color:rgba(255,107,139,.45)}
-.ticket-note.rejected,.ticket-note.blocked{background:rgba(255,107,139,.12)}
-.btn,.big-btn.primary{background:var(--blue);color:#1b1630;box-shadow:0 0 26px rgba(185,182,236,.28)}
-.btn-secondary{background:var(--surface-2);color:var(--text);box-shadow:none}
-.pill-blue{background:rgba(185,182,236,.16);color:#d8d4ff}
-.pill-red{background:rgba(255,107,139,.14);color:#ff8fa8}
-.pill-green{box-shadow:0 0 18px rgba(34,197,94,.25)}
-.filter-btn:hover{background:rgba(185,182,236,.16)}
-.badge-expired{background:rgba(255,107,139,.16);color:#ff8fa8}
-.badge-owner{background:rgba(143,134,240,.2)}
-.duration-btn.active{background:rgba(185,182,236,.2);color:#f4f0ff}
-.duration-btn.active .d-sub{color:var(--blue)}
-.toast.success{background:rgba(185,182,236,.18);color:#e4e1ff;border-color:var(--border-hi)}
-.toast.error{background:rgba(255,107,139,.16)}
-.overlay{background:rgba(6,3,12,.62)}
-.modal,.map-modal{box-shadow:0 -20px 60px rgba(0,0,0,.5)}
-.modal h2{font-weight:800;letter-spacing:-.02em}
-.spinner,.loading-spinner{border-top-color:var(--blue)}
-.main{padding-bottom:132px}
+                // SVG cirocle circumference calculation (r = 34, c = 2 * pi * r ≈ 213.6)
+                let radius = 34;
+                let circumference = 2 * Math.PI * radius;
+                let strokeDashoffset = circumference - (percent / 100) * circumference;
 
-/* ===== Pastki dock: suyuq "bead" ===== */
-.bottom-nav{
-  left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:auto;max-width:396px;
-  padding:8px 6px;background:none;border:0;backdrop-filter:none;overflow:visible;border-radius:24px;
-}
-.dk-layer{position:absolute;inset:0;filter:url(#dk-goo);pointer-events:none;z-index:0}
-.dk-layer i{position:absolute;display:block}
-.dk-bar{inset:0;border-radius:24px}
-.dk-blob{top:-17px;left:0;border-radius:50%;will-change:transform}
-.dk-out{--c:#3a3150}.dk-out .dk-blob{width:62px;height:62px}
-.dk-in{inset:1.5px;--c:#15101f}.dk-in .dk-blob{width:59px;height:59px}
-.dk-layer i{background:var(--c)}
-.dk-bead{
-  position:absolute;left:0;top:-11px;width:50px;height:50px;margin-left:-25px;border-radius:50%;z-index:2;pointer-events:none;
-  display:grid;place-items:center;color:#1b1630;will-change:transform;
-  background:radial-gradient(circle at 35% 30%,#fff8,transparent 55%),var(--blue);
-  box-shadow:0 0 0 5px #15101f,0 0 34px rgba(185,182,236,.65);
-}
-.dk-bead svg{width:22px;height:22px}
-.nav-btn{z-index:3;color:var(--text-dim);font-size:10.5px}
-.nav-btn.active{background:transparent;border-color:transparent;color:var(--blue)}
-.nav-btn.active svg{opacity:0}
-.nav-btn:not(.active):hover{background:transparent;color:var(--text)}
-.nav-btn .count{z-index:4;background:var(--violet);color:#1b1630}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+                if (percent <= 10) {
+                    lowStockCount++;
+                    warningsContainer.innerHTML += `
+                        <div class="list-item">
+                            <div>
+                                <div class="list-title" style="color: #dc2626;">${d.id} (${d.type})</div>
+                                <div class="list-sub">${percent}% qoldi (${d.remaining} m)</div>
+                            </div>
+                            <span>&gt;</span>
+                        </div>
+                    `;
+                } else if (percent <= 35) {
+                    warningsContainer.innerHTML += `
+                        <div class="list-item">
+                            <div>
+                                <div class="list-title" style="color: #ca8a04;">${d.id} (${d.type})</div>
+                                <div class="list-sub">${percent}% qoldi (${d.remaining} m)</div>
+                            </div>
+                            <span>&gt;</span>
+                        </div>
+                    `;
+                }
 
-<script id="codexure-script">
-(function(){
-  var nav=document.querySelector('.bottom-nav'); if(!nav) return;
+                container.innerHTML += `
+                    <div class="drum-item">
+                        <div class="drum-title">
+                            <span>${d.id}</span>
+                            <span class="status-dot ${dotClass}"></span>
+                        </div>
+                        <div class="drum-svg-container">
+                            <svg viewBox="0 0 80 80">
+                                <circle class="drum-bg-circle" cx="40" cy="40" r="${radius}"></circle>
+                                <circle class="drum-progress-circle" cx="40" cy="40" r="${radius}" 
+                                    style="stroke: ${strokeColor}; stroke-dasharray: ${circumference}; stroke-dashoffset: ${strokeDashoffset};">
+                                </circle>
+                            </svg>
+                            <div class="drum-center-text">
+                                ${percent}%
+                                <span>qolgan</span>
+                            </div>
+                        </div>
+                        <div class="drum-info" style="font-weight: 600; color: #0f172a; margin-bottom: 2px;">Qoldiq: ${d.remaining} m</div>
+                        <div class="drum-info" style="color: #94a3b8; font-size: 0.7rem;">Asl: ${d.initial} m</div>
+                    </div>
+                `;
 
-  // 1) "Mening" -> "Olingan" + pastga qaragan strelka ikonkasi
-  var mb=document.getElementById('navMening');
-  if(mb){
-    var oldSvg=mb.querySelector('svg');
-    if(oldSvg) oldSvg.outerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6"/><path d="M5 21h14"/></svg>';
-    mb.childNodes.forEach(function(n){ if(n.nodeType===3 && n.textContent.trim()) n.textContent='\n      Olingan\n      '; });
-  }
-  function renameStat(){ var l=document.getElementById('statMeningLbl'); if(l) l.textContent='Olingan'; }
-  if(typeof window.applyRoleUI==='function'){
-    var _a=window.applyRoleUI;
-    window.applyRoleUI=function(){ _a.apply(this,arguments); renameStat(); };
-  }
-  renameStat();
+                select.innerHTML += `<option value="${d.id}">${d.id} (${d.type} - ${d.remaining}m qolgan)</option>`;
+            });
 
-  // 2) Suyuq dock
-  document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="dk-goo" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b"/><feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10"/></filter></svg>');
-  nav.insertAdjacentHTML('afterbegin','<div class="dk-layer dk-out"><i class="dk-bar"></i><i class="dk-blob"></i><i class="dk-blob"></i></div><div class="dk-layer dk-in"><i class="dk-bar"></i><i class="dk-blob"></i><i class="dk-blob"></i></div><div class="dk-bead"></div>');
+            if(warningsContainer.innerHTML === '') {
+                warningsContainer.innerHTML = `<div style="font-size: 0.85rem; color: #64748b; text-align: center; padding: 10px;">Ogohlantirishlar yo'q</div>`;
+            }
 
-  var outs=nav.querySelectorAll('.dk-out .dk-blob'), ins=nav.querySelectorAll('.dk-in .dk-blob'), bead=nav.querySelector('.dk-bead');
-  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var x=null, lag=null, raf=0, lastId='';
-  function act(){ return nav.querySelector('.nav-btn.active'); }
-  function sync(){
-    var a=act(); if(!a||a.id===lastId) return;
-    var s=a.querySelector('svg'); if(s){ bead.innerHTML=s.outerHTML; lastId=a.id; }
-  }
-  function paint(){
-    var a=act(); if(!a||!a.offsetWidth) return false;
-    var t=a.offsetLeft+a.offsetWidth/2;
-    if(x===null||reduce){ x=lag=t; }
-    x+=(t-x)*.17; lag+=(t-lag)*.08;
-    outs[0].style.transform=ins[0].style.transform='translateX('+(x-31)+'px)';
-    outs[1].style.transform=ins[1].style.transform='translateX('+(lag-31)+'px)';
-    bead.style.transform='translateX('+x+'px)';
-    return Math.abs(t-x)>.3||Math.abs(t-lag)>.3;
-  }
-  function kick(){
-    cancelAnimationFrame(raf);
-    (function f(){ if(paint()) raf=requestAnimationFrame(f); })();
-  }
-  var mo=new MutationObserver(function(){ sync(); kick(); });
-  nav.querySelectorAll('.nav-btn').forEach(function(b){ mo.observe(b,{attributes:true,attributeFilter:['class','style']}); });
-  var app=document.getElementById('appScreen');
-  if(app) mo.observe(app,{attributes:true,attributeFilter:['style']});
-  addEventListener('resize',function(){ x=null; kick(); });
-  sync(); kick();
-})();
-</script>
+            document.getElementById('totalStock').innerText = totalRem.toLocaleString() + ' m';
+            document.getElementById('totalDrumsCount').innerText = drums.length + ' ta';
+            document.getElementById('cableTypesCount').innerText = typesSet.size + ' ta';
+            document.getElementById('lowStockCount').innerText = lowStockCount + ' ta';
 
+            localStorage.setItem('adminDrums', JSON.stringify(drums));
+        }
+
+        function renderWorks() {
+            const container = document.getElementById('worksContainer');
+            container.innerHTML = '';
+            works.forEach(w => {
+                container.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <div class="list-title">${w.project}</div>
+                            <div class="list-sub">${w.amount} - ${w.drums}</div>
+                        </div>
+                        <span style="font-size: 0.75rem; color: #64748b;">${w.date}</span>
+                    </div>
+                `;
+            });
+            localStorage.setItem('adminWorks', JSON.stringify(works));
+        }
+
+        function openModal() { document.getElementById('drumModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('drumModal').style.display = 'none'; }
+        function openWorkModal() { document.getElementById('workModal').style.display = 'flex'; }
+        function closeWorkModal() { document.getElementById('workModal').style.display = 'none'; }
+
+        function saveDrum() {
+            let id = document.getElementById('newDrumName').value;
+            let type = document.getElementById('newDrumType').value;
+            let initial = parseFloat(document.getElementById('newDrumInitial').value);
+
+            if(!id || !type) {
+                alert("Barcha maydonlarni to'ldiring!");
+                return;
+            }
+
+            drums.push({ id, type, initial, remaining: initial });
+            renderDrums();
+            closeModal();
+        }
+
+        function saveWork() {
+            let drumId = document.getElementById('workDrumSelect').value;
+            let project = document.getElementById('workProject').value;
+            let amount = parseFloat(document.getElementById('workAmount').value);
+
+            let drum = drums.find(d => d.id === drumId);
+            if(amount > drum.remaining) {
+                alert("Xatolik: Barabandaunchalik kabel qolmagan!");
+                return;
+            }
+
+            drum.remaining -= amount;
+            works.unshift({
+                project: `"${project}"`,
+                amount: `${amount} m`,
+                drums: drumId,
+                date: new Date().toLocaleDateString()
+            });
+
+            renderDrums();
+            renderWorks();
+            closeWorkModal();
+        }
+
+        renderDrums();
+        renderWorks();
+    </script>
 </body>
 </html>
