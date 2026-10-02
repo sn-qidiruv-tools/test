@@ -1,0 +1,124 @@
+<!-- ===== CODEXURE USLUBI — shu blokni </body> dan OLDIN, eng oxiriga qo'ying ===== -->
+<style id="codexure-style">
+:root{
+  color-scheme:dark;
+  --bg:#0f0b17;--panel:#17111f;--surface:#1a1426;--surface-2:#221a31;--surface-solid:#1a1426;
+  --border:rgba(255,255,255,.09);--border-hi:rgba(185,182,236,.42);
+  --text:#f4f0ff;--text-dim:#9a93b0;
+  --blue:#B9B6EC;--cyan:#cfc9ff;--violet:#8f86f0;--danger:#ff6b8b;--ok:#8fe3b0;--warn:#ffc46b;
+  --icon-a-bg:rgba(143,227,176,.14);--icon-a-fg:#8fe3b0;
+  --icon-b-bg:rgba(255,196,107,.14);--icon-b-fg:#ffc46b;
+  --icon-c-bg:rgba(185,182,236,.16);--icon-c-fg:#cfc9ff;
+  --icon-d-bg:rgba(255,255,255,.08);--icon-d-fg:#b8b2cc;
+  --header-grad:linear-gradient(120deg,#1d1330,#2b1d4d 60%,#3a2766);
+}
+body{background:radial-gradient(ellipse 70% 32% at 50% 6%,rgba(185,182,236,.18),transparent 72%),var(--bg) fixed}
+h1,h2,.top-bar-title,.login-title,.num{font-family:Inter,sans-serif;letter-spacing:-.03em}
+.top-bar-title{font-weight:800;font-size:16px}
+.login-title{font-weight:800;font-size:26px}
+.top-bar{box-shadow:0 14px 34px rgba(0,0,0,.45);border:1px solid var(--border);border-top:0}
+.top-bar-badge,.login-badge{background:var(--blue);color:#1b1630;box-shadow:0 0 28px rgba(185,182,236,.45)}
+.login-card,.stat-box,.ticket,.search-box,.sorov-card,.xabarlar-toolbar{background:var(--surface);border-color:var(--border);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.stat-box .num{font-weight:800;font-size:19px}
+.stat-box.b2 .stat-icon{background:rgba(143,134,240,.2)}
+.section-title{text-transform:none;letter-spacing:0;font-size:13px;color:var(--text-dim)}
+.ticket-code{letter-spacing:0}
+.ticket.expired{border-color:rgba(255,107,139,.45)}
+.ticket-note.rejected,.ticket-note.blocked{background:rgba(255,107,139,.12)}
+.btn,.big-btn.primary{background:var(--blue);color:#1b1630;box-shadow:0 0 26px rgba(185,182,236,.28)}
+.btn-secondary{background:var(--surface-2);color:var(--text);box-shadow:none}
+.pill-blue{background:rgba(185,182,236,.16);color:#d8d4ff}
+.pill-red{background:rgba(255,107,139,.14);color:#ff8fa8}
+.pill-green{box-shadow:0 0 18px rgba(34,197,94,.25)}
+.filter-btn:hover{background:rgba(185,182,236,.16)}
+.badge-expired{background:rgba(255,107,139,.16);color:#ff8fa8}
+.badge-owner{background:rgba(143,134,240,.2)}
+.duration-btn.active{background:rgba(185,182,236,.2);color:#f4f0ff}
+.duration-btn.active .d-sub{color:var(--blue)}
+.toast.success{background:rgba(185,182,236,.18);color:#e4e1ff;border-color:var(--border-hi)}
+.toast.error{background:rgba(255,107,139,.16)}
+.overlay{background:rgba(6,3,12,.62)}
+.modal,.map-modal{box-shadow:0 -20px 60px rgba(0,0,0,.5)}
+.modal h2{font-weight:800;letter-spacing:-.02em}
+.spinner,.loading-spinner{border-top-color:var(--blue)}
+.main{padding-bottom:132px}
+
+/* ===== Pastki dock: suyuq "bead" ===== */
+.bottom-nav{
+  left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:auto;max-width:396px;
+  padding:8px 6px;background:none;border:0;backdrop-filter:none;overflow:visible;border-radius:24px;
+}
+.dk-layer{position:absolute;inset:0;filter:url(#dk-goo);pointer-events:none;z-index:0}
+.dk-layer i{position:absolute;display:block}
+.dk-bar{inset:0;border-radius:24px}
+.dk-blob{top:-17px;left:0;border-radius:50%;will-change:transform}
+.dk-out{--c:#3a3150}.dk-out .dk-blob{width:62px;height:62px}
+.dk-in{inset:1.5px;--c:#15101f}.dk-in .dk-blob{width:59px;height:59px}
+.dk-layer i{background:var(--c)}
+.dk-bead{
+  position:absolute;left:0;top:-11px;width:50px;height:50px;margin-left:-25px;border-radius:50%;z-index:2;pointer-events:none;
+  display:grid;place-items:center;color:#1b1630;will-change:transform;
+  background:radial-gradient(circle at 35% 30%,#fff8,transparent 55%),var(--blue);
+  box-shadow:0 0 0 5px #15101f,0 0 34px rgba(185,182,236,.65);
+}
+.dk-bead svg{width:22px;height:22px}
+.nav-btn{z-index:3;color:var(--text-dim);font-size:10.5px}
+.nav-btn.active{background:transparent;border-color:transparent;color:var(--blue)}
+.nav-btn.active svg{opacity:0}
+.nav-btn:not(.active):hover{background:transparent;color:var(--text)}
+.nav-btn .count{z-index:4;background:var(--violet);color:#1b1630}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<script id="codexure-script">
+(function(){
+  var nav=document.querySelector('.bottom-nav'); if(!nav) return;
+
+  // 1) "Mening" -> "Olingan" + pastga qaragan strelka ikonkasi
+  var mb=document.getElementById('navMening');
+  if(mb){
+    var oldSvg=mb.querySelector('svg');
+    if(oldSvg) oldSvg.outerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6"/><path d="M5 21h14"/></svg>';
+    mb.childNodes.forEach(function(n){ if(n.nodeType===3 && n.textContent.trim()) n.textContent='\n      Olingan\n      '; });
+  }
+  function renameStat(){ var l=document.getElementById('statMeningLbl'); if(l) l.textContent='Olingan'; }
+  if(typeof window.applyRoleUI==='function'){
+    var _a=window.applyRoleUI;
+    window.applyRoleUI=function(){ _a.apply(this,arguments); renameStat(); };
+  }
+  renameStat();
+
+  // 2) Suyuq dock
+  document.body.insertAdjacentHTML('beforeend','<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="dk-goo" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b"/><feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10"/></filter></svg>');
+  nav.insertAdjacentHTML('afterbegin','<div class="dk-layer dk-out"><i class="dk-bar"></i><i class="dk-blob"></i><i class="dk-blob"></i></div><div class="dk-layer dk-in"><i class="dk-bar"></i><i class="dk-blob"></i><i class="dk-blob"></i></div><div class="dk-bead"></div>');
+
+  var outs=nav.querySelectorAll('.dk-out .dk-blob'), ins=nav.querySelectorAll('.dk-in .dk-blob'), bead=nav.querySelector('.dk-bead');
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var x=null, lag=null, raf=0, lastId='';
+  function act(){ return nav.querySelector('.nav-btn.active'); }
+  function sync(){
+    var a=act(); if(!a||a.id===lastId) return;
+    var s=a.querySelector('svg'); if(s){ bead.innerHTML=s.outerHTML; lastId=a.id; }
+  }
+  function paint(){
+    var a=act(); if(!a||!a.offsetWidth) return false;
+    var t=a.offsetLeft+a.offsetWidth/2;
+    if(x===null||reduce){ x=lag=t; }
+    x+=(t-x)*.17; lag+=(t-lag)*.08;
+    outs[0].style.transform=ins[0].style.transform='translateX('+(x-31)+'px)';
+    outs[1].style.transform=ins[1].style.transform='translateX('+(lag-31)+'px)';
+    bead.style.transform='translateX('+x+'px)';
+    return Math.abs(t-x)>.3||Math.abs(t-lag)>.3;
+  }
+  function kick(){
+    cancelAnimationFrame(raf);
+    (function f(){ if(paint()) raf=requestAnimationFrame(f); })();
+  }
+  var mo=new MutationObserver(function(){ sync(); kick(); });
+  nav.querySelectorAll('.nav-btn').forEach(function(b){ mo.observe(b,{attributes:true,attributeFilter:['class','style']}); });
+  var app=document.getElementById('appScreen');
+  if(app) mo.observe(app,{attributes:true,attributeFilter:['style']});
+  addEventListener('resize',function(){ x=null; kick(); });
+  sync(); kick();
+})();
+</script>
