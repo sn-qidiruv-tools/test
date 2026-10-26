@@ -1036,6 +1036,24 @@ html.splash-on body{overflow:hidden}
   #skladResults,#meningResults,#tarixResults{grid-template-columns:repeat(3,1fr)}
   .main{max-width:1400px}
 }
+
+/* ---------- Tarix: tekstura xatolariga qarshi yengil kartalar ---------- */
+.ticket{transition:none;box-shadow:0 1px 3px rgba(15,30,70,.08);overflow:hidden;transform:translateZ(0);backface-visibility:hidden}
+.ticket-icon{box-shadow:none}
+.ticket.expired{box-shadow:0 0 0 1px rgba(225,29,72,.18)}
+@media (hover:hover){.ticket:hover{transform:translateZ(0);box-shadow:0 4px 14px rgba(15,30,70,.1)}}
+html[data-theme="dark"] .ticket{box-shadow:none}
+/* ---------- Qorong'u rejimda logotip: oq quti o'rniga shaffof ---------- */
+html[data-theme="dark"] .brand-logo.on-surface{background:transparent;padding:0;border-radius:0;box-sizing:border-box;filter:invert(1) hue-rotate(180deg) brightness(1.15);mix-blend-mode:screen}
+html[data-theme="dark"] .splash-logo{background:transparent;padding:0;border-radius:0;width:min(300px,72vw)}
+html[data-theme="dark"] #splashBase{filter:grayscale(1) invert(1) brightness(.9);opacity:.5}
+html[data-theme="dark"] #splashFill{filter:invert(1) hue-rotate(180deg) brightness(1.15)}
+html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
+@media (min-width:1000px){
+  html[data-theme="dark"] .bottom-nav::before{background-color:transparent;padding:0;left:20px;right:20px;filter:invert(1) hue-rotate(180deg) brightness(1.15);mix-blend-mode:screen}
+  .search-box{margin-left:auto;margin-right:auto}
+  .section-title,.filter-chips{max-width:620px;margin-left:auto;margin-right:auto}
+}
 </style>
 </head>
 <body>
@@ -2209,9 +2227,21 @@ skladSearchClear.addEventListener('click', ()=>{ skladSearch.value=''; skladSear
 // ===== SKLAD — bitta umumiy vertikal ticket uslubida =====
 const STEP = 60;
 const LIM = { sklad:STEP, mening:STEP, tarix:STEP };
+let _APPEND = null;
+function setListHTML(el, key, list, fn){
+  const n = Math.min(list.length, LIM[key]);
+  const tail = () => moreBtn(list.length, key);
+  if(_APPEND === key && el._n > 0 && el._n < n){
+    const old = el.querySelector('.more-btn'); if(old) old.remove();
+    el.insertAdjacentHTML('beforeend', list.slice(el._n, n).map(fn).join('') + tail());
+  } else {
+    el.innerHTML = list.slice(0, n).map(fn).join('') + tail();
+  }
+  el._n = n; _APPEND = null;
+}
 function moreBtn(total, key){
   const left = total - LIM[key];
-  return left > 0 ? `<button type="button" class="more-btn" onclick="LIM.${key}+=STEP;renderActive()">Yana ko'rsatish (${left})</button>` : '';
+  return left > 0 ? `<button type="button" class="more-btn" onclick="_APPEND='${key}';LIM.${key}+=STEP;renderActive()">Yana ko'rsatish (${left})</button>` : '';
 }
 function cbBtn(cls, icon, label, onclick, dis){
   return `<button type="button" class="cb ${cls}" ${dis?'disabled':''} onclick="${onclick}" aria-label="${label}"><span class="c"><span class="ring"></span>${ico(icon,24)}</span>${label}</button>`;
@@ -2249,7 +2279,7 @@ function renderSklad(){
   const el = document.getElementById('skladResults');
   if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${q ? "Hech narsa topilmadi" : "Skladda qurilma yo'q"}</div>`; return; }
   const isAdmin = currentUser.role === 'admin';
-  el.innerHTML = list.slice(0,LIM.sklad).map(d => {
+  setListHTML(el, 'sklad', list, d => {
     const ownTuman = normalizeTuman(d.tuman) === normalizeTuman(currentUser.tuman);
     const canTake = isAdmin || ownTuman;
     const tumanCls = normalizeTuman(d.tuman) === 'kogon' ? ' kogon' : '';
@@ -2271,7 +2301,7 @@ function renderSklad(){
           : `<div class="ticket-sub" style="padding:0 0 4px">Bu qurilma boshqa tumanga tegishli</div>`}
       </div>
     </div>`;
-  }).join('') + moreBtn(list.length, 'sklad');
+  });
 }
 
 let olishSeria = null, olishMuddatSoat = null;
@@ -2364,7 +2394,7 @@ function renderMening(){
   const el = document.getElementById('meningResults');
   if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${q || meningMarkaFilter || meningTumanFilter!=='all' || meningHolatFilter!=='all' ? "Hech narsa topilmadi" : (isAdmin ? "Hozircha hech kimda qurilma yo'q" : "Siz hali hech qanday qurilma olmagansiz")}</div>`; return; }
 
-  el.innerHTML = list.slice(0,LIM.mening).map(d => {
+  setListHTML(el, 'mening', list, d => {
     const expired = d._expired;
     const isOwner = normalize(d.login) === normalize(currentUser.login);
     const muddatText = muddatInfoText(d);
@@ -2443,7 +2473,7 @@ function renderMening(){
       ${!isAdmin && !expired && muddatRejected ? `<div class="ticket-note rejected">${ico('x',12)} So'nggi muddat so'rovingiz rad etildi</div>` : ''}
       ${actionsHtml}
     </div>`;
-  }).join('') + moreBtn(list.length, 'mening');
+  });
 }
 
 // --- Mening qidiruv maydoni ---
@@ -3322,7 +3352,7 @@ function renderTarix(){
   const el = document.getElementById('tarixResults');
   const filterActive = q || tarixTumanFilter!=='all' || tarixXodimFilter || tarixMarkaFilter.length || tarixDateFilter.size;
   if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${filterActive ? "Topilmadi" : (isAdmin ? "Hali hech qanday qurilma o'rnatilmagan" : "Siz hali hech narsa o'rnatmagansiz")}</div>`; return; }
-  el.innerHTML = list.slice(0,LIM.tarix).map(d => {
+  setListHTML(el, 'tarix', list, d => {
     const mapLinkHtml = d.Lokatsiya
       ? `<a class="pill-btn pill-blue compact" href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank">${ico('map')} Xaritadan ko'rish</a>`
       : '';
@@ -3353,7 +3383,7 @@ function renderTarix(){
       </div>
       ${(mapLinkHtml || cancelBtnHtml) ? `<div class="action-row">${mapLinkHtml}${cancelBtnHtml}</div>` : ''}
     </div>`;
-  }).join('') + moreBtn(list.length, 'tarix');
+  });
 }
 
 // ============ TARIX: BARCHA QURILMALARNI XARITADA KO'RISH ============
