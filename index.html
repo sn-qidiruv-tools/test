@@ -1038,10 +1038,10 @@ html.splash-on body{overflow:hidden}
 }
 
 /* ---------- Tarix: tekstura xatolariga qarshi yengil kartalar ---------- */
-.ticket{transition:none;box-shadow:0 1px 3px rgba(15,30,70,.08);overflow:hidden;transform:translateZ(0);backface-visibility:hidden}
+.ticket{transition:none;box-shadow:0 1px 3px rgba(15,30,70,.08);overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 150px}
 .ticket-icon{box-shadow:none}
 .ticket.expired{box-shadow:0 0 0 1px rgba(225,29,72,.18)}
-@media (hover:hover){.ticket:hover{transform:translateZ(0);box-shadow:0 4px 14px rgba(15,30,70,.1)}}
+@media (hover:hover){.ticket:hover{transform:none;box-shadow:0 4px 14px rgba(15,30,70,.1)}}
 html[data-theme="dark"] .ticket{box-shadow:none}
 /* ---------- Qorong'u rejimda logotip: oq quti o'rniga shaffof ---------- */
 html[data-theme="dark"] .brand-logo.on-surface{background:transparent;padding:0;border-radius:0;box-sizing:border-box;filter:invert(1) hue-rotate(180deg) brightness(1.15);mix-blend-mode:screen}
@@ -1077,7 +1077,7 @@ html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
     fill.style.clipPath='inset(0 '+(100-100*e).toFixed(1)+'% 0 0)';
     pct.textContent=Math.round(e*100);
     if(p<1) requestAnimationFrame(tick);
-    else setTimeout(()=>{ sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),500); },180);
+    else Promise.race([window.__refreshDone||Promise.resolve(), new Promise(r=>setTimeout(r,4000))]).then(()=>setTimeout(()=>{ sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),500); },180));
   }
   requestAnimationFrame(tick);
 })();
@@ -1929,7 +1929,11 @@ async function loadAll(silent){
 // MUHIM: agar 4 marta urinishdan keyin ham yuklanmasa (masalan internet
 // butunlay yo'q), foydalanuvchi bo'sh/abadiy "yuklanmoqda" holatida
 // qolib ketmasligi uchun aniq xabar va "Qayta urinish" tugmasi ko'rsatiladi.
+window.__refreshDone = new Promise(r=>{ window.__rd = r; });
 async function initApp(){
+  try{ await initApp0(); } finally { if(!window.__fastRefresh && window.__rd) window.__rd(); }
+}
+async function initApp0(){
   // Tez yo'l: oldin kirgan va saqlangan ma'lumot bor — kutmasdan darhol ochamiz
   const savedEarly = localStorage.getItem('sklad_user');
   if(savedEarly && loadSnapshot()){
@@ -1939,7 +1943,8 @@ async function initApp(){
       if(navigator.onLine === false) showOfflineLock();
       enterApp();
       startSessionWatch();
-      backgroundRefresh();
+      window.__fastRefresh = true;
+      backgroundRefresh(true).finally(()=>{ if(window.__rd) window.__rd(); });
       return;
     }
     currentUser = null;
