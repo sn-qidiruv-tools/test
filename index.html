@@ -4053,7 +4053,7 @@ initApp();
   const nav = document.getElementById('bottomNav'), ind = document.getElementById('navInd');
   if(!nav || !ind) return;
   let lx = null, ly = null, first = true, goT = null;
-  ind.innerHTML = '<svg class="truck" viewBox="0 0 84 40" aria-hidden="true"><path d="M50 10h-3v-4h3z" fill="#0a2a5e"/><rect x="2" y="6" width="46" height="24" rx="4" fill="#0a4a9e"/><rect x="6" y="10" width="38" height="4" rx="2" fill="#8db8ff" opacity=".55"/><path d="M52 12h15l11 10v8H52z" fill="#2a7bea"/><path d="M57 15h8l6 7H57z" fill="#e7efff"/><rect x="2" y="29" width="78" height="3.5" rx="1.5" fill="#0a2a5e"/><circle cx="79" cy="25" r="2.2" fill="#fde047"/><g class=\"wh\"><circle cx=\"16\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M16 29v10M11 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g><g class=\"wh\"><circle cx=\"38\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M38 29v10M33 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g><g class=\"wh\"><circle cx=\"66\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M66 29v10M61 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g></svg>';
+  ind.innerHTML = ''; const _unused = '<svg class="truck" viewBox="0 0 84 40" aria-hidden="true"><path d="M50 10h-3v-4h3z" fill="#0a2a5e"/><rect x="2" y="6" width="46" height="24" rx="4" fill="#0a4a9e"/><rect x="6" y="10" width="38" height="4" rx="2" fill="#8db8ff" opacity=".55"/><path d="M52 12h15l11 10v8H52z" fill="#2a7bea"/><path d="M57 15h8l6 7H57z" fill="#e7efff"/><rect x="2" y="29" width="78" height="3.5" rx="1.5" fill="#0a2a5e"/><circle cx="79" cy="25" r="2.2" fill="#fde047"/><g class=\"wh\"><circle cx=\"16\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M16 29v10M11 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g><g class=\"wh\"><circle cx=\"38\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M38 29v10M33 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g><g class=\"wh\"><circle cx=\"66\" cy=\"34\" r=\"6\" fill=\"#1f2937\"/><path d=\"M66 29v10M61 34h10\" stroke=\"#cbd5e1\" stroke-width=\"1.6\"/></g></svg>';
   function place(animate){
     const a = nav.querySelector('.nav-btn.active:not(.danger)');
     if(!a || !nav.offsetWidth){ ind.classList.remove('on'); return; }
@@ -4063,20 +4063,6 @@ initApp();
     ind.classList.add('on');
     if(first || !animate){ void ind.offsetWidth; ind.classList.remove('noanim'); }
     else if((lx!==x || ly!==y) && lx!==null){
-      const horiz = Math.abs(x-lx) >= Math.abs(y-ly), dir = horiz ? (x>lx?-1:1) : (y>ly?-1:1);
-      ind.style.setProperty('--fx', horiz ? (x>lx?1:-1) : 1);
-      ind.style.setProperty('--rot','0deg');
-      ind.classList.add('go'); nav.classList.add('driving'); clearTimeout(goT); goT = setTimeout(()=>{ ind.classList.remove('go'); nav.classList.remove('driving'); }, 520);
-      for(let i=0;i<3;i++){
-        const p = document.createElement('span'); p.className='puff';
-        const px = lx + (horiz ? (dir<0 ? 6 : lx? 0:0) : 0);
-        p.style.left = (lx + (horiz ? (dir<0 ? 4 : w-16) : w/2-6)) + 'px';
-        p.style.top  = (ly + (horiz ? h-16 : (dir<0 ? 4 : h-16))) + 'px';
-        p.style.setProperty('--dx', (horiz ? dir*(10+i*9) : (i-1)*7)+'px');
-        p.style.setProperty('--dy', (horiz ? -(6+i*5) : dir*(10+i*9))+'px');
-        p.style.animationDelay = (i*70)+'ms';
-        nav.appendChild(p); setTimeout(()=>p.remove(), 900);
-      }
     }
     lx = x; ly = y; first = false;
   }
