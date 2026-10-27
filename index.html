@@ -968,7 +968,7 @@ html[data-theme="dark"] .theme-seg button.active{color:#8db8ff}
 /* ---------- Splash ---------- */
 :root{--splash-base:#d5dded}
 html[data-theme="dark"]{--splash-base:#2a3550}
-#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .45s ease,visibility .45s}
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .28s ease,visibility .28s}
 #splash.hide{opacity:0;visibility:hidden}
 .splash-logo{position:relative;width:min(300px,72vw)}
 .splash-logo img{display:block;width:100%;height:auto}
@@ -1054,6 +1054,25 @@ html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
   .search-box{margin-left:auto;margin-right:auto}
   .section-title,.filter-chips{max-width:620px;margin-left:auto;margin-right:auto}
 }
+
+/* ---------- Silliq aylantirish: ro'yxat kartalari yengil ---------- */
+.ticket,.sorov-card{box-shadow:none!important;border-radius:16px}
+.ticket::before{background:#22c55e!important}
+.ticket.tone-b::before{background:#f59e0b!important}
+.ticket.tone-d::before{background:#94a3b8!important}
+.ticket.expired::before{background:#e11d48!important}
+.ticket .pill-btn,.ticket .badge,.ticket .ticket-icon{box-shadow:none!important;transition:none!important}
+.ticket .pill-green{background:#16a34a!important}
+.ticket .badge-tuman,.ticket .badge-tuman.kogon{background-image:none!important}
+.ticket .pill-btn::after,.ticket .btn::after{display:none!important}
+.panel-enter .ticket,.panel-enter .sorov-card{animation:none}
+.panel-enter .ticket:nth-child(-n+8){animation:fadeUp .35s var(--ease) both}
+.cb .c{transition:transform .18s}
+.cb.g .c{box-shadow:none}
+.cb{contain:layout style}
+#skladResults,#meningResults,#tarixResults{overflow-anchor:none}
+html{scroll-behavior:auto}
+@media (hover:hover){.ticket:hover{box-shadow:none!important;transform:none}}
 </style>
 </head>
 <body>
@@ -1069,7 +1088,7 @@ html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
 (function(){
   const sp=document.getElementById('splash'), fill=document.getElementById('splashFill'), base=document.getElementById('splashBase'), pct=document.getElementById('splashPct');
   fill.src=base.src; document.documentElement.style.setProperty('--logo-url','url('+base.src+')');
-  const DUR=1900, t0=performance.now();
+  const DUR=1000, t0=performance.now();
   document.documentElement.classList.add('splash-on');
   function ease(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
   function tick(now){
@@ -1077,7 +1096,7 @@ html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
     fill.style.clipPath='inset(0 '+(100-100*e).toFixed(1)+'% 0 0)';
     pct.textContent=Math.round(e*100);
     if(p<1) requestAnimationFrame(tick);
-    else Promise.race([window.__refreshDone||Promise.resolve(), new Promise(r=>setTimeout(r,4000))]).then(()=>setTimeout(()=>{ sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),500); },180));
+    else Promise.race([window.__refreshDone||Promise.resolve(), new Promise(r=>setTimeout(r,4000))]).then(()=>setTimeout(()=>{ sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),350); },40));
   }
   requestAnimationFrame(tick);
 })();
@@ -2230,7 +2249,7 @@ skladSearch.addEventListener('input', ()=>{ skladSearchClear.style.display = skl
 skladSearchClear.addEventListener('click', ()=>{ skladSearch.value=''; skladSearchClear.style.display='none'; renderSklad(); });
 
 // ===== SKLAD — bitta umumiy vertikal ticket uslubida =====
-const STEP = 60;
+const STEP = 30;
 const LIM = { sklad:STEP, mening:STEP, tarix:STEP };
 let _APPEND = null;
 function setListHTML(el, key, list, fn){
@@ -2265,14 +2284,13 @@ document.addEventListener('click', e=>{
   function arm(){
     if(io) io.disconnect();
     if(!('IntersectionObserver' in window)) return;
-    io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); e.target.click(); } }); }, { rootMargin:'0px 0px 3500px 0px' });
+    io = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); e.target.click(); } }); }, { rootMargin:'0px 0px 2500px 0px' });
     document.querySelectorAll('.more-btn').forEach(m=>io.observe(m));
   }
-  new MutationObserver(arm).observe(document.getElementById('appScreen'), { childList:true, subtree:true });
-  window.addEventListener('scroll', ()=>{
-    const m = document.querySelector('.more-btn');
-    if(m && m.getBoundingClientRect().top < window.innerHeight + 3500) m.click();
-  }, { passive:true });
+  ['skladResults','meningResults','tarixResults'].forEach(id=>{
+    const el=document.getElementById(id); if(el) new MutationObserver(arm).observe(el,{childList:true});
+  });
+  arm();
 })();
 function renderSklad(){
   const q = normalize(skladSearch.value.trim());
