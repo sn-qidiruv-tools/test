@@ -1421,6 +1421,9 @@ html{scroll-behavior:auto}
   <div class="modal">
     <h2 id="olishTitle">Qurilmani olish</h2>
     <p class="modal-sub">Manzil va muddatni kiriting</p>
+    <div class="field" id="olishWhoField" style="display:none"><label>Kim nomidan olinadi</label>
+      <select id="olishWho" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit"></select>
+    </div>
     <div class="field"><label>Manzil</label><input type="text" id="olishManzil" placeholder="Masalan: Amir temur ko'chasi 2- uy"></div>
     <div class="field">
       <label>Muddat (ma'lumot uchun — "necha soatga olingan" deb ko'rsatiladi)</label>
@@ -2334,6 +2337,14 @@ function openOlish(seriaEnc){
   olishMuddatSoat = null;
   document.getElementById('olishTitle').textContent = 'Qurilmani olish — ' + olishSeria;
   document.getElementById('olishManzil').value = '';
+  const whoF = document.getElementById('olishWhoField'), whoS = document.getElementById('olishWho');
+  if(currentUser && currentUser.role === 'admin'){
+    const list = (employees||[]).filter(e => e.LOGIN && String(e.LOGIN).trim().toLowerCase() !== String(currentUser.login).trim().toLowerCase());
+    whoS.innerHTML = `<option value="">O'zim (${escapeHtml(currentUser.ism||currentUser.login)})</option>` +
+      list.map(e => `<option value="${escapeHtml(String(e.LOGIN))}">${escapeHtml(String(e.ISM||e.LOGIN))}${e.tuman?' · '+escapeHtml(String(e.tuman)):''}</option>`).join('');
+    whoS.value = '';
+    whoF.style.display = '';
+  } else { whoF.style.display = 'none'; whoS.innerHTML = ''; }
   document.querySelectorAll('#olishDurationGrid .duration-btn').forEach(b=>b.classList.remove('active'));
   olishOverlay.classList.add('show');
 }
@@ -2356,6 +2367,13 @@ document.getElementById('olishConfirm').addEventListener('click', ()=>{
   const seria = olishSeria;
   const muddat_soat = olishMuddatSoat;
   const manzilVal = manzil;
+  // Admin boshqa xodim nomidan olishi mumkin
+  let owner = { login: currentUser.login, ism: currentUser.ism, tuman: currentUser.tuman };
+  const whoSel = document.getElementById('olishWho').value;
+  if(currentUser.role === 'admin' && whoSel){
+    const emp = (employees||[]).find(e => String(e.LOGIN) === whoSel);
+    if(emp) owner = { login: String(emp.LOGIN), ism: String(emp.ISM||emp.LOGIN), tuman: String(emp.tuman||'').trim() };
+  }
   olishOverlay.classList.remove('show');
 
   // Darhol lokal massivlarni yangilaymiz va qayta chizamiz
@@ -2365,11 +2383,11 @@ document.getElementById('olishConfirm').addEventListener('click', ()=>{
     'S/N': seria,
     marka: removed ? removed.marka : '',
     manzil: manzilVal,
-    login: currentUser.login,
+    login: owner.login,
     sana: todaySanaClient(),
-    tuman: removed ? removed.tuman : currentUser.tuman,
+    tuman: removed ? removed.tuman : owner.tuman,
     MsgId: '', MsgChatId: '',
-    Ism: currentUser.ism,
+    Ism: owner.ism,
     MuddatSoat: muddat_soat,
     OlinganVaqt: new Date().toISOString()
   });
@@ -2377,7 +2395,7 @@ document.getElementById('olishConfirm').addEventListener('click', ()=>{
   updateStats();
 
   bgTaskStart('Biriktirilmoqda: ' + seria);
-  postAction({ action:'olish', seria, login: currentUser.login, ism: currentUser.ism, role: currentUser.role, tuman: currentUser.tuman, manzil: manzilVal, muddat_soat })
+  postAction({ action:'olish', seria, login: owner.login, ism: owner.ism, role: currentUser.role, tuman: owner.tuman, manzil: manzilVal, muddat_soat })
     .then((res)=>{
       if(res.telegram_debug){ toast('TELEGRAM: ' + res.telegram_debug, 'error'); }
       // Fonda haqiqiy ma'lumot bilan sokin sinxronlaymiz
