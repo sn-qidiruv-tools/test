@@ -1073,6 +1073,19 @@ html[data-theme="dark"] .splash-logo{mix-blend-mode:screen}
 #skladResults,#meningResults,#tarixResults{overflow-anchor:none}
 html{scroll-behavior:auto}
 @media (hover:hover){.ticket:hover{box-shadow:none!important;transform:none}}
+
+/* ---------- Oyna yopish tugmasi (chap burchakda, aylana) ---------- */
+.modal-x{position:sticky;top:4px;float:left;width:34px;height:34px;margin:-4px 0 -34px -2px;border-radius:50%;border:none;background:var(--surface-2,rgba(120,130,150,.15));color:var(--text-secondary,#64748b);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;padding:0;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.modal-x:active{transform:scale(.86)}
+.modal-x svg{width:16px;height:16px}
+.modal h2,.map-modal h2{padding-left:44px;min-height:34px;display:flex;align-items:center}
+.confirm-modal h2{padding-left:0;justify-content:center}
+.confirm-modal .modal-x{margin-bottom:-34px}
+/* ---------- Oyna ochilishi silliq ---------- */
+.overlay{transition:opacity .18s ease,visibility .18s}
+.overlay .modal,.overlay .map-modal{opacity:1;transform:translateY(24px);transition:transform .26s var(--ease);box-shadow:none;border-top:1px solid var(--border)}
+.overlay.show .modal,.overlay.show .map-modal{transform:none}
+@media (min-width:1000px){.overlay .modal,.overlay .map-modal{transform:translateY(10px)}.overlay.show .modal,.overlay.show .map-modal{transform:none}}
 </style>
 </head>
 <body>
@@ -1088,15 +1101,27 @@ html{scroll-behavior:auto}
 (function(){
   const sp=document.getElementById('splash'), fill=document.getElementById('splashFill'), base=document.getElementById('splashBase'), pct=document.getElementById('splashPct');
   fill.src=base.src; document.documentElement.style.setProperty('--logo-url','url('+base.src+')');
-  const DUR=1000, t0=performance.now();
+  const t0=performance.now(); let ready=false, hooked=false, v=0, done=false;
   document.documentElement.classList.add('splash-on');
-  function ease(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
+  function hook(){
+    if(hooked || !window.__refreshDone) return; hooked=true;
+    Promise.race([window.__refreshDone, new Promise(r=>setTimeout(r,3500))]).then(()=>{ ready=true; });
+  }
+  function finish(){
+    if(done) return; done=true;
+    sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),300);
+  }
   function tick(now){
-    const p=Math.min(1,(now-t0)/DUR), e=ease(p);
-    fill.style.clipPath='inset(0 '+(100-100*e).toFixed(1)+'% 0 0)';
-    pct.textContent=Math.round(e*100);
-    if(p<1) requestAnimationFrame(tick);
-    else Promise.race([window.__refreshDone||Promise.resolve(), new Promise(r=>setTimeout(r,4000))]).then(()=>setTimeout(()=>{ sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),350); },40));
+    hook();
+    const el=now-t0;
+    // Haqiqiy yuklanishga bog'langan: ma'lumot kelguncha ~90% da kutadi, kelishi bilan tez 100% ga chiqadi
+    let target = ready && el>450 ? 1 : Math.min(.9, el/1300*.9);
+    if(!hooked && el>1500) hook();
+    v += Math.max((target-v)*.2, target>v?.004:0); if(v>target) v=target;
+    fill.style.clipPath='inset(0 '+(100-100*v).toFixed(1)+'% 0 0)';
+    pct.textContent=Math.round(v*100);
+    if(ready && v>=.995){ fill.style.clipPath='inset(0 0 0 0)'; pct.textContent=100; setTimeout(finish,60); return; }
+    requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
 })();
@@ -3978,6 +4003,22 @@ document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('c
 })();
 
 initApp();
+
+// ===== Har bir oynaga chap burchakda aylana "X" tugmasi =====
+(function(){
+  const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    const m = ov.querySelector('.modal, .map-modal'); if(!m || m.querySelector('.modal-x')) return;
+    const b = document.createElement('button');
+    b.type='button'; b.className='modal-x'; b.setAttribute('aria-label','Yopish'); b.innerHTML=X;
+    b.addEventListener('click', e=>{
+      e.stopPropagation();
+      const c = ov.querySelector('.modal-actions .btn-secondary');
+      if(c) c.click(); else ov.classList.remove('show');
+    });
+    m.insertBefore(b, m.firstChild);
+  });
+})();
 </script>
 </body>
 </html>
