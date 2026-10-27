@@ -1112,6 +1112,39 @@ html{scroll-behavior:auto}
 html[data-theme="dark"] .nav-btn.active{color:#8db8ff!important}
 .bottom-nav.driving .nav-btn.active{color:transparent!important}.bottom-nav.driving .nav-btn.active svg{opacity:0}.nav-btn.active svg{transition:opacity .15s,transform .35s var(--spring)}
 html[data-theme="dark"] .modal-x{background:rgba(251,113,133,.16);color:#fb7185}
+
+/* =========== Suyuq shisha (Liquid Glass) — blur'siz, statik, yengil =========== */
+:root{--hl:rgba(255,255,255,.75);--hl-soft:rgba(255,255,255,.35);--sh-in:rgba(8,20,50,.16)}
+html[data-theme="dark"]{--hl:rgba(255,255,255,.28);--hl-soft:rgba(255,255,255,.1);--sh-in:rgba(0,0,0,.45)}
+/* dumaloq amal tugmalari */
+.cb .c{border:1px solid rgba(255,255,255,.35)}
+.cb.g .c{background:radial-gradient(90% 70% at 30% 12%,rgba(255,255,255,.6),rgba(255,255,255,0) 55%),linear-gradient(160deg,#3bd77f,#16a34a 55%,#0e8a3b);box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -4px 8px rgba(0,70,25,.28),inset 0 0 0 1px rgba(255,255,255,.18)}
+.cb.b .c{background:radial-gradient(90% 70% at 30% 12%,rgba(255,255,255,.85),rgba(255,255,255,0) 55%),linear-gradient(160deg,var(--pill-blue-bg),rgba(42,123,234,.28));box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -4px 8px rgba(10,74,158,.18),inset 0 0 0 1px rgba(42,123,234,.2)}
+.cb.r .c{background:radial-gradient(90% 70% at 30% 12%,rgba(255,255,255,.85),rgba(255,255,255,0) 55%),linear-gradient(160deg,var(--pill-red-bg),rgba(225,29,72,.26));box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -4px 8px rgba(190,18,60,.18),inset 0 0 0 1px rgba(225,29,72,.2)}
+html[data-theme="dark"] .cb.b .c,html[data-theme="dark"] .cb.r .c{background-blend-mode:normal}
+.cb:disabled .c{box-shadow:inset 0 1px 0 var(--hl-soft)}
+/* kartadagi cho'ziq tugmalar */
+.ticket .pill-green{background:linear-gradient(180deg,#34d17a,#16a34a 60%,#0f8a3c)!important;box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -3px 6px rgba(0,70,25,.25),inset 0 0 0 1px rgba(255,255,255,.15)!important}
+.ticket .pill-blue{background:linear-gradient(180deg,rgba(255,255,255,.7),var(--pill-blue-bg))!important;box-shadow:inset 0 1.5px 0 var(--hl),inset 0 0 0 1px rgba(42,123,234,.22)!important}
+.ticket .pill-red{background:linear-gradient(180deg,rgba(255,255,255,.7),var(--pill-red-bg))!important;box-shadow:inset 0 1.5px 0 var(--hl),inset 0 0 0 1px rgba(225,29,72,.2)!important}
+html[data-theme="dark"] .ticket .pill-blue,html[data-theme="dark"] .ticket .pill-red{background-image:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0))!important;background-color:var(--pill-blue-bg)!important}
+html[data-theme="dark"] .ticket .pill-red{background-color:var(--pill-red-bg)!important}
+/* asosiy tugmalar */
+.btn:not(.btn-secondary):not(.btn-logout),.big-btn.primary,.duration-btn.active,.fab{box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -3px 7px rgba(5,25,80,.28),inset 0 0 0 1px rgba(255,255,255,.14),0 6px 16px rgba(10,74,158,.25)}
+.btn-secondary{box-shadow:inset 0 1.5px 0 var(--hl-soft)}
+/* tepa/yon kichik tugmalar */
+.icon-btn{background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.1))!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),inset 0 -2px 5px rgba(0,0,40,.18),inset 0 0 0 1px rgba(255,255,255,.2)!important}
+.bar-btn,.filter-btn,.search-box .icon-btn2{background:linear-gradient(180deg,var(--hl),var(--surface-2))!important;box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -2px 5px var(--sh-in),inset 0 0 0 1px var(--border)!important}
+html[data-theme="dark"] .bar-btn,html[data-theme="dark"] .filter-btn{background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02))!important}
+.modal-x{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(225,29,72,.16));box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -2px 4px rgba(190,18,60,.16),inset 0 0 0 1px rgba(225,29,72,.22)}
+html[data-theme="dark"] .modal-x{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(251,113,133,.14))}
+/* pastki menyu */
+.bottom-nav{box-shadow:var(--sh-3),inset 0 1.5px 0 var(--hl),inset 0 -2px 6px var(--sh-in)}
+.nav-ind{background:linear-gradient(180deg,rgba(255,255,255,.65),var(--active-bg));box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -2px 6px rgba(10,74,158,.14),inset 0 0 0 1px rgba(42,123,234,.22)}
+html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,255,.16),var(--active-bg))}
+@media (min-width:1000px){.bottom-nav{box-shadow:none}}
+/* bosilganda */
+.cb:active .c,.bar-btn:active,.filter-btn:active,.icon-btn:active,.modal-x:active{filter:brightness(1.06)}
 </style>
 </head>
 <body>
