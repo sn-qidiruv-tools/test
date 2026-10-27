@@ -1146,6 +1146,16 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
 /* bosilganda */
 .cb:active .c,.bar-btn:active,.filter-btn:active,.icon-btn:active,.modal-x:active{filter:brightness(1.06)}
 .overlay.warm{visibility:visible!important;opacity:0!important;transition:none!important;pointer-events:none!important}.overlay.warm .modal,.overlay.warm .map-modal{transition:none!important}
+
+.cb.y .c{color:#b45309;background:radial-gradient(90% 70% at 30% 12%,rgba(255,255,255,.85),rgba(255,255,255,0) 55%),linear-gradient(160deg,#fef3c7,rgba(245,158,11,.38));box-shadow:inset 0 1.5px 0 var(--hl),inset 0 -4px 8px rgba(180,83,9,.2),inset 0 0 0 1px rgba(217,119,6,.28)}
+html[data-theme="dark"] .cb.y .c{color:#fbbf24;background:radial-gradient(90% 70% at 30% 12%,rgba(255,255,255,.2),rgba(255,255,255,0) 55%),linear-gradient(160deg,rgba(245,158,11,.28),rgba(120,70,10,.5))}
+
+/* Kartaning o'ng ustunidagi dumaloq tugmalar */
+.side-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+.cb.sm{min-width:0;flex:none;font-size:10.5px;gap:4px;text-decoration:none;color:var(--text-secondary)}
+.cb.sm .c{width:44px;height:44px}
+.cb.sm .c svg{width:20px;height:20px}
+a.cb{-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -1233,7 +1243,7 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
         </div>
       </div>
 
-      <div class="page-bar" id="pageBar" style="display:none"><div class="page-bar-title" id="pageBarTitle">Mening</div><div class="page-bar-actions"><button class="bar-btn" data-bell type="button" title="Xabarlar" style="display:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="bell-count">0</span></button><button class="bar-btn" data-refresh type="button" title="Yangilash"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button></div></div>
+      <div class="page-bar" id="pageBar" style="display:none"><div class="page-bar-title" id="pageBarTitle">Olingan</div><div class="page-bar-actions"><button class="bar-btn" data-bell type="button" title="Xabarlar" style="display:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="bell-count">0</span></button><button class="bar-btn" data-refresh type="button" title="Yangilash"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button></div></div>
 
       <div class="stat-strip" id="statStrip">
         <div class="stat-box b1">
@@ -1356,8 +1366,8 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
       Sklad
     </button>
     <button class="nav-btn" id="navMening">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.4 14.5 16 10 4 20"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M19 3v6M22 6h-6"/></svg>
-      Mening
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>
+      Olingan
       <span class="count" id="meningCount" style="display:none">0</span>
     </button>
     <button class="nav-btn" id="navTarix">
@@ -1584,7 +1594,7 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
 <div class="overlay" id="ornatishBekorOverlay">
   <div class="modal">
     <h2>O'rnatishni bekor qilish</h2>
-    <p class="modal-sub">Qurilma o'rnatgan xodimning "Mening" bo'limiga qaytadi, Telegram xabari ham yangilanadi.</p>
+    <p class="modal-sub">Qurilma o'rnatgan xodimning "Olingan" bo'limiga qaytadi, Telegram xabari ham yangilanadi.</p>
     <div class="field"><label>Sabab</label><input type="text" id="ornatishBekorSabab" placeholder="Masalan: noto'g'ri manzilga o'rnatilgan"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" id="ornatishBekorCancel">Bekor qilish</button>
@@ -2329,7 +2339,7 @@ function showPanel(name){
   document.getElementById('topBar').style.display = name==='sklad' ? '' : 'none';
   const pb = document.getElementById('pageBar');
   pb.style.display = name==='sklad' ? 'none' : '';
-  document.getElementById('pageBarTitle').textContent = ({mening:'Mening', tarix:'Tarix', xabarlar:'Xabarlar', profil:'Profil'})[name] || '';
+  document.getElementById('pageBarTitle').textContent = ({mening:'Olingan', tarix:'Tarix', xabarlar:'Xabarlar', profil:'Profil'})[name] || '';
   updateFab();
   LIM.sklad = LIM.mening = LIM.tarix = STEP;
   requestAnimationFrame(()=>{ if(window.moveNavInd) moveNavInd(true); });
@@ -2406,19 +2416,14 @@ function renderSklad(){
     return `
     <div class="ticket ${deviceIconTone(d.tuman)}">
       <div class="ticket-main">
-        <div class="ticket-icon ${deviceIconTone(d.tuman)}">${DEVICE_ICON_SVG}</div>
         <div class="ticket-body">
           <div class="ticket-code">${escapeHtml(d['S/N']||'')}</div>
           <div class="ticket-sub">${escapeHtml(d.marka||'')}</div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="badge badge-tuman${tumanCls}">${tumanLabel(d.tuman)}</span>${canTake ? '' : `<span class="ticket-sub" style="font-size:11.5px">Boshqa tumanga tegishli</span>`}</div>
         </div>
-        <div class="ticket-badges">
-          <span class="badge badge-tuman${tumanCls}">${tumanLabel(d.tuman)}</span>
+        <div class="ticket-badges side-col" style="align-self:center">
+          ${canTake ? cbBtn('g sm','check','Olish',"openOlish('"+encodeURIComponent(d['S/N'])+"')") : ''}
         </div>
-      </div>
-      <div class="action-row">
-        ${canTake
-          ? `<button class="pill-btn pill-green" onclick="openOlish('${encodeURIComponent(d['S/N'])}')">${ico('check')} Olish</button>`
-          : `<div class="ticket-sub" style="padding:0 0 4px">Bu qurilma boshqa tumanga tegishli</div>`}
       </div>
     </div>`;
   });
@@ -2540,11 +2545,6 @@ function renderMening(){
     const muddatPending = !!(latestMuddat && (latestMuddat.holat||'').trim() === 'kutilmoqda');
     const muddatRejected = !!(latestMuddat && (latestMuddat.holat||'').trim() === 'rad etilgan');
     let muddatBtnHtml = '';
-    if(isOwner && !isAdmin && !expired){
-      muddatBtnHtml = `<button class="badge-icon-btn${muddatPending?' pending':''}" ${muddatPending?'disabled':''} title="${muddatPending?"Muddat so'rovi kutilmoqda":"Muddat qo'shishni so'rash"}" onclick="openSorov('${encodeURIComponent(d['S/N'])}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      </button>`;
-    }
 
     // --- Qaytarish: admin uchun bevosita amal, xodim uchun so'rov (faqat faol qurilmada) ---
     const latestReturn = (isOwner && !expired) ? getLatestRequest(d['S/N'], 'qaytarish') : null;
@@ -2580,6 +2580,7 @@ function renderMening(){
       actionsHtml = `
       <div class="action-row cb-row">
         ${cbBtn('g','check',"O'rnatish","openInstall('"+encodeURIComponent(d['S/N'])+"')",returnPending)}
+        ${cbBtn('y',muddatPending?'hour':'clock',muddatPending?'Kutilmoqda':"Muddat so'rash","openSorov('"+encodeURIComponent(d['S/N'])+"')",muddatPending)}
         ${cbBtn('r',returnPending?'hour':'back',returnPending?'Yuborilgan':'Qaytarish',"qaytarish('"+encodeURIComponent(d['S/N'])+"')",returnPending)}
       </div>`;
     }
@@ -3489,15 +3490,12 @@ function renderTarix(){
   if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${filterActive ? "Topilmadi" : (isAdmin ? "Hali hech qanday qurilma o'rnatilmagan" : "Siz hali hech narsa o'rnatmagansiz")}</div>`; return; }
   setListHTML(el, 'tarix', list, d => {
     const mapLinkHtml = d.Lokatsiya
-      ? `<a class="pill-btn pill-blue compact" href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank">${ico('map')} Xaritadan ko'rish</a>`
+      ? `<a class="cb b sm" href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank" rel="noopener"><span class="c"><span class="ring"></span>${ico('map',20)}</span>Xarita</a>`
       : '';
-    const cancelBtnHtml = isAdmin
-      ? `<button class="pill-btn pill-red compact" onclick="openOrnatishBekor('${encodeURIComponent(d['S/N'])}')">${ico('back')} Bekor qilish</button>`
-      : '';
+    const cancelBtnHtml = isAdmin ? cbBtn('r sm','back','Bekor',"openOrnatishBekor('"+encodeURIComponent(d['S/N'])+"')") : '';
     return `
     <div class="ticket tone-d">
       <div class="ticket-main">
-        <div class="ticket-icon tone-d">${DEVICE_ICON_SVG}</div>
         <div class="ticket-body">
           <div class="ticket-code">${escapeHtml(d['S/N']||'')}</div>
           <div class="ticket-sub">${escapeHtml(d.marka||'')} · ${escapeHtml(d.manzil||'')}</div>
@@ -3512,11 +3510,11 @@ function renderTarix(){
             ${d.Lokatsiya ? `<span>${ico('pin',13)} ${escapeHtml(d.Lokatsiya)}</span>` : ''}
           </div>
         </div>
-        <div class="ticket-badges">
+        <div class="ticket-badges side-col">
           <span class="badge badge-tuman${normalizeTuman(d.tuman)==='kogon'?' kogon':''}">${tumanLabel(d.tuman)}</span>
+          ${mapLinkHtml}${cancelBtnHtml}
         </div>
       </div>
-      ${(mapLinkHtml || cancelBtnHtml) ? `<div class="action-row">${mapLinkHtml}${cancelBtnHtml}</div>` : ''}
     </div>`;
   });
 }
