@@ -1145,6 +1145,7 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
 @media (min-width:1000px){.bottom-nav{box-shadow:none}}
 /* bosilganda */
 .cb:active .c,.bar-btn:active,.filter-btn:active,.icon-btn:active,.modal-x:active{filter:brightness(1.06)}
+.overlay.warm{visibility:visible!important;opacity:0!important;transition:none!important;pointer-events:none!important}.overlay.warm .modal,.overlay.warm .map-modal{transition:none!important}
 </style>
 </head>
 <body>
@@ -1160,27 +1161,34 @@ html[data-theme="dark"] .nav-ind{background:linear-gradient(180deg,rgba(255,255,
 (function(){
   const sp=document.getElementById('splash'), fill=document.getElementById('splashFill'), base=document.getElementById('splashBase'), pct=document.getElementById('splashPct');
   fill.src=base.src; document.documentElement.style.setProperty('--logo-url','url('+base.src+')');
-  const t0=performance.now(); let ready=false, hooked=false, v=0, done=false;
+  const DUR=2000, t0=performance.now(); let done=false;
   document.documentElement.classList.add('splash-on');
-  function hook(){
-    if(hooked || !window.__refreshDone) return; hooked=true;
-    Promise.race([window.__refreshDone, new Promise(r=>setTimeout(r,3500))]).then(()=>{ ready=true; });
-  }
   function finish(){
     if(done) return; done=true;
     sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),300);
+    setTimeout(warmUp, 350);
   }
   function tick(now){
-    hook();
-    const el=now-t0;
-    // Haqiqiy yuklanishga bog'langan: ma'lumot kelguncha ~90% da kutadi, kelishi bilan tez 100% ga chiqadi
-    let target = ready && el>450 ? 1 : Math.min(.9, el/1300*.9);
-    if(!hooked && el>1500) hook();
-    v += Math.max((target-v)*.2, target>v?.004:0); if(v>target) v=target;
-    fill.style.clipPath='inset(0 '+(100-100*v).toFixed(1)+'% 0 0)';
-    pct.textContent=Math.round(v*100);
-    if(ready && v>=.995){ fill.style.clipPath='inset(0 0 0 0)'; pct.textContent=100; setTimeout(finish,60); return; }
-    requestAnimationFrame(tick);
+    const p=Math.min(1,(now-t0)/DUR);   // 2 soniyada 0→100
+    const e = p*(0.6+0.4*p);
+    fill.style.clipPath='inset(0 '+(100-100*e).toFixed(1)+'% 0 0)';
+    pct.textContent=Math.round(e*100);
+    if(p<1) requestAnimationFrame(tick); else setTimeout(finish,60);
+  }
+  // Birinchi bosishdagi qotishni oldini olish: bo'limlar va oynalarni oldindan "isitib" qo'yamiz
+  function warmUp(){
+    const run = ()=>{
+      try{
+        if(typeof currentUser!=='undefined' && currentUser){
+          try{ renderSklad(); }catch(e){} try{ renderMening(); }catch(e){} try{ renderTarix(); }catch(e){}
+          try{ if(typeof renderXabarlar==='function') renderXabarlar(); }catch(e){} try{ if(typeof renderProfil==='function') renderProfil(); }catch(e){}
+        }
+        const ovs=[...document.querySelectorAll('.overlay:not(.show)')];
+        ovs.forEach(o=>o.classList.add('warm'));
+        requestAnimationFrame(()=>requestAnimationFrame(()=>ovs.forEach(o=>o.classList.remove('warm'))));
+      }catch(e){}
+    };
+    if('requestIdleCallback' in window) requestIdleCallback(run,{timeout:1200}); else setTimeout(run,300);
   }
   requestAnimationFrame(tick);
 })();
