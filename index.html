@@ -1171,6 +1171,26 @@ html[data-theme="dark"] .seg-btn.active{color:#8db8ff}
 .cb.lg{min-width:0;flex:none;font-size:12.5px;gap:5px}
 .cb.lg .c{width:62px;height:62px}
 .cb.lg .c svg{width:27px;height:27px}
+
+/* Xarita rejimi: qidiruv yo'q, faqat filter; xarita pastki menyuni to'smaydi */
+#panelTarix.map-view .search-box{background:none!important;border:none!important;box-shadow:none!important;padding:0;margin:0 0 8px;justify-content:flex-end}
+#panelTarix.map-view .search-box .search-icon,#panelTarix.map-view #tarixSearch,#panelTarix.map-view #tarixSearchClear{display:none!important}
+#panelTarix.map-view .section-title{display:none}
+#panelTarix.map-view .seg{margin-bottom:8px}
+#allDevicesMap{height:auto;min-height:0}
+#tarixMapWrap .all-map-legend{margin-top:6px}
+.cb.lg .c{width:54px;height:54px}
+.cb.lg .c svg{width:24px;height:24px}
+/* Sklad: tepadagi ko'k hudud kichikroq */
+.top-bar{padding:calc(7px + env(safe-area-inset-top)) 14px 24px}
+.top-bar-logo{padding:4px 8px}
+.top-bar-logo .brand-logo{width:62px}
+.stat-strip{margin:-17px 0 12px;gap:7px}
+.stat-box{padding:7px 8px;gap:8px}
+.stat-box .stat-icon{width:28px;height:28px;border-radius:9px}
+.stat-box .num{font-size:17px}
+.stat-box .lbl{font-size:10px;margin-top:2px}
+@media (min-width:1000px){.top-bar{padding:16px 30px 44px}.stat-strip{margin:-30px 28px 22px}.stat-box{padding:12px 16px}.stat-box .num{font-size:24px}.top-bar-logo .brand-logo{width:90px}}
 </style>
 </head>
 <body>
@@ -3510,7 +3530,7 @@ function renderTarix(){
   if(list.length === 0){ el.innerHTML = `<div class="empty-msg">${filterActive ? "Topilmadi" : (isAdmin ? "Hali hech qanday qurilma o'rnatilmagan" : "Siz hali hech narsa o'rnatmagansiz")}</div>`; return; }
   setListHTML(el, 'tarix', list, d => {
     const mapLinkHtml = d.Lokatsiya
-      ? `<a class="cb b sm" href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank" rel="noopener"><span class="c"><span class="ring"></span>${GM_ICON(20)}</span>Xarita</a>`
+      ? cbBtn('b sm', 'map', 'Xarita', "focusOnMap('"+encodeURIComponent(d['S/N'])+"')").replace(/<svg[\s\S]*?<\/svg>/, GM_ICON(20))
       : '';
     const cancelBtnHtml = isAdmin ? cbBtn('r sm','back','Bekor',"openOrnatishBekor('"+encodeURIComponent(d['S/N'])+"')") : '';
     return `
@@ -3564,7 +3584,24 @@ function tarixFilteredList(){
   return list;
 }
 
-let tarixView = 'list';
+let tarixView = 'list', mapFocusSeria = null, mapMarkers = {};
+function focusOnMap(seriaEnc){
+  mapFocusSeria = decodeURIComponent(seriaEnc);
+  setTarixView('map');
+  window.scrollTo({top:0});
+}
+window.focusOnMap = focusOnMap;
+function sizeTarixMap(){
+  const m = document.getElementById('allDevicesMap'); if(!m || document.getElementById('tarixMapWrap').style.display==='none') return;
+  const nav = document.getElementById('bottomNav');
+  const navTop = (nav && getComputedStyle(nav).position==='fixed' && nav.offsetHeight && nav.getBoundingClientRect().left<50 && nav.offsetWidth>300) ? nav.getBoundingClientRect().top : window.innerHeight;
+  const top = m.getBoundingClientRect().top;
+  const leg = document.getElementById('allMapLegend').offsetHeight || 0;
+  const h = Math.max(280, navTop - top - leg - 14);
+  m.style.height = h + 'px';
+  if(allMapInstance) allMapInstance.invalidateSize();
+}
+window.addEventListener('resize', ()=>sizeTarixMap());
 function openAllDevicesMap(){
   document.getElementById('allMapHint').textContent = 'Xarita yuklanmoqda...';
   ensureLeafletLoaded().then(initAllDevicesMap).catch(err=>{ toast(err.message, 'error'); });
@@ -3576,6 +3613,7 @@ function setTarixView(v){
   placeSeg();
   document.getElementById('tarixResults').style.display = v==='list' ? '' : 'none';
   document.getElementById('tarixMapWrap').style.display = v==='map' ? 'block' : 'none';
+  document.getElementById('panelTarix').classList.toggle('map-view', v==='map');
   if(v==='map') openAllDevicesMap(); else renderTarix();
 }
 document.querySelectorAll('#tarixSeg .seg-btn').forEach(b=> b.addEventListener('click', ()=>setTarixView(b.dataset.view)));
@@ -3583,6 +3621,8 @@ window.addEventListener('resize', ()=>{ const ab=document.querySelector('#tarixS
 
 function initAllDevicesMap(){
   setTimeout(()=>{
+    sizeTarixMap();
+    mapMarkers = {};
     if(!allMapInstance){
       allMapInstance = L.map('allDevicesMap').setView(DEFAULT_CENTER, 12);
       const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -3617,14 +3657,16 @@ function initAllDevicesMap(){
         ${escapeHtml(d.Ism||d.login||'')} · ${escapeHtml(d.sana||'')}<br>
         <a href="https://www.google.com/maps?q=${encodeURIComponent(d.Lokatsiya)}" target="_blank" rel="noopener">Google Maps'da ochish</a>
       </div>`;
-      L.circleMarker(ll, { radius: 8, color: '#ffffff', weight: 2, fillColor: color, fillOpacity: 0.95 })
+      const mk = L.circleMarker(ll, { radius: 8, color: '#ffffff', weight: 2, fillColor: color, fillOpacity: 0.95 })
         .bindPopup(popup)
         .bindTooltip(String(d['S/N']||''), { direction: 'top', offset: [0,-6] })
         .addTo(allMapLayer);
+      mapMarkers[d['S/N']] = mk;
       bounds.push(ll);
     });
 
-    if(bounds.length === 1) allMapInstance.setView(bounds[0], 16);
+    if(mapFocusSeria && mapMarkers[mapFocusSeria]){ const mk = mapMarkers[mapFocusSeria]; allMapInstance.setView(mk.getLatLng(), 18); setTimeout(()=>mk.openPopup(), 250); mapFocusSeria = null; }
+    else if(bounds.length === 1) allMapInstance.setView(bounds[0], 16);
     else if(bounds.length > 1) allMapInstance.fitBounds(bounds, { padding: [30,30], maxZoom: 17 });
     else allMapInstance.setView(DEFAULT_CENTER, 12);
 
@@ -3633,6 +3675,7 @@ function initAllDevicesMap(){
       : (list.length ? "Bu qurilmalarda joylashuv saqlanmagan." : "Ko'rsatish uchun o'rnatilgan qurilma yo'q.");
     document.getElementById('allMapLegend').innerHTML = Object.values(tumanColor)
       .map(t => `<span><i style="background:${t.color}"></i>${escapeHtml(t.label)}</span>`).join('');
+    sizeTarixMap();
   }, 50);
 }
 
