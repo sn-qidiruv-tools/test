@@ -1216,6 +1216,25 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 .vt-circle::view-transition-old(root),.vt-circle::view-transition-new(root){animation:none;mix-blend-mode:normal}
 .vt-circle::view-transition-old(root){z-index:1}
 .vt-circle::view-transition-new(root){z-index:2}
+
+/* ---------- Ovalroq kartalar ---------- */
+.ticket{border-radius:28px}
+.ticket::before{top:22px;bottom:22px}
+.ticket-main{padding-left:22px}
+.sorov-card{border-radius:26px}
+.profile-card,.info-card,.settings-card{border-radius:28px}
+.stat-box{border-radius:22px}
+.search-box{border-radius:22px}
+.seg{border-radius:20px}.seg-ind{border-radius:16px}
+.theme-seg.seg{border-radius:20px}
+.empty-msg{border-radius:26px}
+/* ---------- Skaner tugmasi ustidagi strelka (3 marta bosilguncha) ---------- */
+[data-scan="sklad"]{position:relative;overflow:visible}
+.scan-arrow{position:absolute;left:50%;top:-25px;width:22px;height:22px;margin-left:-11px;color:var(--blue-2);pointer-events:none;z-index:3;animation:scanArrow 1s ease-in-out infinite}
+.scan-arrow svg{width:22px;height:22px;display:block;filter:drop-shadow(0 1px 2px rgba(10,74,158,.35))}
+@keyframes scanArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.scan-arrow{animation:none}}
+#panelSklad .search-box{overflow:visible}
 </style>
 </head>
 <body>
@@ -4266,6 +4285,20 @@ initApp();
     if('ResizeObserver' in window) new ResizeObserver(()=>place(seg)).observe(seg);
     new MutationObserver(()=>place(seg)).observe(seg, { attributes:true, subtree:true, attributeFilter:['class'] });
     place(seg);
+  });
+})();
+
+// ===== Skaner tugmasi: 3 marta bosilmaguncha ustida qimirlab turuvchi strelka =====
+(function(){
+  const KEY='sklad_scan_n'; let n=0;
+  try{ n = parseInt(localStorage.getItem(KEY)||'0',10) || 0; }catch(e){}
+  const btn = document.querySelector('[data-scan="sklad"]'); if(!btn || n>=3) return;
+  const a = document.createElement('span'); a.className='scan-arrow'; a.setAttribute('aria-hidden','true');
+  a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14"/><path d="m6 13 6 6 6-6"/></svg>';
+  btn.appendChild(a);
+  btn.addEventListener('click', ()=>{
+    n++; try{ localStorage.setItem(KEY, String(n)); }catch(e){}
+    if(n>=3) a.remove();
   });
 })();
 </script>
