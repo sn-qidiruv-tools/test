@@ -1157,26 +1157,6 @@ html[data-theme="dark"] .cb.y .c{color:#fbbf24;background:radial-gradient(90% 70
 .cb.sm .c svg{width:20px;height:20px}
 a.cb{-webkit-tap-highlight-color:transparent}
 
-/* ===== OLISH: iOS "surib javob berish" uslubidagi tugma ===== */
-.swp-col{margin-left:auto;align-items:flex-end}
-.swp{--p:0;position:relative;width:142px;height:52px;flex:none;border-radius:26px;overflow:hidden;user-select:none;-webkit-user-select:none;
-  background:linear-gradient(100deg,var(--btn-a),var(--btn-b));box-shadow:0 6px 16px rgba(10,74,158,.28),inset 0 0 0 1px rgba(255,255,255,.14)}
-.swp::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.22);transform-origin:left;transform:scaleX(var(--p));pointer-events:none}
-.swp-txt{position:absolute;inset:0;padding-left:52px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;letter-spacing:.01em;color:#fff;
-  opacity:calc(1 - var(--p) * 1.7);pointer-events:none}
-.swp-knob{position:absolute;left:4px;top:4px;width:44px;height:44px;border-radius:50%;border:0;padding:0;background:#fff;color:var(--btn-a);
-  display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:pan-y;box-shadow:0 3px 8px rgba(0,20,60,.3);-webkit-appearance:none;appearance:none}
-.swp-knob:active{cursor:grabbing}
-.swp-knob:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:2px}
-.swp:not(.drag) .swp-knob{transition:transform .32s var(--spring)}
-.swp:not(.drag)::before{transition:transform .32s var(--spring)}
-.swp.nudge .swp-knob{animation:swpNudge .7s ease}
-.swp.done .swp-knob{color:var(--ok)}
-@keyframes swpNudge{0%,100%{transform:translateX(0)}35%{transform:translateX(26px)}65%{transform:translateX(8px)}}
-@keyframes swpShine{0%{background-position:150% 0}100%{background-position:-50% 0}}
-#skladResults .ticket:nth-child(-n+3) .swp-txt{background:linear-gradient(100deg,rgba(255,255,255,.55) 35%,#fff 50%,rgba(255,255,255,.55) 65%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:swpShine 2.6s linear infinite}
-@media (prefers-reduced-motion:reduce){#skladResults .ticket .swp-txt{animation:none!important;background:none;-webkit-text-fill-color:#fff}.swp.nudge .swp-knob{animation:none}}
-html[data-theme="dark"] .swp{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
 .gm-ic{display:block;flex:none}
 </style>
 </head>
@@ -1821,7 +1801,8 @@ const ICONS = {
   fwd:'<path d="M15 4l5 5-5 5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/>',
   unlock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
   hour:'<path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/>',
-  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>'
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+  down:'<path d="M12 5v13"/><path d="m6 13 6 6 6-6"/>'
 };
 let _gmN = 0;
 function GM_ICON(size){ const id='g'+(++_gmN); return '<svg class="gm-ic" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="gmP'+id+'"><path d="M12 1.6c-4.2 0-7.6 3.3-7.6 7.5 0 5.4 6.2 11.6 7 12.5.3.3.8.3 1.1 0 .8-.9 7-7.1 7-12.5 0-4.2-3.4-7.5-7.5-7.5z"/></clipPath></defs><g clip-path="url(#gmP'+id+')"><rect x="0" y="0" width="12" height="11" fill="#4285F4"/><rect x="12" y="0" width="12" height="9" fill="#EA4335"/><rect x="12" y="9" width="12" height="15" fill="#FBBC04"/><rect x="0" y="11" width="12" height="13" fill="#34A853"/></g><circle cx="12" cy="9.2" r="3" fill="#fff"/></svg>'; }
@@ -2424,49 +2405,7 @@ document.addEventListener('click', e=>{
   arm();
 })();
 
-// ===== Olish: o'ngga surish (iOS uslubida) =====
-(function(){
-  let drag = null;
-  function reset(sw, k){ sw.classList.remove('drag','done'); k.style.transform=''; sw.style.setProperty('--p','0'); }
-  document.addEventListener('pointerdown', e=>{
-    const k = e.target.closest && e.target.closest('.swp-knob'); if(!k) return;
-    const sw = k.parentNode; if(sw.classList.contains('done')) return;
-    drag = { k, sw, id:e.pointerId, x0:e.clientX, dx:0, max: Math.max(1, sw.clientWidth - k.offsetWidth - 8), moved:false };
-    sw.classList.add('drag');
-    try{ k.setPointerCapture(e.pointerId); }catch(_){}
-  });
-  document.addEventListener('pointermove', e=>{
-    if(!drag || e.pointerId !== drag.id) return;
-    drag.dx = Math.max(0, Math.min(drag.max, e.clientX - drag.x0));
-    if(drag.dx > 4) drag.moved = true;
-    drag.k.style.transform = 'translateX(' + drag.dx + 'px)';
-    drag.sw.style.setProperty('--p', (drag.dx / drag.max).toFixed(3));
-  });
-  function end(e){
-    if(!drag || e.pointerId !== drag.id) return;
-    const { k, sw, max, dx } = drag; drag = null;
-    sw.classList.remove('drag');
-    if(e.type === 'pointerup' && dx >= max * 0.8){
-      sw.classList.add('done');
-      k.style.transform = 'translateX(' + max + 'px)'; sw.style.setProperty('--p','1');
-      try{ navigator.vibrate && navigator.vibrate(15); }catch(_){}
-      const seria = sw.dataset.seria;
-      setTimeout(()=>{ openOlish(seria); }, 140);
-      setTimeout(()=> reset(sw, k), 600);
-    } else { reset(sw, k); }
-  }
-  document.addEventListener('pointerup', end);
-  document.addEventListener('pointercancel', end);
-  // Oddiy bosish tasodifan olib qo'ymasin: faqat ishora ko'rsatamiz. Klaviatura (Enter/Space) — to'g'ridan-to'g'ri.
-  document.addEventListener('click', e=>{
-    const k = e.target.closest && e.target.closest('.swp-knob'); if(!k) return;
-    const sw = k.parentNode;
-    if(e.detail === 0){ openOlish(sw.dataset.seria); return; }
-    if(sw.classList.contains('done')) return;
-    sw.classList.remove('nudge'); void sw.offsetWidth; sw.classList.add('nudge');
-    setTimeout(()=> sw.classList.remove('nudge'), 750);
-  });
-})();
+
 function renderSklad(){
   const q = normalize(skladSearch.value.trim());
   let list = sklad.slice();
@@ -2489,8 +2428,8 @@ function renderSklad(){
           <div class="ticket-sub">${escapeHtml(d.marka||'')}</div>
           <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="badge badge-tuman${tumanCls}">${tumanLabel(d.tuman)}</span>${canTake ? '' : `<span class="ticket-sub" style="font-size:11.5px">Boshqa tumanga tegishli</span>`}</div>
         </div>
-        <div class="ticket-badges side-col swp-col" style="align-self:center">
-          ${canTake ? `<div class="swp" data-seria="${encodeURIComponent(d['S/N'])}" role="group" aria-label="Olish uchun o'ngga suring"><span class="swp-txt">Olish</span><button type="button" class="swp-knob" aria-label="Olish — o'ngga suring yoki bosing"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></svg></button></div>` : ''}
+        <div class="ticket-badges side-col" style="align-self:center">
+          ${canTake ? cbBtn('g sm','down','Olish',"openOlish('"+encodeURIComponent(d['S/N'])+"')") : ''}
         </div>
       </div>
     </div>`;
