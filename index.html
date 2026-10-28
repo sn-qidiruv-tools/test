@@ -1230,8 +1230,8 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 .empty-msg{border-radius:26px}
 /* ---------- Skaner tugmasi ustidagi strelka (3 marta bosilguncha) ---------- */
 [data-scan="sklad"]{position:relative;overflow:visible}
-.scan-arrow{position:absolute;left:50%;top:-25px;width:22px;height:22px;margin-left:-11px;color:var(--blue-2);pointer-events:none;z-index:3;animation:scanArrow 1s ease-in-out infinite}
-.scan-arrow svg{width:22px;height:22px;display:block;filter:drop-shadow(0 1px 2px rgba(10,74,158,.35))}
+.scan-arrow{position:absolute;left:50%;top:-25px;width:22px;height:22px;margin-left:-11px;color:#e11d48;pointer-events:none;z-index:3;animation:scanArrow 1s ease-in-out infinite}
+.scan-arrow svg{width:22px;height:22px;display:block;filter:drop-shadow(0 1px 2px rgba(190,18,60,.35))}
 @keyframes scanArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){.scan-arrow{animation:none}}
 #panelSklad .search-box{overflow:visible}
@@ -3369,7 +3369,7 @@ function initLeafletMap(){
         maxZoom: 19, attribution: '© OpenStreetMap'
       }).addTo(leafletMapInstance);
       const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19, attribution: 'Tiles © Esri'
+        maxZoom: 19, maxNativeZoom: 17, attribution: 'Tiles © Esri'
       });
       L.control.layers({ 'Xarita': streetLayer, 'Sputnik': satelliteLayer }, null, { position: 'topright', collapsed: false }).addTo(leafletMapInstance);
       // Masshtab chizg'ich (leneyka) — masofani metr/km da ko'rsatadi.
@@ -3684,7 +3684,7 @@ function initAllDevicesMap(){
         maxZoom: 19, attribution: '© OpenStreetMap'
       }).addTo(allMapInstance);
       const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19, attribution: 'Tiles © Esri'
+        maxZoom: 19, maxNativeZoom: 17, attribution: 'Tiles © Esri'
       });
       L.control.layers({ 'Xarita': streetLayer, 'Sputnik': satelliteLayer }, null, { position: 'topright', collapsed: false }).addTo(allMapInstance);
       L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(allMapInstance);
