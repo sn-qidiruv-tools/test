@@ -1196,6 +1196,14 @@ html[data-theme="dark"] .seg-btn.active{color:#8db8ff}
 #panelTarix.map-view .section-title{max-height:0;opacity:0;margin-top:0;margin-bottom:0}
 #panelTarix .search-box{max-height:90px;transition:max-height .38s var(--ease),opacity .25s ease,margin .38s var(--ease),padding .38s var(--ease)}
 #panelTarix.map-view .search-box{max-height:0;opacity:0;margin:0!important;padding-top:0!important;padding-bottom:0!important;overflow:hidden;pointer-events:none;border-width:0!important}
+
+/* Xarita klasterlari */
+.mc{background:none}
+.mc-in{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;font-family:'Space Grotesk',sans-serif;
+  background:radial-gradient(90% 70% at 30% 15%,rgba(255,255,255,.45),rgba(255,255,255,0) 55%),linear-gradient(160deg,#2a7bea,#0a4a9e);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.6),0 0 0 4px rgba(42,123,234,.28),0 3px 8px rgba(5,26,70,.35)}
+.marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:none}
+.leaflet-cluster-anim .leaflet-marker-icon,.leaflet-cluster-anim .leaflet-marker-shadow{transition:transform .3s ease-out,opacity .3s ease-in}
 </style>
 </head>
 <body>
@@ -1216,7 +1224,7 @@ html[data-theme="dark"] .seg-btn.active{color:#8db8ff}
   function finish(){
     if(done) return; done=true;
     sp.classList.add('hide'); document.documentElement.classList.remove('splash-on'); setTimeout(()=>sp.remove(),300);
-    setTimeout(warmUp, 350);
+    setTimeout(warmUp, 1500);
   }
   function tick(now){
     const p=Math.min(1,(now-t0)/DUR);   // 2 soniyada 0→100
@@ -1227,18 +1235,19 @@ html[data-theme="dark"] .seg-btn.active{color:#8db8ff}
   }
   // Birinchi bosishdagi qotishni oldini olish: bo'limlar va oynalarni oldindan "isitib" qo'yamiz
   function warmUp(){
-    const run = ()=>{
-      try{
-        if(typeof currentUser!=='undefined' && currentUser){
-          try{ renderSklad(); }catch(e){} try{ renderMening(); }catch(e){} try{ renderTarix(); }catch(e){}
-          try{ if(typeof renderXabarlar==='function') renderXabarlar(); }catch(e){} try{ if(typeof renderProfil==='function') renderProfil(); }catch(e){}
-        }
+    const idle = fn => ('requestIdleCallback' in window) ? requestIdleCallback(fn,{timeout:1500}) : setTimeout(fn,200);
+    const steps = [
+      ()=>{ if(typeof currentUser!=='undefined' && currentUser){ try{ renderMening(); }catch(e){} } },
+      ()=>{ if(typeof currentUser!=='undefined' && currentUser){ try{ renderTarix(); }catch(e){} } },
+      ()=>{ if(typeof currentUser!=='undefined' && currentUser){ try{ renderXabarlar(); }catch(e){} try{ renderProfil(); }catch(e){} } },
+      ()=>{
         const ovs=[...document.querySelectorAll('.overlay:not(.show)')];
         ovs.forEach(o=>o.classList.add('warm'));
         requestAnimationFrame(()=>requestAnimationFrame(()=>ovs.forEach(o=>o.classList.remove('warm'))));
-      }catch(e){}
-    };
-    if('requestIdleCallback' in window) requestIdleCallback(run,{timeout:1200}); else setTimeout(run,300);
+      }
+    ];
+    let i=0;
+    (function next(){ if(i>=steps.length) return; const st=steps[i++]; idle(()=>{ try{ st(); }catch(e){} setTimeout(next,250); }); })();
   }
   requestAnimationFrame(tick);
 })();
@@ -3297,7 +3306,13 @@ function ensureLeafletLoaded(){
 
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    script.onload = () => resolve();
+    script.onload = () => {
+      // Klaster plagini — ixtiyoriy: yuklanmasa ham xarita oddiy nuqtalar bilan ishlaydi
+      const css2 = document.createElement('link'); css2.rel='stylesheet'; css2.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css'; document.head.appendChild(css2);
+      const sc2 = document.createElement('script'); sc2.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js';
+      sc2.onload = () => resolve(); sc2.onerror = () => resolve();
+      document.head.appendChild(sc2);
+    };
     script.onerror = () => reject(new Error("Xarita kutubxonasini yuklab bo'lmadi. Internetni tekshiring."));
     document.head.appendChild(script);
   });
@@ -3596,6 +3611,10 @@ function focusOnMap(seriaEnc){
   window.scrollTo({top:0});
 }
 window.focusOnMap = focusOnMap;
+function animateSizeMap(ms){
+  const t0 = performance.now();
+  (function f(now){ sizeTarixMap(); if((now||performance.now()) - t0 < ms) requestAnimationFrame(f); })(t0);
+}
 function sizeTarixMap(){
   const m = document.getElementById('allDevicesMap'); if(!m || document.getElementById('tarixMapWrap').style.display==='none') return;
   const nav = document.getElementById('bottomNav');
@@ -3604,7 +3623,7 @@ function sizeTarixMap(){
   const leg = document.getElementById('allMapLegend').offsetHeight || 0;
   const h = Math.max(280, navTop - top - leg - 14);
   m.style.height = h + 'px';
-  if(allMapInstance) allMapInstance.invalidateSize();
+  if(allMapInstance) allMapInstance.invalidateSize({ pan:false, animate:false });
 }
 window.addEventListener('resize', ()=>sizeTarixMap());
 function openAllDevicesMap(){
@@ -3619,7 +3638,7 @@ function setTarixView(v){
   document.getElementById('tarixResults').style.display = v==='list' ? '' : 'none';
   document.getElementById('tarixMapWrap').style.display = v==='map' ? 'block' : 'none';
   document.getElementById('panelTarix').classList.toggle('map-view', v==='map');
-  if(v==='map'){ openAllDevicesMap(); setTimeout(sizeTarixMap, 420); } else renderTarix();
+  if(v==='map'){ openAllDevicesMap(); animateSizeMap(480); } else renderTarix();
 }
 document.querySelectorAll('#tarixSeg .seg-btn').forEach(b=> b.addEventListener('click', ()=>setTarixView(b.dataset.view)));
 window.addEventListener('resize', ()=>{ const ab=document.querySelector('#tarixSeg .seg-btn.active'), ind=document.getElementById('tarixSegInd'); if(ab&&ab.offsetWidth){ ind.style.width=ab.offsetWidth+'px'; ind.style.transform='translateX('+ab.offsetLeft+'px)'; }});
@@ -3638,7 +3657,13 @@ function initAllDevicesMap(){
       });
       L.control.layers({ 'Xarita': streetLayer, 'Sputnik': satelliteLayer }, null, { position: 'topright', collapsed: false }).addTo(allMapInstance);
       L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(allMapInstance);
-      allMapLayer = L.layerGroup().addTo(allMapInstance);
+      allMapLayer = (L.markerClusterGroup
+        ? L.markerClusterGroup({
+            maxClusterRadius: 55, showCoverageOnHover: false, spiderfyOnMaxZoom: true, disableClusteringAtZoom: 18, chunkedLoading: true,
+            iconCreateFunction: c => { const n = c.getChildCount(); const sz = n<10 ? 38 : n<100 ? 44 : 50;
+              return L.divIcon({ html:'<div class="mc-in">'+n+'</div>', className:'mc', iconSize:[sz,sz] }); }
+          })
+        : L.layerGroup()).addTo(allMapInstance);
     } else {
       allMapInstance.invalidateSize();
       allMapLayer.clearLayers();
@@ -3670,7 +3695,7 @@ function initAllDevicesMap(){
       bounds.push(ll);
     });
 
-    if(mapFocusSeria && mapMarkers[mapFocusSeria]){ const mk = mapMarkers[mapFocusSeria]; allMapInstance.setView(mk.getLatLng(), 18); setTimeout(()=>mk.openPopup(), 250); mapFocusSeria = null; }
+    if(mapFocusSeria && mapMarkers[mapFocusSeria]){ const mk = mapMarkers[mapFocusSeria]; allMapInstance.setView(mk.getLatLng(), 18); if(allMapLayer.zoomToShowLayer){ allMapLayer.zoomToShowLayer(mk, ()=>mk.openPopup()); } else { setTimeout(()=>mk.openPopup(), 300); } mapFocusSeria = null; }
     else if(bounds.length === 1) allMapInstance.setView(bounds[0], 16);
     else if(bounds.length > 1) allMapInstance.fitBounds(bounds, { padding: [30,30], maxZoom: 17 });
     else allMapInstance.setView(DEFAULT_CENTER, 12);
