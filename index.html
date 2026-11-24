@@ -1258,6 +1258,24 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 .upload-slot>span:not(.req):not(.opt){margin:0!important;position:static!important}
 .upload-slot>svg{margin:0 auto;display:block}
 .upload-slot>span:not(.req):not(.opt){display:block;width:100%;text-align:center;line-height:1.2}
+
+/* ===== Qurilma kartasi ketayotganda: yashil yonadi, belgi chiqadi, keyin siljib yo'qoladi ===== */
+.ticket.ghost-out{pointer-events:none;position:relative;content-visibility:visible!important;animation:ghostOut 1.25s cubic-bezier(.4,0,.2,1) forwards;--gc:34,197,94}
+.ticket.ghost-out::before{content:'';position:absolute;inset:0;border-radius:inherit;background:rgba(var(--gc),.14);animation:ghostTint 1.25s ease forwards;z-index:1}
+.gh-badge{position:absolute;left:50%;top:50%;z-index:3;display:flex;align-items:center;gap:8px;padding:10px 18px 10px 12px;border-radius:100px;font-weight:800;font-size:14px;color:#fff;
+  background:linear-gradient(160deg,rgb(var(--gc)),rgba(var(--gc),.78));box-shadow:0 8px 22px rgba(var(--gc),.45),inset 0 1.5px 0 rgba(255,255,255,.5);
+  transform:translate(-50%,-50%) scale(0);animation:ghostBadge 1.25s cubic-bezier(.34,1.45,.5,1) forwards;white-space:nowrap}
+.gh-badge svg{width:22px;height:22px;background:rgba(255,255,255,.25);border-radius:50%;padding:3px}
+@keyframes ghostTint{0%{opacity:0}18%,60%{opacity:1}100%{opacity:0}}
+@keyframes ghostBadge{0%{transform:translate(-50%,-50%) scale(0)}20%{transform:translate(-50%,-50%) scale(1.12)}32%{transform:translate(-50%,-50%) scale(1)}62%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.8);opacity:0}}
+@keyframes ghostOut{
+  0%{transform:none;opacity:1;max-height:var(--gh,160px);margin-bottom:12px}
+  16%{transform:scale(1.02);box-shadow:0 0 0 3px rgba(var(--gc),.7)}
+  34%{transform:scale(1);box-shadow:0 0 0 3px rgba(var(--gc),.55)}
+  60%{transform:translateX(0);opacity:1;max-height:var(--gh,160px);margin-bottom:12px}
+  100%{transform:translateX(70%) scale(.92);opacity:0;max-height:0;margin-bottom:0;border-width:0;box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){.ticket.ghost-out{animation-duration:.5s}}
 </style>
 </head>
 <body>
@@ -4353,6 +4371,61 @@ initApp();
     n++; try{ localStorage.setItem(KEY, String(n)); }catch(e){}
     if(n>=3) a.remove();
   });
+})();
+
+// ===== Qurilma kartasi birdan yo'qolib qolmasin: harakat tasdiqlanganda karta
+// "ketish" animatsiyasini ko'rsatadi (yashil yonadi, belgi chiqadi, siljib yo'qoladi) =====
+(function(){
+  const L = {
+    olishConfirm:{c:'34,197,94', t:{uz:'Olindi',ru:'Получено',en:'Taken'}, v:()=>olishSeria},
+    installConfirm:{c:'34,197,94', t:{uz:'Örnatildi',ru:'Установлено',en:'Installed'}, v:()=>installSeria},
+    faollashtirishConfirm:{c:'34,197,94', t:{uz:'Faollaştirildi',ru:'Активировано',en:'Activated'}, v:()=>faollashtirishSeria},
+    yonaltirishConfirm:{c:'37,99,235', t:{uz:'Yönaltirildi',ru:'Передано',en:'Forwarded'}, v:()=>yonaltirishSeria},
+    qaytarishConfirm:{c:'225,29,72', t:{uz:'Qaytarildi',ru:'Возвращено',en:'Returned'}, v:()=>qaytarishSeria},
+    ornatishBekorConfirm:{c:'225,29,72', t:{uz:'Bekor qilindi',ru:'Отменено',en:'Cancelled'}, v:()=>ornatishBekorSeria}
+  };
+  let act = null;
+  document.addEventListener('click', e=>{
+    const b = e.target.closest && e.target.closest('button[id]'); const d = b && L[b.id];
+    if(!d) return;
+    let key = null; try{ key = d.v(); }catch(_){}
+    if(key) act = { key:String(key), c:d.c, t:d.t[LANG]||d.t.uz, until:performance.now()+1500 };
+  }, true);
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  new MutationObserver(muts=>{
+    if(!act || performance.now() > act.until) return;
+    const jobs = [];
+    muts.forEach(m=>{
+      if(!m.removedNodes.length) return;
+      let idx = 0;
+      m.removedNodes.forEach(n=>{
+        if(n.nodeType !== 1) return;
+        const cards = n.matches && n.matches('.ticket') ? [n] : (n.querySelectorAll ? [...n.querySelectorAll('.ticket')] : []);
+        cards.forEach(c=>{
+          if(c.classList.contains('ghost-out')) return;
+          const code = c.querySelector('.ticket-code'); if(!code || code.textContent.trim() !== act.key) return;
+          jobs.push({ parent:m.target, card:c, idx });
+        });
+        idx++;
+      });
+    });
+    if(!jobs.length) return;
+    const a = act; act = null;
+    jobs.forEach(j=>{
+      const g = j.card.cloneNode(true);
+      // ushbu ro'yxatda yangi karta hali ham bo'lsa (masalan boshqa ro'yxat) — tegmaymiz
+      if([...j.parent.querySelectorAll('.ticket-code')].some(x=>x.textContent.trim() === a.key)) return;
+      g.classList.add('ghost-out'); g.style.setProperty('--gc', a.c);
+      const bd = document.createElement('div'); bd.className = 'gh-badge'; bd.innerHTML = CHECK + '<span></span>'; bd.lastChild.textContent = a.t;
+      g.appendChild(bd);
+      const ref = j.parent.children[Math.min(j.idx, j.parent.children.length)] || null;
+      j.parent.insertBefore(g, ref);
+      g.style.setProperty('--gh', g.offsetHeight + 'px');
+      const done = ()=>{ g.remove(); };
+      g.addEventListener('animationend', ev=>{ if(ev.animationName === 'ghostOut') done(); });
+      setTimeout(done, 1600);
+    });
+  }).observe(document.body, { childList:true, subtree:true });
 })();
 </script>
 </body>
