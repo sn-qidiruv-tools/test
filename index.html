@@ -1238,9 +1238,10 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 
 /* ===== Oynalar: tugmalar doim pastda qimirlamay turadi ===== */
 .modal{max-height:92vh;max-height:92dvh;overscroll-behavior:contain}
-.modal .modal-actions{position:sticky;bottom:0;z-index:6;margin:16px -22px -26px;padding:12px 22px calc(14px + env(safe-area-inset-bottom));
+#installOverlay .modal{padding-bottom:0}
+#installOverlay .modal-actions{position:sticky;bottom:0;z-index:6;margin:16px -22px 0;padding:12px 22px calc(12px + env(safe-area-inset-bottom));
   background:var(--panel);border-top:1px solid var(--border)}
-.modal .modal-actions .btn{flex:1}
+#installOverlay .modal-actions .btn{flex:1}
 .map-modal{height:min(94vh,720px);height:min(94dvh,720px);max-height:none;gap:10px;padding:26px 16px 0;overflow:hidden}
 .map-modal>div[style*="relative"]{flex:1;min-height:170px;display:flex}
 #leafletMap{height:auto;flex:1;min-height:170px}
@@ -1249,7 +1250,7 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 .map-modal .modal-actions .btn{flex:1;padding-left:8px;padding-right:8px;font-size:14px}
 .map-modal .modal-actions #mapConfirm{flex:1.5}
 /* To'ldirilmagan bo'lsa tasdiqlash tugmasi qoramtir ko'rinadi (bosilsa nima yetishmayotgani aytiladi) */
-.btn.incomplete{filter:brightness(.5) saturate(.45);box-shadow:none!important}
+.btn.incomplete{opacity:.55;filter:saturate(.75)}
 .upload-slot.miss-flash,.loc-btn.miss-flash,.field input.miss-flash{animation:missFlash 1.3s ease}
 @keyframes missFlash{0%,100%{box-shadow:0 0 0 0 rgba(225,29,72,0)}25%,65%{box-shadow:0 0 0 3px rgba(225,29,72,.75)}}
 /* Rasm kataklari: yozuvlar katakning aniq markazida */
@@ -1929,7 +1930,7 @@ function toast(msg, type){
   el.className = 'toast ' + (type||'success');
   el.textContent = msg;
   wrap.appendChild(el);
-  setTimeout(()=>el.remove(), 3000);
+  setTimeout(()=>el.remove(), 4000);
 }
 
 // TEZLASHTIRISH VA XAVFSIZLIK: har bir so'rov uchun cheklangan vaqt
