@@ -1235,6 +1235,28 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 @keyframes scanArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 @media (prefers-reduced-motion:reduce){.scan-arrow{animation:none}}
 #panelSklad .search-box{overflow:visible}
+
+/* ===== Oynalar: tugmalar doim pastda qimirlamay turadi ===== */
+.modal{max-height:92vh;max-height:92dvh;overscroll-behavior:contain}
+.modal .modal-actions{position:sticky;bottom:0;z-index:6;margin:16px -22px -26px;padding:12px 22px calc(14px + env(safe-area-inset-bottom));
+  background:var(--panel);border-top:1px solid var(--border)}
+.modal .modal-actions .btn{flex:1}
+.map-modal{height:min(94vh,720px);height:min(94dvh,720px);max-height:none;gap:10px;padding:26px 16px 0;overflow:hidden}
+.map-modal>div[style*="relative"]{flex:1;min-height:170px;display:flex}
+#leafletMap{height:auto;flex:1;min-height:170px}
+.map-modal .map-hint{margin:0;line-height:1.35}
+.map-modal .modal-actions{position:static;margin:0 -16px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--border);flex:none}
+.map-modal .modal-actions .btn{flex:1;padding-left:8px;padding-right:8px;font-size:14px}
+.map-modal .modal-actions #mapConfirm{flex:1.5}
+/* To'ldirilmagan bo'lsa tasdiqlash tugmasi qoramtir ko'rinadi (bosilsa nima yetishmayotgani aytiladi) */
+.btn.incomplete{filter:brightness(.5) saturate(.45);box-shadow:none!important}
+.upload-slot.miss-flash,.loc-btn.miss-flash,.field input.miss-flash{animation:missFlash 1.3s ease}
+@keyframes missFlash{0%,100%{box-shadow:0 0 0 0 rgba(225,29,72,0)}25%,65%{box-shadow:0 0 0 3px rgba(225,29,72,.75)}}
+/* Rasm kataklari: yozuvlar katakning aniq markazida */
+.upload-slot{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:8px!important;text-align:center}
+.upload-slot>span:not(.req):not(.opt){margin:0!important;position:static!important}
+.upload-slot>svg{margin:0 auto;display:block}
+.upload-slot>span:not(.req):not(.opt){display:block;width:100%;text-align:center;line-height:1.2}
 </style>
 </head>
 <body>
@@ -1907,7 +1929,7 @@ function toast(msg, type){
   el.className = 'toast ' + (type||'success');
   el.textContent = msg;
   wrap.appendChild(el);
-  setTimeout(()=>el.remove(), type==='error' ? 20000 : 3200);
+  setTimeout(()=>el.remove(), 3000);
 }
 
 // TEZLASHTIRISH VA XAVFSIZLIK: har bir so'rov uchun cheklangan vaqt
@@ -3123,6 +3145,30 @@ function removeInstImage(e, idx, required){
 }
 window.removeInstImage = removeInstImage;
 
+function installMissing(){
+  const g = id => document.getElementById(id), out = [];
+  const N = (uz,ru,en)=>({uz,ru,en});
+  if(!g('installManzil').value.trim()) out.push({el:g('installManzil'), name:N('Manzil','Адрес','Address')});
+  if(!g('installUy').value.trim()) out.push({el:g('installUy'), name:N('Uy raqami','Номер дома','House no.')});
+  if(!g('installOlt').value.trim()) out.push({el:g('installOlt'), name:N('OLT','OLT','OLT')});
+  if(!g('installPort').value.trim()) out.push({el:g('installPort'), name:N('Port','Порт','Port')});
+  if(!g('installMasofa').value.trim()) out.push({el:g('installMasofa'), name:N('Masofa','Расстояние','Distance')});
+  if(!pickedLatLng) out.push({el:g('locBtn'), name:N('Joylaşuv','Локация','Location')});
+  if(!instFiles[0]) out.push({el:g('instSlot1'), name:N('1-rasm','Фото 1','Photo 1')});
+  if(!instFiles[1]) out.push({el:g('instSlot2'), name:N('2-rasm','Фото 2','Photo 2')});
+  return out;
+}
+function installRefresh(){
+  const b = document.getElementById('installConfirm');
+  if(b) b.classList.toggle('incomplete', installMissing().length > 0);
+}
+(function(){
+  const ov = document.getElementById('installOverlay');
+  ov.addEventListener('input', installRefresh);
+  ov.addEventListener('change', installRefresh);
+  new MutationObserver(ms=>{ if(ms.every(m=>m.target.id==='installConfirm')) return; installRefresh(); })
+    .observe(ov, {subtree:true, childList:true, attributes:true, attributeFilter:['class']});
+})();
 function openInstall(seriaEnc){
   installSeria = decodeURIComponent(seriaEnc);
   document.getElementById('installManzil').value = '';
@@ -3133,6 +3179,7 @@ function openInstall(seriaEnc){
   resetInstallSlots();
   resetLocation();
   installOverlay.classList.add('show');
+  installRefresh();
 }
 
 document.getElementById('installMasofa').addEventListener('input', (e)=>{
@@ -3150,10 +3197,15 @@ document.getElementById('installConfirm').addEventListener('click', ()=>{
   const olt = document.getElementById('installOlt').value.trim();
   const port = document.getElementById('installPort').value.trim();
   const masofa = document.getElementById('installMasofa').value.trim();
-  if(!uy){ toast("Uy raqamini kiriting", 'error'); document.getElementById('installUy').focus(); return; }
-  if(!manzilBase || !olt || !port || !masofa){ toast("Barcha maydonlarni to'ldiring", 'error'); return; }
-  if(!pickedLatLng){ toast("Joylaşuvni xaritadan belgilang", 'error'); return; }
-  if(!instFiles[0] || !instFiles[1]){ toast('Kamida 2 ta majburiy rasmni yuklang', 'error'); return; }
+  const miss = installMissing();
+  if(miss.length){
+    const T = {uz:'Töldirilmagan: ', ru:'Не заполнено: ', en:'Missing: '}[LANG] || 'Töldirilmagan: ';
+    toast(T + miss.map(m=>m.name[LANG]||m.name.uz).join(', '), 'error');
+    const el = miss[0].el; el.scrollIntoView({block:'center',behavior:'smooth'});
+    miss.forEach(m=>{ m.el.classList.remove('miss-flash'); void m.el.offsetWidth; m.el.classList.add('miss-flash'); });
+    if(el.tagName==='INPUT') setTimeout(()=>el.focus({preventScroll:true}),250);
+    return;
+  }
   const seria = installSeria;
   const rasmlar = instFiles.filter(Boolean);
   const lokatsiya = pickedLatLng ? (pickedLatLng.lat.toFixed(6) + ', ' + pickedLatLng.lng.toFixed(6)) : '';
