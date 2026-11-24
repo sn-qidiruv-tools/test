@@ -1277,6 +1277,20 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
 }
 }
 @media (prefers-reduced-motion:reduce){.ticket.ghost-out{animation-duration:.5s}}
+
+.ticket-note.pending{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 14px 12px;padding:11px 14px;border-radius:16px;font-size:12.5px;font-weight:600;line-height:1.35;
+  background:rgba(251,191,36,.14);color:var(--warn);border:1px solid rgba(251,191,36,.35)}
+.ticket-note.pending span{flex:1;min-width:60%}
+.note-link{border:none;border-radius:100px;padding:7px 14px;font-family:inherit;font-weight:700;font-size:12.5px;color:#fff;cursor:pointer;background:linear-gradient(160deg,var(--blue-2,#2a7bea),var(--blue,#0a4a9e))}
+
+.sorov-status.eskirgan{background:rgba(148,163,184,.18);color:var(--text-dim)}
+.sorov-card:has(.sorov-status.eskirgan){opacity:.78}
+.newmsg-ic{width:64px;height:64px;border-radius:50%;margin:4px auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;position:relative;
+  background:linear-gradient(160deg,var(--blue-2,#2a7bea),var(--blue,#0a4a9e));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),0 8px 22px rgba(10,74,158,.35)}
+.newmsg-ic b{position:absolute;top:-4px;right:-4px;min-width:24px;height:24px;border-radius:12px;background:#e11d48;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0 6px;border:2px solid var(--panel)}
+#newMsgOverlay{z-index:97}
+#newMsgOverlay h2{padding-left:0;justify-content:center;text-align:center}
+#newMsgOverlay .modal-sub{text-align:center}
 </style>
 </head>
 <body>
@@ -1770,6 +1784,19 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
   </div>
 </div>
 
+<div class="overlay" id="newMsgOverlay">
+  <div class="modal">
+    <button type="button" class="modal-x" id="newMsgX" aria-label="Yopish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="newmsg-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><b id="newMsgCount">1</b></div>
+    <h2>Sizda yangi xabar bor</h2>
+    <p class="modal-sub" id="newMsgSub"></p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="newMsgLater">Keyinroq</button>
+      <button class="btn" id="newMsgGo">Xabarlarga ötiş</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="mapOverlay">
   <div class="map-modal">
     <h2 style="margin:0">Joylaşuvni tanlang</h2>
@@ -1870,7 +1897,6 @@ html[data-theme="dark"] .theme-seg.seg button.active{color:#8db8ff}
     <div class="expired-lock-title">Sizda muddati ötgan qurilma bor</div>
     <div class="expired-lock-sub">Ilovadan foydalaniş uçun administrator qurilmani faollaştirişi yoki omborga qaytarişi kerak. Admin bilan boğlaning.</div>
     <div class="expired-lock-list" id="expiredLockList"></div>
-    <button type="button" class="btn btn-secondary expired-lock-logout" id="expiredLockLogout">Çiqiş</button>
   </div>
 </div>
 
@@ -2014,6 +2040,14 @@ function muddatInfoText(d){
   return soat + ' soatga olingan';
 }
 
+function hasPending(seria){
+  const k = normalize(seria);
+  return sorovlar.some(r => normalize(r.seria) === k && reqPending(r));
+}
+// Qurilma muddati o'tgan bo'lsa, unga tegishli javobsiz so'rov ham "muddati o'tgan" bo'ladi
+function expiredSeria(seria){ const k = normalize(seria); return tugaganlar.some(d => normalize(d['S/N']) === k); }
+function reqPending(r){ return (r.holat||'').toString().trim() === 'kutilmoqda' && !expiredSeria(r.seria); }
+function reqExpired(r){ return (r.holat||'').toString().trim() === 'kutilmoqda' && expiredSeria(r.seria); }
 function getLatestRequest(seria, turi){
   const login = normalize(currentUser.login);
   let latest = null;
@@ -2048,12 +2082,6 @@ function renderExpiredBanner(){
     </div>`).join('');
   el.classList.add('show');
 }
-document.getElementById('expiredLockLogout').addEventListener('click', ()=>{
-  stopSessionWatch();
-  localStorage.removeItem('sklad_user'); clearSnapshot();
-  location.reload();
-});
-
 // ============ FON REJIMIDAGI JARAYON KO'RSATKICHI ============
 let bgTaskCount = 0;
 function bgTaskStart(label){
@@ -2388,7 +2416,7 @@ function updateStats(){
   document.getElementById('statChiqim').textContent = chiqim.length;
   const countEl = document.getElementById('meningCount');
   if(meningCount > 0){ countEl.style.display='flex'; countEl.textContent = meningCount; } else { countEl.style.display='none'; }
-  const pending = sorovlar.filter(r => (r.holat||'').toString().trim() === 'kutilmoqda').length;
+  const pending = sorovlar.filter(reqPending).length;
   const xEl = document.getElementById('xabarlarCount');
   if(isAdmin && pending > 0){ xEl.style.display='flex'; xEl.textContent = pending; } else { xEl.style.display='none'; }
   document.querySelectorAll('[data-bell]').forEach(b=>{
@@ -2711,6 +2739,14 @@ function renderMening(){
       </div>`;
     }
 
+    // --- Javobsiz so'rov bor: qurilma ustida HECH QANDAY amal bajarib bo'lmaydi ---
+    if(hasPending(d['S/N'])){
+      adminEndBtnHtml = '';
+      actionsHtml = `<div class="ticket-note pending">${ico('clock',13)} <span>${isAdmin
+        ? "Bu qurilma böyiça sörov javob kutmoqda — avval Xabarlarda sörovga javob bering"
+        : "Sörovingiz admin javobini kutmoqda — javob kelguça qurilma bilan amal bajarib bölmaydi"}</span>${isAdmin ? ` <button type="button" class="note-link" onclick="showPanel('xabarlar')">Xabarlar</button>` : ''}</div>`;
+    }
+
     return `
     <div class="ticket ${deviceIconTone(d.tuman)}${expired?' expired':''}">
       <div class="ticket-main">
@@ -2992,15 +3028,16 @@ function renderXabarlar(){
     return;
   }
   toolbar.style.display = 'flex';
-  const validIds = new Set(sorovlar.map(r=>r.ID));
+  const validIds = new Set(sorovlar.filter(r => !reqPending(r)).map(r=>r.ID));
   selectedSorovIds.forEach(id=>{ if(!validIds.has(id)) selectedSorovIds.delete(id); });
 
   const sorted = sorovlar.slice().reverse();
 
   el.innerHTML = sorted.map(r=>{
     const holat = (r.holat||'').toString().trim();
-    const isPending = holat === 'kutilmoqda';
-    const statusCls = holat==='kutilmoqda' ? 'kutilmoqda' : (holat==='qabul qilingan' ? 'qabul' : 'rad');
+    const isPending = reqPending(r);
+    const isExpReq = reqExpired(r);
+    const statusCls = isPending ? 'kutilmoqda' : isExpReq ? 'eskirgan' : (holat==='qabul qilingan' ? 'qabul' : 'rad');
     const turi = (r.turi||'muddat').toString().trim();
     const isMuddat = turi === 'muddat';
     const checked = selectedSorovIds.has(r.ID) ? 'checked' : '';
@@ -3009,7 +3046,7 @@ function renderXabarlar(){
       : `Sabab: <b style="color:var(--text)">${escapeHtml(r.sabab||'')}</b>`;
     return `
     <div class="sorov-card${isPending?' pending':''}">
-      <input type="checkbox" class="sorov-check" data-id="${escapeHtml(r.ID)}" ${checked} onchange="toggleSorovSelect('${encodeURIComponent(r.ID)}', this.checked)">
+      <input type="checkbox" class="sorov-check" data-id="${escapeHtml(r.ID)}" ${isPending ? 'disabled' : checked} onchange="toggleSorovSelect('${encodeURIComponent(r.ID)}', this.checked)">
       <div class="sorov-row">
         <div>
           <div class="ticket-tag" style="margin:0 0 6px 0">${isMuddat ? ico('clock',12)+' Muddat sörovi' : ico('back',12)+' Qaytariş sörovi'}</div>
@@ -3018,7 +3055,7 @@ function renderXabarlar(){
           <div class="ticket-sub">${detailLine} · ${escapeHtml(r.vaqt||'')}</div>
         </div>
       </div>
-      <span class="sorov-status ${statusCls}">${holat==='kutilmoqda'?'Kutilmoqda':holat==='qabul qilingan'?'Qabul qilingan':'Rad etilgan'}</span>
+      <span class="sorov-status ${statusCls}">${isPending?'Kutilmoqda':isExpReq?'Muddati ötgan':holat==='qabul qilingan'?'Qabul qilingan':'Rad etilgan'}</span>
       ${isPending ? `
       <div class="sorov-actions">
         <button class="big-btn primary" onclick="sorovQabul('${encodeURIComponent(r.ID)}')">${ico('check')} Ruxsat berish</button>
@@ -3036,7 +3073,8 @@ function updateXabarlarToolbar(){
   const selectAll = document.getElementById('xabarlarSelectAll');
   countEl.textContent = selectedSorovIds.size;
   delBtn.disabled = selectedSorovIds.size === 0;
-  selectAll.checked = sorovlar.length > 0 && selectedSorovIds.size === sorovlar.length;
+  const deletable = sorovlar.filter(r => !reqPending(r)).length;
+  selectAll.checked = deletable > 0 && selectedSorovIds.size === deletable;
 }
 
 function toggleSorovSelect(idEnc, checked){
@@ -3047,7 +3085,7 @@ function toggleSorovSelect(idEnc, checked){
 window.toggleSorovSelect = toggleSorovSelect;
 
 document.getElementById('xabarlarSelectAll').addEventListener('change', (e)=>{
-  if(e.target.checked){ sorovlar.forEach(r=>selectedSorovIds.add(r.ID)); }
+  if(e.target.checked){ sorovlar.forEach(r=>{ if(!reqPending(r)) selectedSorovIds.add(r.ID); }); }
   else { selectedSorovIds.clear(); }
   renderXabarlar();
 });
@@ -3055,7 +3093,9 @@ document.getElementById('xabarlarSelectAll').addEventListener('change', (e)=>{
 // ==== Xabarlarni o'chirish — OPTIMISTIK: darhol ro'yxatdan olib tashlanadi ====
 document.getElementById('xabarlarDeleteBtn').addEventListener('click', async ()=>{
   if(selectedSorovIds.size === 0) return;
-  const ids = Array.from(selectedSorovIds);
+  const pendIds = new Set(sorovlar.filter(reqPending).map(r=>r.ID));
+  const ids = Array.from(selectedSorovIds).filter(id => !pendIds.has(id));
+  if(ids.length === 0){ toast("Javob berilmagan sörovni öçirib bölmaydi", 'error'); return; }
   const okDel = await askConfirm({ title:"Xabarlarni öçiriş", text: ids.length + " ta tanlangan xabar öçiriladi. Davom etasizmi?", okText:"Ha, öçiriş" });
   if(!okDel) return;
 
@@ -4434,6 +4474,65 @@ initApp();
       setTimeout(done, 1500);
     });
   }).observe(document.body, { childList:true, subtree:true });
+})();
+
+// ===== Javobsiz so'rov bo'lgan qurilma bloklanadi (admin ham amal bajara olmaydi) =====
+(function(){
+  Object.assign(I18N, {
+    "Bu qurilma böyiça sörov javob kutmoqda — avval Xabarlarda sörovga javob bering":{ru:"По этому устройству есть запрос без ответа — сначала ответьте на него в «Сообщениях»",en:"This device has an unanswered request — answer it in Messages first"},
+    "Sörovingiz admin javobini kutmoqda — javob kelguça qurilma bilan amal bajarib bölmaydi":{ru:"Ваш запрос ждёт ответа админа — до ответа действия с устройством недоступны",en:"Your request is waiting for the admin — no actions are possible until it is answered"},
+    "Sörovga javob berilmaguça amal bajarib bölmaydi":{ru:"Пока на запрос не ответят, действия недоступны",en:"No actions until the request is answered"},
+    "Javob berilmagan sörovni öçirib bölmaydi":{ru:"Запрос без ответа удалить нельзя",en:"An unanswered request cannot be deleted"}
+  });
+  ['openInstall','openYonaltirish','openFaollashtirish','qaytarish','muddatTugatish','openOrnatishBekor','openSorov','openOlish'].forEach(n=>{
+    const f = window[n]; if(typeof f !== 'function') return;
+    window[n] = function(enc){
+      let seria = ''; try{ seria = decodeURIComponent(enc); }catch(_){}
+      if(seria && hasPending(seria)){ toast("Sörovga javob berilmaguça amal bajarib bölmaydi", 'error'); return; }
+      return f.apply(this, arguments);
+    };
+  });
+})();
+
+// ===== Admin uchun: yangi (javobsiz) so'rov bo'lsa "Sizda yangi xabar bor" oynasi =====
+(function(){
+  Object.assign(I18N, {
+    "Sizda yangi xabar bor":{ru:"У вас новое сообщение",en:"You have a new message"},
+    "Xabarlarga ötiş":{ru:"Перейти к сообщениям",en:"Go to messages"},
+    "Keyinroq":{ru:"Позже",en:"Later"},
+    "Muddati ötgan":{ru:"Срок истёк",en:"Expired"}
+  });
+  const ov = document.getElementById('newMsgOverlay');
+  const KEY = 'sklad_seen_sorov';
+  const seen = ()=>{ try{ return new Set(JSON.parse(localStorage.getItem(KEY)||'[]')); }catch(_){ return new Set(); } };
+  const saveSeen = set=>{ try{ localStorage.setItem(KEY, JSON.stringify([...set].slice(-300))); }catch(_){} };
+  let timer = null;
+  function check(){
+    if(!currentUser || currentUser.role !== 'admin') return;
+    const pend = sorovlar.filter(reqPending);
+    const sn = seen();
+    const fresh = pend.filter(r => !sn.has(String(r.ID)));
+    if(!fresh.length) return;
+    // boshqa oynalar (yangiliklar, bloklash) ochiq bo'lsa — biroz kutamiz
+    const busy = document.querySelector('.overlay.show:not(#newMsgOverlay), .expired-lock.show, .offline-lock.show');
+    if(busy || ov.classList.contains('show')){ clearTimeout(timer); timer = setTimeout(check, 1200); return; }
+    const n = pend.length;
+    document.getElementById('newMsgCount').textContent = n;
+    document.getElementById('newMsgSub').textContent = ({
+      uz: n + ' ta sörov javob kutmoqda',
+      ru: n + ' запрос(ов) ждут ответа',
+      en: n + ' request(s) waiting for a reply'
+    })[LANG] || (n + ' ta sörov javob kutmoqda');
+    ov.classList.add('show');
+    fresh.forEach(r => sn.add(String(r.ID))); saveSeen(sn);
+  }
+  const close = ()=> ov.classList.remove('show');
+  document.getElementById('newMsgLater').addEventListener('click', close);
+  document.getElementById('newMsgX').addEventListener('click', close);
+  ov.addEventListener('click', e=>{ if(e.target === ov) close(); });
+  document.getElementById('newMsgGo').addEventListener('click', ()=>{ close(); showPanel('xabarlar'); });
+  const _us = window.updateStats;
+  window.updateStats = function(){ const r = _us.apply(this, arguments); try{ check(); }catch(_){} return r; };
 })();
 </script>
 </body>
