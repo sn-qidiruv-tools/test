@@ -4503,14 +4503,14 @@ initApp();
     "Muddati ötgan":{ru:"Срок истёк",en:"Expired"}
   });
   const ov = document.getElementById('newMsgOverlay');
-  const KEY = 'sklad_seen_sorov';
-  const seen = ()=>{ try{ return new Set(JSON.parse(localStorage.getItem(KEY)||'[]')); }catch(_){ return new Set(); } };
-  const saveSeen = set=>{ try{ localStorage.setItem(KEY, JSON.stringify([...set].slice(-300))); }catch(_){} };
+  // Har safar sayt ochilganda (kirganda) javobsiz so'rov bor bo'lsa eslatadi — javob berilmaguncha.
+  // Bir ochilish ichida esa faqat YANGI kelgan so'rovlar uchun qayta chiqadi.
+  const shown = new Set();
   let timer = null;
   function check(){
     if(!currentUser || currentUser.role !== 'admin') return;
     const pend = sorovlar.filter(reqPending);
-    const sn = seen();
+    const sn = shown;
     const fresh = pend.filter(r => !sn.has(String(r.ID)));
     if(!fresh.length) return;
     // boshqa oynalar (yangiliklar, bloklash) ochiq bo'lsa — biroz kutamiz
@@ -4524,13 +4524,15 @@ initApp();
       en: n + ' request(s) waiting for a reply'
     })[LANG] || (n + ' ta sörov javob kutmoqda');
     ov.classList.add('show');
-    fresh.forEach(r => sn.add(String(r.ID))); saveSeen(sn);
+    fresh.forEach(r => sn.add(String(r.ID)));
   }
   const close = ()=> ov.classList.remove('show');
   document.getElementById('newMsgLater').addEventListener('click', close);
   document.getElementById('newMsgX').addEventListener('click', close);
   ov.addEventListener('click', e=>{ if(e.target === ov) close(); });
   document.getElementById('newMsgGo').addEventListener('click', ()=>{ close(); showPanel('xabarlar'); });
+  setInterval(()=>{ try{ check(); }catch(_){} }, 3000);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') setTimeout(check, 600); });
   const _us = window.updateStats;
   window.updateStats = function(){ const r = _us.apply(this, arguments); try{ check(); }catch(_){} return r; };
 })();
