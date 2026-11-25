@@ -3,143 +3,200 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a3a8c">
 <title>Kabel barabanlari</title>
+<script>try{var t=localStorage.getItem("kb_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
-:root{--bg:#f3f5f6;--card:#fff;--ink:#16252b;--mut:#5d6f76;--line:#d8e0e3;--acc:#0b6e8a;--warn:#c4410c}
-@media(prefers-color-scheme:dark){:root{--bg:#10191d;--card:#18252a;--ink:#e6eef0;--mut:#93a6ad;--line:#2a3b42;--acc:#4cb8d6;--warn:#ff8a50}}
+:root{--bg:#eef1f7;--pn:#fff;--s2:#f3f5fa;--bd:rgba(20,30,60,.12);--tx:#12162b;--dim:#6b7280;--bl:#0a4a9e;--ok:#16a34a;--wr:#d97706;--dg:#e11d48;--nav:rgba(255,255,255,.98);color-scheme:light}
+html[data-theme=dark]{--bg:#0d1322;--pn:#161d30;--s2:#1e2740;--bd:rgba(255,255,255,.12);--tx:#e8ecf7;--dim:#93a0bd;--bl:#4d8dff;--ok:#4ade80;--wr:#fbbf24;--dg:#fb7185;--nav:rgba(22,29,48,.98);color-scheme:dark}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+body{font:15px/1.4 Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column}
+h3,.logo{font-family:"Space Grotesk",Inter,sans-serif}
 button,input,select{font:inherit;color:inherit}
-button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer}
-button.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
-button.d{background:var(--warn)}
-input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:4px 0 10px}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-#login{margin:auto;width:min(340px,90%);background:var(--card);padding:22px;border-radius:12px;border:1px solid var(--line)}
-#login h1{margin:0 0 14px;font-size:20px}
+.btn{background:linear-gradient(120deg,#0a4a9e,#1f6fd1);color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn.sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+.btn.dng{background:transparent;color:var(--dg);border:1px solid var(--dg)}
+.btn.s{padding:7px 11px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.5}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--pn);margin:4px 0 10px}
+label{font-size:13px;color:var(--dim)}
+:focus-visible{outline:2px solid var(--bl);outline-offset:2px}
+#login{margin:auto;width:min(360px,92%);background:var(--pn);padding:26px;border-radius:20px;border:1px solid var(--bd)}
+#login h3{margin:0 0 4px;font-size:22px}#err{color:var(--dg);min-height:22px;font-size:13px}
 #app{display:none;flex:1;min-height:0;flex-direction:column}
-header{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--line);flex-wrap:wrap}
-header b{margin-right:auto}
-nav{display:flex;gap:4px}
-nav button{background:transparent;color:var(--mut);padding:7px 11px}
-nav button.on{background:var(--acc);color:#fff}
+header{background:linear-gradient(120deg,#0a2a63,#0e3f8f 55%,#1556b8);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:8px}
+.logo{font-weight:700;font-size:18px;margin-right:auto}
+header .who{font-size:12px;opacity:.85}
+header button{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:10px;padding:7px 10px;cursor:pointer}
+nav{display:flex;background:var(--nav);border-bottom:1px solid var(--bd)}
+nav button{flex:1;background:none;border:0;padding:11px 6px;color:var(--dim);font-weight:600;cursor:pointer;border-bottom:3px solid transparent}
+nav button.on{color:var(--bl);border-color:var(--bl)}
 main{flex:1;min-height:0;display:flex}
-.side{width:380px;overflow:auto;padding:10px;border-right:1px solid var(--line)}
-.mapw{flex:1;position:relative;min-width:0}
-#map{position:absolute;inset:0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
-.card.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
-.bar{height:8px;background:var(--line);border-radius:4px;margin:8px 0 4px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--acc)}
-small,.mut{color:var(--mut)}
-.row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.ln{display:flex;justify-content:space-between;gap:6px;padding:5px 0;border-top:1px solid var(--line);font-size:13px}
-#dbar{position:absolute;z-index:500;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;display:none}
-#dbar .row{margin:6px 0 0}
-#meter{font-size:22px;font-weight:700}
-#err{color:var(--warn);min-height:20px}
+.side{width:410px;overflow:auto;padding:12px;border-right:1px solid var(--bd)}
+.mapw{flex:1;position:relative;min-width:0}#map{position:absolute;inset:0;z-index:0}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.sum div{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:9px 6px;text-align:center}
+.sum b{display:block;font:700 17px "Space Grotesk",sans-serif}.sum span{font-size:11px;color:var(--dim)}
+.flt{display:flex;gap:6px}.flt>*{margin:0 0 10px;min-width:0}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:12px;margin-bottom:10px}
+.card.on{border-color:var(--bl);box-shadow:0 0 0 2px var(--bl)}
+.top{display:flex;align-items:center;gap:6px}.top .pill{margin-left:auto}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px}
+.pill.ok{background:rgba(22,163,74,.15);color:var(--ok)}.pill.kam{background:rgba(217,119,6,.16);color:var(--wr)}.pill.tugagan{background:rgba(225,29,72,.14);color:var(--dg)}
+.bar{height:8px;background:var(--s2);border-radius:5px;margin:9px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--ok)}.bar i.kam{background:var(--wr)}.bar i.tugagan{background:var(--dg)}
+.mut{color:var(--dim)}.sm{font-size:13px}
+.row{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.ln{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd);font-size:13px}
+.ln .row{margin:0}
+#dbar{position:absolute;z-index:800;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:12px;display:none}
+#meter{font:700 24px "Space Grotesk",sans-serif}
+#gps{position:absolute;z-index:700;right:10px;top:80px;width:38px;height:38px;padding:0;border-radius:10px}
+#fab{position:fixed;z-index:800;right:16px;bottom:80px;width:54px;height:54px;border-radius:50%;font-size:28px;padding:0;box-shadow:0 8px 20px rgba(10,74,158,.4)}
+.ov{position:fixed;inset:0;background:rgba(10,20,40,.55);display:flex;align-items:flex-end;justify-content:center;z-index:2000}
+.modal{background:var(--pn);width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:22px;max-height:90vh;overflow:auto}
+.modal h3{margin:0 0 14px}.ma{display:flex;gap:10px;margin-top:8px}.ma .btn{flex:1}
+#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:3000;width:min(92%,380px);display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 16px;border-radius:12px;font-weight:600;font-size:13px;background:var(--pn);border:1px solid var(--bd);box-shadow:0 10px 26px rgba(20,30,60,.2)}
+.toast.err{color:var(--dg)}.toast.ok{color:var(--bl)}
+@keyframes sp{to{transform:rotate(360deg)}}.spin{animation:sp 1s linear infinite;display:inline-block}
 @media(max-width:899px){
- .side{width:100%;border:0}.mapw{display:none}
+ .side{width:100%;border:0;padding-bottom:90px}.mapw{display:none}
  body[data-t=xarita] .side{display:none}body[data-t=xarita] .mapw{display:block}
+ nav{position:fixed;left:0;right:0;bottom:0;z-index:900;border-top:1px solid var(--bd);border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
+ #dbar{bottom:calc(64px + env(safe-area-inset-bottom))}
 }
-@media(min-width:900px){#tx{display:none}}
+@media(min-width:900px){#tx{display:none}#fab{bottom:24px;left:350px;right:auto}.ov{align-items:center}.modal{border-radius:20px}}
 </style>
 </head>
 <body data-t="baraban">
 <form id="login" onsubmit="doLogin();return false">
- <h1>Kabel barabanlari</h1>
+ <h3>Kabel barabanlari</h3><p class="mut" style="margin:0 0 16px">Hisob va xaritada kabel yo'nalishi</p>
  <label>Login<input id="lu" autocomplete="username" required></label>
  <label>Parol<input id="lp" type="password" autocomplete="current-password" required></label>
- <div id="err"></div>
- <button style="width:100%">Kirish</button>
+ <div id="err"></div><button class="btn" style="width:100%">Kirish</button>
 </form>
 <div id="app">
- <header><b id="who"></b>
-  <nav><button data-t="baraban">Barabanlar</button><button id="tx" data-t="xarita">Xarita</button><button data-t="admin" class="adm">Baraban qo'shish</button><button data-t="tarix" class="adm">Amallar tarixi</button></nav>
-  <button class="g" onclick="logout()">Chiqish</button></header>
+ <header><span class="logo">Kabel baraban</span><span class="who" id="who"></span>
+  <button id="rf" onclick="refresh(true)" title="Yangilash">⟳</button><button onclick="theme()" title="Rejim">◐</button><button onclick="logout()">Chiqish</button></header>
+ <nav><button data-t="baraban">Barabanlar</button><button id="tx" data-t="xarita">Xarita</button><button data-t="tarix" class="adm">Amallar tarixi</button></nav>
  <main><div class="side" id="side"></div>
- <div class="mapw"><div id="map"></div>
-  <div id="dbar"><div id="dinfo" class="mut"></div><div id="meter">0 m</div>
-   <div class="row"><button class="g" onclick="undo()">Orqaga</button><button class="g" onclick="clearPts()">Tozalash</button><button onclick="saveLine()">Saqlash</button><button class="g" onclick="stopDraw()">Bekor qilish</button></div></div>
- </div></main>
+  <div class="mapw"><div id="map"></div><button id="gps" class="btn sec" onclick="locate()" title="Mening joyim">◎</button>
+   <div id="dbar"><div id="dinfo" class="mut sm"></div><div id="meter">0 m</div>
+    <div class="row"><button class="btn sec s" onclick="undo()">Orqaga</button><button class="btn sec s" onclick="clearPts()">Tozalash</button><button class="btn s" onclick="saveLine()">Saqlash</button><button class="btn dng s" onclick="stopDraw()">Bekor</button></div></div>
+  </div></main>
+ <button id="fab" class="btn adm" onclick="addD()" title="Baraban qo'shish">+</button>
 </div>
+<div id="toasts"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const API="https://script.google.com/macros/s/AKfycbxf6t1ste_nj224GGKjQWZy6bqUhCMDUQ01TbFVlnYoc0CJ78kW-WCvOo39B4gBvRX9/exec";
-let S=JSON.parse(sessionStorage.s||"null"),D={baraban:[],kabel:[],tuman:[],tarix:[]},sel=null,drawing=false,pts=[],tab="baraban";
-const $=id=>document.getElementById(id);
+let S=JSON.parse(sessionStorage.s||"null"),D={baraban:[],kabel:[],tuman:[],tarix:[]},sel=null,drawing=false,pts=[],tab="baraban",F={q:"",t:"",h:""},TQ="",map,layer,me;
+const $=id=>document.getElementById(id),adm=()=>S.rol=="admin";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const COL=["#0b6e8a","#c4410c","#6a8f1f","#8a3fa8","#b8860b","#d6336c"];
+const COL=["#0b6e8a","#c4410c","#6a8f1f","#8a3fa8","#b8860b","#d6336c","#2563eb","#0d9488"];
+const col=id=>COL[Math.max(0,D.baraban.findIndex(b=>b.id==id))%COL.length];
+function toast(m,t){const e=document.createElement("div");e.className="toast "+(t||"ok");e.textContent=m;$("toasts").appendChild(e);setTimeout(()=>e.remove(),3200)}
 async function call(action,x={}){
- const r=await fetch(API,{method:"POST",body:JSON.stringify({...x,action,u:S.u,p:S.p})});
- const j=await r.json(); if(j.err)throw new Error(j.err); D=j; S.rol=j.rol; sessionStorage.s=JSON.stringify(S); return j;
-}
-async function act(a,x){try{await call(a,x);render();return true}catch(e){alert(e.message);return false}}
+ $("rf").classList.add("spin");
+ try{const r=await fetch(API,{method:"POST",body:JSON.stringify({...x,action,u:S.u,p:S.p})});
+  const j=await r.json();if(j.err)throw new Error(j.err);D=j;S.rol=j.rol;sessionStorage.s=JSON.stringify(S);return j}
+ finally{$("rf").classList.remove("spin")}}
+async function act(a,x,msg){try{await call(a,x);render();if(msg)toast(msg);return true}catch(e){toast(e.message,"err");return false}}
+async function refresh(m){try{await call("list");render();if(m)toast("Yangilandi")}catch(e){toast(e.message,"err")}}
+function modal(title,body,ok,fn){
+ const o=document.createElement("div");o.className="ov";
+ o.innerHTML=`<div class="modal"><h3>${title}</h3>${body}<div class="ma"><button class="btn sec" data-c>Bekor</button>${ok?`<button class="btn" data-ok>${ok}</button>`:""}</div></div>`;
+ document.body.appendChild(o);const x=()=>o.remove();
+ o.onclick=e=>{if(e.target==o)x()};o.querySelector("[data-c]").onclick=x;
+ const b=o.querySelector("[data-ok]");
+ if(b)b.onclick=async()=>{b.disabled=true;if(await fn(o)!==false)x();else b.disabled=false};
+ const f=o.querySelector("input,select");f&&f.focus()}
+const val=(o,n)=>o.querySelector("[name="+n+"]").value.trim();
 async function doLogin(){
  S={u:$("lu").value.trim(),p:$("lp").value};$("err").textContent="Tekshirilmoqda...";
- try{await call("list");start()}catch(e){S=null;$("err").textContent=e.message}
- return false}
+ try{await call("list");start()}catch(e){S=null;$("err").textContent=e.message}}
 function logout(){sessionStorage.clear();location.reload()}
-let map,layer,tiles;
+function theme(){const t=document.documentElement.dataset.theme=="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("kb_theme",t)}catch(e){}}
 function start(){
  $("login").style.display="none";$("app").style.display="flex";
- $("who").textContent=S.u+" ("+(S.rol=="admin"?"admin":"xodim")+")";
- document.querySelectorAll(".adm").forEach(b=>b.style.display=S.rol=="admin"?"":"none");
+ $("who").textContent=S.u;
+ document.querySelectorAll(".adm").forEach(b=>b.style.display=adm()?"":"none");
  document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
- map=L.map("map").setView([41.3,69.27],11);
+ map=L.map("map").setView([39.77,64.42],11);
  const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
  const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri"});
  L.control.layers({"Xarita":osm,"Yo'ldosh":sat}).addTo(map);
- layer=L.layerGroup().addTo(map);
+ layer=L.layerGroup().addTo(map);me=L.layerGroup().addTo(map);
  map.on("click",e=>{if(drawing){pts.push([e.latlng.lat,e.latlng.lng]);paint()}});
- render()}
-function go(t){tab=t;if(drawing&&t!="xarita")stopDraw();document.body.dataset.t=t=="xarita"?"xarita":"baraban";
- document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
- render();setTimeout(()=>map.invalidateSize(),50)}
+ render();setInterval(()=>{if(!drawing&&!document.querySelector(".ov")&&document.activeElement.tagName!="INPUT")refresh()},60000)}
+function go(t){tab=t;if(drawing&&t!="xarita")stopDraw();document.body.dataset.t=t=="xarita"?"xarita":"baraban";render();setTimeout(()=>map.invalidateSize(),60)}
+function st(b){return b.left<=0?["Tugagan","tugagan"]:b.left<=b.metr*.1?["Kam qoldi","kam"]:["Yetarli","ok"]}
 function render(){
- document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==tab));
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==(tab=="xarita"?"xarita":tab)));
  const s=$("side");
- if(tab=="admin")s.innerHTML=adminHtml();
- else if(tab=="tarix")s.innerHTML=D.tarix.map(h=>`<div class="card"><small>${esc(h.vaqt)} · ${esc(h.kim)}</small><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||"<p class=mut>Hali amal yo'q</p>";
- else s.innerHTML=D.baraban.map(drumHtml).join("")||"<p class=mut>Hali baraban qo'shilmagan</p>";
+ if(tab=="tarix"){s.innerHTML=`<input placeholder="Qidirish: xodim, amal, baraban..." value="${esc(TQ)}" oninput="TQ=this.value;tarix()"><div id="lst"></div>`;tarix()}
+ else{
+  const A=D.baraban,sum=k=>Math.round(A.reduce((a,b)=>a+Number(b[k]),0));
+  s.innerHTML=`<div class="sum"><div><b>${A.length}</b><span>baraban</span></div><div><b>${sum("metr")}</b><span>jami m</span></div><div><b>${sum("used")}</b><span>ishlatildi</span></div><div><b>${sum("left")}</b><span>qoldi</span></div></div>
+  <input placeholder="Qidirish: raqam yoki marka" value="${esc(F.q)}" oninput="F.q=this.value;list()">
+  <div class="flt"><select onchange="F.t=this.value;list()"><option value="">Barcha tuman</option>${D.tuman.map(t=>`<option ${F.t==t?"selected":""}>${esc(t)}</option>`).join("")}</select>
+  <select onchange="F.h=this.value;list()">${[["","Barcha holat"],["ok","Yetarli"],["kam","Kam qoldi"],["tugagan","Tugagan"]].map(o=>`<option value="${o[0]}" ${F.h==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></div><div id="lst"></div>`;
+  list()}
  paint()}
-function drumHtml(b,i){
- const pct=Math.max(0,Math.min(100,b.left/b.metr*100)),on=sel==b.id;
- let h=`<div class="card ${on?"on":""}" onclick="pick('${b.id}')"><b>№${esc(b.raqam)}</b> ${esc(b.marka)} <small>· ${esc(b.tuman)}</small>
- <div class="bar"><i style="width:${pct}%"></i></div><small>Jami ${b.metr} m · ishlatildi ${b.used} m · <b>qoldi ${b.left} m</b></small>
- <div class="row"><button onclick="event.stopPropagation();draw('${b.id}')">Kabel chizish</button></div>`;
- if(on)h+=D.kabel.filter(l=>l.baraban==b.id).map(l=>`<div class="ln"><span>${esc(l.vaqt)} · ${esc(l.kim)} ${esc(l.izoh)}</span><b>${l.metr} m</b></div>`).join("");
+function list(){
+ const q=F.q.toLowerCase(),A=D.baraban.filter(b=>(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))&&(!F.t||b.tuman==F.t)&&(!F.h||st(b)[1]==F.h));
+ $("lst").innerHTML=A.map(card).join("")||'<p class="mut">Baraban topilmadi</p>'}
+function card(b){
+ const s=st(b),on=sel==b.id,pct=Math.max(0,Math.min(100,b.left/b.metr*100));
+ let h=`<div class="card ${on?"on":""}" onclick="pick('${b.id}')"><div class="top"><span class="dot" style="background:${col(b.id)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)}</span><span class="pill ${s[1]}">${s[0]}</span></div>
+ <div class="mut sm">${esc(b.tuman)}</div><div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
+ <div class="sm">Jami <b>${b.metr}</b> · ishlatildi <b>${b.used}</b> · qoldi <b>${b.left}</b> m</div>
+ <div class="row"><button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">Kabel chizish</button>`;
+ if(adm())h+=`<button class="btn sec s" onclick="event.stopPropagation();editD('${b.id}')">Tahrirlash</button><button class="btn dng s" onclick="event.stopPropagation();delD('${b.id}')">O'chirish</button>`;
+ h+="</div>";
+ if(on){const L2=D.kabel.filter(l=>l.baraban==b.id);
+  h+=(L2.length?`<div class="row"><button class="btn sec s" onclick="event.stopPropagation();viewOn()">Xaritada ko'rish</button></div>`:"")+L2.map(l=>{const can=adm()||l.kim==S.u;
+   return `<div class="ln"><span>${esc(l.vaqt)} · ${esc(l.kim)}<br><span class="mut">${esc(l.izoh)}</span></span><span><b>${l.metr} m</b>${can?`<div class="row"><button class="btn sec s" onclick="event.stopPropagation();editL('${l.id}')">Tahrir</button><button class="btn dng s" onclick="event.stopPropagation();delL('${l.id}')">O'chirish</button></div>`:""}</span></div>`}).join("")||'<p class="mut sm">Hali kabel chizilmagan</p>'}
  return h+"</div>"}
-function adminHtml(){
- return `<div class="card"><b>Yangi baraban</b><br>
- <label>Baraban raqami<input id="nr"></label><label>Marka<input id="nm"></label>
- <label>Kabel uzunligi (metr)<input id="nl" type="number" min="1"></label>
- <label>Tuman<select id="nt">${D.tuman.map(t=>`<option>${esc(t)}</option>`).join("")}</select></label>
- <button onclick="addDrum()">Baraban qo'shish</button></div>`}
-async function addDrum(){if(await act("addDrum",{raqam:$("nr").value.trim(),marka:$("nm").value.trim(),metr:$("nl").value,tuman:$("nt").value}))go("baraban")}
-function pick(id){sel=sel==id?null:id;render();fit()}
+function tarix(){
+ const q=TQ.toLowerCase();
+ $("lst").innerHTML=D.tarix.filter(h=>!q||Object.values(h).join(" ").toLowerCase().includes(q)).map(h=>`<div class="card"><span class="mut sm">${esc(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||'<p class="mut">Amal topilmadi</p>'}
+function pick(id){sel=sel==id?null:id;render();if(innerWidth>=900)fit()}
+function viewOn(){go("xarita");setTimeout(fit,150)}
 function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(l=>JSON.parse(l.nuqtalar));if(a.length)map.fitBounds(a,{padding:[30,30]})}
-function dist(p){let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo(L.latLng(p[i]));return m}
+const dform=b=>`<label>Baraban raqami<input name="r" value="${esc(b?.raqam)}"></label><label>Marka<input name="m" value="${esc(b?.marka)}"></label><label>Kabel uzunligi (metr)<input name="l" type="number" min="1" value="${b?b.metr:""}"></label><label>Tuman<select name="t">${D.tuman.map(t=>`<option ${b&&b.tuman==t?"selected":""}>${esc(t)}</option>`).join("")}</select></label>`;
+function addD(){modal("Yangi baraban",dform(),"Qo'shish",async o=>{if(!(await act("addDrum",{raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Baraban qo'shildi")))return false;go("baraban")})}
+function editD(id){const b=D.baraban.find(x=>x.id==id);modal("Barabanni tahrirlash",dform(b),"Saqlash",async o=>await act("editDrum",{id,raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Saqlandi")||false)}
+function delD(id){const b=D.baraban.find(x=>x.id==id);modal("Baraban №"+esc(b.raqam)+" o'chirilsinmi?",'<p class="mut sm">Kabel chizilgan baraban o\'chirilmaydi.</p>',"O'chirish",async()=>{if(sel==id)sel=null;return await act("delDrum",{id},"Baraban o'chirildi")||false})}
+function lform(m,z){return `<label>Ishlatilgan uzunlik (metr)<input name="m" type="number" step="0.1" value="${m}"></label><label>Joy yoki izoh<input name="z" value="${esc(z)}"></label>`}
+function editL(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();modal("Kabelni tahrirlash",lform(l.metr,l.izoh),"Saqlash",async o=>await act("editLine",{id,metr:val(o,"m"),izoh:val(o,"z")},"Saqlandi")||false)}
+function delL(id){map&&map.closePopup();modal("Kabel o'chirilsinmi?","","O'chirish",async()=>await act("delLine",{id},"Kabel o'chirildi")||false)}
+const dist=p=>{let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo(L.latLng(p[i]));return m};
 function paint(){
  if(!layer)return;layer.clearLayers();
- D.kabel.filter(l=>!sel||l.baraban==sel).forEach(l=>{
-  const i=D.baraban.findIndex(b=>b.id==l.baraban),can=S.rol=="admin"||l.kim==S.u;
-  L.polyline(JSON.parse(l.nuqtalar),{color:COL[i%6],weight:5}).addTo(layer).bindPopup(
-   `<b>${l.metr} m</b><br>${esc(l.kim)} · ${esc(l.vaqt)}<br>${esc(l.izoh)}`+(can?`<br><button onclick="editL('${l.id}',${l.metr})">O'zgartirish</button> <button class="d" onclick="delL('${l.id}')">O'chirish</button>`:""))});
+ D.kabel.filter(l=>!sel||l.baraban==sel).forEach(l=>{const can=adm()||l.kim==S.u;
+  L.polyline(JSON.parse(l.nuqtalar),{color:col(l.baraban),weight:5}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${esc(l.vaqt)}<br>${esc(l.izoh)}`+(can?`<br><button onclick="editL('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
  if(drawing){L.polyline(pts,{color:"#000",weight:4,dashArray:"6"}).addTo(layer);pts.forEach(p=>L.circleMarker(p,{radius:5,color:"#fff",fillColor:"#c4410c",fillOpacity:1}).addTo(layer));$("meter").textContent=Math.round(dist(pts)*10)/10+" m"}}
-function editL(id,m){const v=prompt("Yangi uzunlik (metr):",m);if(v){map.closePopup();act("editLine",{id,metr:v})}}
-function delL(id){if(confirm("Kabel o'chirilsinmi?")){map.closePopup();act("delLine",{id})}}
-function draw(id){sel=id;drawing=true;pts=[];const b=D.baraban.find(x=>x.id==id);
- $("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+b.left+" m. Xaritada yo'nalish bo'ylab bosing.";
- $("dbar").style.display="block";go("xarita");drawing=true;render()}
+function draw(id){sel=id;const b=D.baraban.find(x=>x.id==id);
+ if(b.left<=0)return toast("Bu barabanda kabel qolmagan","err");
+ pts=[];drawing=true;$("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+b.left+" m. Xaritada yo'nalish bo'ylab bosing.";
+ $("dbar").style.display="block";go("xarita");drawing=true;paint()}
 function stopDraw(){drawing=false;pts=[];$("dbar").style.display="none";paint()}
 const undo=()=>{pts.pop();paint()},clearPts=()=>{pts=[];paint()};
-async function saveLine(){
- if(pts.length<2)return alert("Kamida 2 ta nuqta belgilang");
- const auto=Math.round(dist(pts)*10)/10,m=prompt("Haqiqiy ishlatilgan uzunlik (metr):",auto);if(!m)return;
- const izoh=prompt("Joy yoki izoh (ixtiyoriy):","")||"";
- if(await act("addLine",{baraban:sel,nuqtalar:pts,avto:auto,metr:m,izoh})){stopDraw();go("baraban")}}
+function saveLine(){
+ if(pts.length<2)return toast("Kamida 2 ta nuqta belgilang","err");
+ const auto=Math.round(dist(pts)*10)/10,id=sel,np=pts.slice();
+ modal("Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(auto,""),"Saqlash",async o=>{
+  if(!(await act("addLine",{baraban:id,nuqtalar:np,avto:auto,metr:val(o,"m"),izoh:val(o,"z")},"Kabel saqlandi")))return false;
+  stopDraw();go("baraban")})}
+function locate(){
+ if(!navigator.geolocation)return toast("Brauzer joylashuvni aniqlay olmaydi","err");
+ navigator.geolocation.getCurrentPosition(p=>{const c=[p.coords.latitude,p.coords.longitude];map.setView(c,17);me.clearLayers();L.circleMarker(c,{radius:8,color:"#fff",fillColor:"#2563eb",fillOpacity:1,weight:3}).addTo(me)},
+ ()=>toast("Joylashuvni aniqlab bo'lmadi. GPS ruxsatini tekshiring","err"),{enableHighAccuracy:true,timeout:8000})}
 if(S)call("list").then(start).catch(()=>{sessionStorage.clear();S=null});
 </script>
 </body>
