@@ -31,7 +31,7 @@ header{background:linear-gradient(120deg,#0a2a63,#0e3f8f 55%,#1556b8);color:#fff
 header .who{font-size:12px;opacity:.85}
 header button{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:10px;padding:7px 10px;cursor:pointer}
 nav{display:flex;background:var(--nav);border-bottom:1px solid var(--bd)}
-nav button{flex:1;background:none;border:0;padding:11px 6px;color:var(--dim);font-weight:600;cursor:pointer;border-bottom:3px solid transparent}
+nav button{flex:1;background:none;border:0;padding:7px 4px 6px;color:var(--dim);font:600 11px Inter,sans-serif;cursor:pointer;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:1px}nav i{font-style:normal;font-size:17px;line-height:1.2}
 nav button.on{color:var(--bl);border-color:var(--bl)}
 main{flex:1;min-height:0;display:flex}
 .side{width:410px;overflow:auto;padding:12px;border-right:1px solid var(--bd)}
@@ -67,7 +67,7 @@ main{flex:1;min-height:0;display:flex}
  .side{width:100%;border:0;padding-bottom:90px}.mapw{display:none}
  body[data-t=xarita] .side{display:none}body[data-t=xarita] .mapw{display:block}
  nav{position:fixed;left:0;right:0;bottom:0;z-index:900;border-top:1px solid var(--bd);border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
- #dbar{bottom:calc(64px + env(safe-area-inset-bottom))}
+ #dbar{bottom:calc(74px + env(safe-area-inset-bottom))}
 }
 @media(min-width:900px){#tx{display:none}#fab{bottom:24px;left:350px;right:auto}.ov{align-items:center}.modal{border-radius:20px}}
 </style>
@@ -82,7 +82,7 @@ main{flex:1;min-height:0;display:flex}
 <div id="app">
  <header><span class="logo">Kabel baraban</span><span class="who" id="who"></span>
   <button id="rf" onclick="refresh(true)" title="Yangilash">⟳</button><button onclick="theme()" title="Rejim">◐</button><button onclick="logout()">Chiqish</button></header>
- <nav><button data-t="baraban">Barabanlar</button><button id="tx" data-t="xarita">Xarita</button><button data-t="tarix" class="adm">Amallar tarixi</button></nav>
+ <nav><button data-t="baraban"><i>🧵</i>Barabanlar</button><button data-t="kabel"><i>〰️</i>Kabellar</button><button id="tx" data-t="xarita"><i>🗺️</i>Xarita</button><button data-t="tarix" class="adm"><i>🕘</i>Tarix</button></nav>
  <main><div class="side" id="side"></div>
   <div class="mapw"><div id="map"></div><button id="gps" class="btn sec" onclick="locate()" title="Mening joyim">◎</button>
    <div id="dbar"><div id="dinfo" class="mut sm"></div><div id="meter">0 m</div>
@@ -94,7 +94,7 @@ main{flex:1;min-height:0;display:flex}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const API="https://script.google.com/macros/s/AKfycbxf6t1ste_nj224GGKjQWZy6bqUhCMDUQ01TbFVlnYoc0CJ78kW-WCvOo39B4gBvRX9/exec";
-let S=JSON.parse(sessionStorage.s||"null"),D={baraban:[],kabel:[],tuman:[],tarix:[]},sel=null,drawing=false,pts=[],tab="baraban",F={q:"",t:"",h:""},TQ="",map,layer,me;
+let S=JSON.parse(sessionStorage.s||"null"),D={baraban:[],kabel:[],tuman:[],tarix:[]},sel=null,drawing=false,pts=[],tab="baraban",F={q:"",t:"",h:""},TQ="",KQ="",map,layer,me,hl;
 const $=id=>document.getElementById(id),adm=()=>S.rol=="admin";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const COL=["#0b6e8a","#c4410c","#6a8f1f","#8a3fa8","#b8860b","#d6336c","#2563eb","#0d9488"];
@@ -133,12 +133,13 @@ function start(){
  layer=L.layerGroup().addTo(map);me=L.layerGroup().addTo(map);
  map.on("click",e=>{if(drawing){pts.push([e.latlng.lat,e.latlng.lng]);paint()}});
  render();setInterval(()=>{if(!drawing&&!document.querySelector(".ov")&&document.activeElement.tagName!="INPUT")refresh()},60000)}
-function go(t){tab=t;if(drawing&&t!="xarita")stopDraw();document.body.dataset.t=t=="xarita"?"xarita":"baraban";render();setTimeout(()=>map.invalidateSize(),60)}
+function go(t){tab=t;if(t!="xarita")hl=null;if(drawing&&t!="xarita")stopDraw();document.body.dataset.t=t=="xarita"?"xarita":"baraban";render();setTimeout(()=>map.invalidateSize(),60)}
 function st(b){return b.left<=0?["Tugagan","tugagan"]:b.left<=b.metr*.1?["Kam qoldi","kam"]:["Yetarli","ok"]}
 function render(){
  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==(tab=="xarita"?"xarita":tab)));
  const s=$("side");
  if(tab=="tarix"){s.innerHTML=`<input placeholder="Qidirish: xodim, amal, baraban..." value="${esc(TQ)}" oninput="TQ=this.value;tarix()"><div id="lst"></div>`;tarix()}
+ else if(tab=="kabel"){s.innerHTML=`<div class="sum" style="grid-template-columns:repeat(2,1fr)"><div><b>${D.kabel.length}</b><span>tortilgan kabel</span></div><div><b>${Math.round(D.kabel.reduce((a,l)=>a+Number(l.metr),0))}</b><span>jami metr</span></div></div><input placeholder="Qidirish: baraban, xodim, joy" value="${esc(KQ)}" oninput="KQ=this.value;kabellar()"><div id="lst"></div>`;kabellar()}
  else{
   const A=D.baraban,sum=k=>Math.round(A.reduce((a,b)=>a+Number(b[k]),0));
   s.innerHTML=`<div class="sum"><div><b>${A.length}</b><span>baraban</span></div><div><b>${sum("metr")}</b><span>jami m</span></div><div><b>${sum("used")}</b><span>ishlatildi</span></div><div><b>${sum("left")}</b><span>qoldi</span></div></div>
@@ -160,11 +161,17 @@ function card(b){
  h+="</div>";
  if(on){const L2=D.kabel.filter(l=>l.baraban==b.id);
   h+=(L2.length?`<div class="row"><button class="btn sec s" onclick="event.stopPropagation();viewOn()">Xaritada ko'rish</button></div>`:"")+L2.map(l=>{const can=adm()||l.kim==S.u;
-   return `<div class="ln"><span>${esc(l.vaqt)} · ${esc(l.kim)}<br><span class="mut">${esc(l.izoh)}</span></span><span><b>${l.metr} m</b>${can?`<div class="row"><button class="btn sec s" onclick="event.stopPropagation();editL('${l.id}')">Tahrir</button><button class="btn dng s" onclick="event.stopPropagation();delL('${l.id}')">O'chirish</button></div>`:""}</span></div>`}).join("")||'<p class="mut sm">Hali kabel chizilmagan</p>'}
+   return `<div class="ln"><span>${fmt(l.vaqt)} · ${esc(l.kim)}<br><span class="mut">${esc(l.izoh)}</span></span><span><b>${l.metr} m</b>${can?`<div class="row"><button class="btn sec s" onclick="event.stopPropagation();editL('${l.id}')">Tahrir</button><button class="btn dng s" onclick="event.stopPropagation();delL('${l.id}')">O'chirish</button></div>`:""}</span></div>`}).join("")||'<p class="mut sm">Hali kabel chizilmagan</p>'}
  return h+"</div>"}
 function tarix(){
  const q=TQ.toLowerCase();
- $("lst").innerHTML=D.tarix.filter(h=>!q||Object.values(h).join(" ").toLowerCase().includes(q)).map(h=>`<div class="card"><span class="mut sm">${esc(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||'<p class="mut">Amal topilmadi</p>'}
+ $("lst").innerHTML=D.tarix.filter(h=>!q||Object.values(h).join(" ").toLowerCase().includes(q)).map(h=>`<div class="card"><span class="mut sm">${fmt(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||'<p class="mut">Amal topilmadi</p>'}
+function fmt(s){s=String(s||"");if(/^\d{4}-\d\d-\d\dT/.test(s)){const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Tashkent",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(s)).reduce((a,x)=>(a[x.type]=x.value,a),{});return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`}return s}
+function kabellar(){
+ const q=KQ.toLowerCase(),A=D.kabel.slice().reverse().filter(l=>{const b=D.baraban.find(x=>x.id==l.baraban)||{};return !q||[b.raqam,b.marka,b.tuman,l.kim,l.izoh].join(" ").toLowerCase().includes(q)});
+ $("lst").innerHTML=A.map(l=>{const b=D.baraban.find(x=>x.id==l.baraban)||{},can=adm()||l.kim==S.u;
+  return `<div class="card"><div class="top"><span class="dot" style="background:${col(l.baraban)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.tuman)}</span><b style="margin-left:auto">${l.metr} m</b></div><div class="mut sm">${fmt(l.vaqt)} · ${esc(l.kim)}</div>${l.izoh?`<div class="sm">${esc(l.izoh)}</div>`:""}<div class="row"><button class="btn s" onclick="viewLine('${l.id}')">Xaritada ko'rish</button>${can?`<button class="btn sec s" onclick="editL('${l.id}')">Tahrir</button><button class="btn dng s" onclick="delL('${l.id}')">O'chirish</button>`:""}</div></div>`}).join("")||'<p class="mut">Hali kabel chizilmagan</p>'}
+function viewLine(id){const l=D.kabel.find(x=>x.id==id);sel=l.baraban;go("xarita");hl=id;setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(JSON.parse(l.nuqtalar),{padding:[50,50],maxZoom:19})},200)}
 function pick(id){sel=sel==id?null:id;render();if(innerWidth>=900)fit()}
 function viewOn(){go("xarita");setTimeout(fit,150)}
 function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(l=>JSON.parse(l.nuqtalar));if(a.length)map.fitBounds(a,{padding:[30,30]})}
@@ -172,26 +179,27 @@ const dform=b=>`<label>Baraban raqami<input name="r" value="${esc(b?.raqam)}"></
 function addD(){modal("Yangi baraban",dform(),"Qo'shish",async o=>{if(!(await act("addDrum",{raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Baraban qo'shildi")))return false;go("baraban")})}
 function editD(id){const b=D.baraban.find(x=>x.id==id);modal("Barabanni tahrirlash",dform(b),"Saqlash",async o=>await act("editDrum",{id,raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Saqlandi")||false)}
 function delD(id){const b=D.baraban.find(x=>x.id==id);modal("Baraban №"+esc(b.raqam)+" o'chirilsinmi?",'<p class="mut sm">Kabel chizilgan baraban o\'chirilmaydi.</p>',"O'chirish",async()=>{if(sel==id)sel=null;return await act("delDrum",{id},"Baraban o'chirildi")||false})}
-function lform(m,z){return `<label>Ishlatilgan uzunlik (metr)<input name="m" type="number" step="0.1" value="${m}"></label><label>Joy yoki izoh<input name="z" value="${esc(z)}"></label>`}
-function editL(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();modal("Kabelni tahrirlash",lform(l.metr,l.izoh),"Saqlash",async o=>await act("editLine",{id,metr:val(o,"m"),izoh:val(o,"z")},"Saqlandi")||false)}
+function lform(m,z,mx){return `<p class="mut sm">Ko'pi bilan <b>${mx} m</b> yozish mumkin (barabanda shuncha qolgan).</p><label>Ishlatilgan uzunlik (metr)<input name="m" type="number" step="0.1" min="0.1" max="${mx}" value="${m}"></label><label>Joy yoki izoh<input name="z" value="${esc(z)}"></label>`}
+function editL(id){const l=D.kabel.find(x=>x.id==id),b=D.baraban.find(x=>x.id==l.baraban),mx=Math.round((b.left+Number(l.metr))*10)/10;map&&map.closePopup();modal("Kabelni tahrirlash",lform(l.metr,l.izoh,mx),"Saqlash",async o=>{const m=Number(val(o,"m"));if(!(m>0&&m<=mx)){toast("Metr 0 dan katta va "+mx+" m dan oshmasligi kerak","err");return false}return await act("editLine",{id,metr:m,izoh:val(o,"z")},"Saqlandi")||false})}
 function delL(id){map&&map.closePopup();modal("Kabel o'chirilsinmi?","","O'chirish",async()=>await act("delLine",{id},"Kabel o'chirildi")||false)}
 const dist=p=>{let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo(L.latLng(p[i]));return m};
 function paint(){
  if(!layer)return;layer.clearLayers();
  D.kabel.filter(l=>!sel||l.baraban==sel).forEach(l=>{const can=adm()||l.kim==S.u;
-  L.polyline(JSON.parse(l.nuqtalar),{color:col(l.baraban),weight:5}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${esc(l.vaqt)}<br>${esc(l.izoh)}`+(can?`<br><button onclick="editL('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
+  L.polyline(JSON.parse(l.nuqtalar),{color:col(l.baraban),weight:l.id==hl?9:5,opacity:hl&&l.id!=hl?.45:1}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${fmt(l.vaqt)}<br>${esc(l.izoh)}`+(can?`<br><button onclick="editL('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
  if(drawing){L.polyline(pts,{color:"#000",weight:4,dashArray:"6"}).addTo(layer);pts.forEach(p=>L.circleMarker(p,{radius:5,color:"#fff",fillColor:"#c4410c",fillOpacity:1}).addTo(layer));$("meter").textContent=Math.round(dist(pts)*10)/10+" m"}}
 function draw(id){sel=id;const b=D.baraban.find(x=>x.id==id);
  if(b.left<=0)return toast("Bu barabanda kabel qolmagan","err");
  pts=[];drawing=true;$("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+b.left+" m. Xaritada yo'nalish bo'ylab bosing.";
- $("dbar").style.display="block";go("xarita");drawing=true;paint()}
+ $("dbar").style.display="block";go("xarita");drawing=true;paint();setTimeout(locate,300)}
 function stopDraw(){drawing=false;pts=[];$("dbar").style.display="none";paint()}
 const undo=()=>{pts.pop();paint()},clearPts=()=>{pts=[];paint()};
 function saveLine(){
  if(pts.length<2)return toast("Kamida 2 ta nuqta belgilang","err");
- const auto=Math.round(dist(pts)*10)/10,id=sel,np=pts.slice();
- modal("Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(auto,""),"Saqlash",async o=>{
-  if(!(await act("addLine",{baraban:id,nuqtalar:np,avto:auto,metr:val(o,"m"),izoh:val(o,"z")},"Kabel saqlandi")))return false;
+ const auto=Math.round(dist(pts)*10)/10,id=sel,np=pts.slice(),mx=D.baraban.find(x=>x.id==id).left;
+ modal("Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(Math.min(auto,mx),"",mx),"Saqlash",async o=>{
+  const m=Number(val(o,"m"));if(!(m>0&&m<=mx)){toast("Metr 0 dan katta va "+mx+" m dan oshmasligi kerak","err");return false}
+  if(!(await act("addLine",{baraban:id,nuqtalar:np,avto:auto,metr:m,izoh:val(o,"z")},"Kabel saqlandi")))return false;
   stopDraw();go("baraban")})}
 function locate(){
  if(!navigator.geolocation)return toast("Brauzer joylashuvni aniqlay olmaydi","err");
