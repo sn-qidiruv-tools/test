@@ -3,238 +3,308 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a3a8c">
+<meta name="theme-color" content="#0b1f4b">
 <title>Kabel barabanlari</title>
 <script>try{var t=localStorage.getItem("kb_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-:root{--bg:#eef1f7;--pn:#fff;--s2:#f3f5fa;--bd:rgba(20,30,60,.1);--tx:#12162b;--dim:#6b7280;--bl:#0a4a9e;--ok:#16a34a;--wr:#d97706;--dg:#e11d48;--nav:rgba(255,255,255,.98);--sh:0 4px 18px rgba(20,40,90,.07);color-scheme:light}
-html[data-theme=dark]{--bg:#0d1322;--pn:#161d30;--s2:#1e2740;--bd:rgba(255,255,255,.1);--tx:#e8ecf7;--dim:#93a0bd;--bl:#4d8dff;--ok:#4ade80;--wr:#fbbf24;--dg:#fb7185;--nav:rgba(22,29,48,.98);--sh:0 4px 18px rgba(0,0,0,.3);color-scheme:dark}
-*{box-sizing:border-box}html,body{height:100%;margin:0}
-body{font:14.5px/1.4 Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column}
-h3,.logo b{font-family:"Space Grotesk",Inter,sans-serif}
-button,input,select{font:inherit;color:inherit}svg{display:block}
-.btn{background:linear-gradient(120deg,#0a4a9e,#1f6fd1);color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center}
-.btn.sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
-.btn.dng{background:transparent;color:var(--dg);border:1px solid var(--dg)}
+:root{--bg:#eef2f9;--pn:#fff;--s2:#f2f5fb;--bd:rgba(18,32,66,.09);--tx:#101828;--dim:#667085;--bl:#2563eb;--bl2:#1d4ed8;--ok:#12a150;--wr:#d97706;--dg:#e5384f;--nav:rgba(255,255,255,.92);--sh:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,40,100,.07);--shh:0 10px 30px rgba(16,40,100,.14);--r:18px;color-scheme:light}
+html[data-theme=dark]{--bg:#0a0f1d;--pn:#131a2d;--s2:#1b2440;--bd:rgba(255,255,255,.08);--tx:#eaf0ff;--dim:#94a3c4;--bl:#5b95ff;--bl2:#3b82f6;--ok:#34d399;--wr:#fbbf24;--dg:#fb7185;--nav:rgba(19,26,45,.92);--sh:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);--shh:0 10px 30px rgba(0,0,0,.45);color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;margin:0}
+body{font:14.5px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}svg{display:block}h3{margin:0;letter-spacing:-.02em}
+.btn{background:linear-gradient(135deg,var(--bl2),var(--bl));color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:transform .12s,box-shadow .2s,opacity .2s;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.btn:hover{box-shadow:0 4px 14px rgba(37,99,235,.35)}.btn:active{transform:scale(.96)}
+.btn.sec{background:var(--s2);color:var(--tx);border:1px solid var(--bd);box-shadow:none}.btn.dng{background:transparent;color:var(--dg);border:1px solid var(--dg);box-shadow:none}
 .btn.s{padding:7px 11px;font-size:13px;border-radius:10px}.btn:disabled{opacity:.55}
-input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--pn);margin:4px 0 10px}
-label{font-size:12.5px;color:var(--dim)}:focus-visible{outline:2px solid var(--bl);outline-offset:2px}
-#login{margin:auto;width:min(360px,92%);background:var(--pn);padding:28px;border-radius:22px;border:1px solid var(--bd);box-shadow:var(--sh)}
-#login h3{margin:10px 0 2px;font-size:22px}#err{color:var(--dg);min-height:22px;font-size:13px}
-.mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#0a3a8c,#1f6fd1);color:#fff;display:grid;place-items:center}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--pn);margin:4px 0 10px;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:0;border-color:var(--bl);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+label{font-size:12.5px;color:var(--dim);font-weight:500}:focus-visible{outline:2px solid var(--bl);outline-offset:2px}
+#login{margin:auto;width:min(370px,92%);background:var(--pn);padding:30px;border-radius:24px;border:1px solid var(--bd);box-shadow:var(--shh);animation:up .5s both}
+#login h3{margin:14px 0 2px;font-size:23px}#err{color:var(--dg);min-height:22px;font-size:13px}
+.mark{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#0b1f4b,#2563eb);color:#fff;display:grid;place-items:center;box-shadow:0 6px 16px rgba(37,99,235,.35)}
+#ld{display:none;margin:auto;width:min(420px,92%)}.sk{height:92px;border-radius:var(--r);margin-bottom:12px;background:linear-gradient(90deg,var(--pn) 25%,var(--s2) 50%,var(--pn) 75%);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
 #app{display:none;flex:1;min-height:0;flex-direction:column}
-header{background:linear-gradient(120deg,#0a2a63,#0e3f8f 55%,#1556b8);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:8px}
-.logo{display:flex;align-items:center;gap:10px;margin-right:auto}.logo .mark{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.18)}
-.logo b{font-size:17px;display:block;line-height:1.1}.logo small{opacity:.75;font-size:11.5px}
-header button{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:10px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
-nav{display:flex;background:var(--nav);border-bottom:1px solid var(--bd)}
-nav button{flex:1;background:none;border:0;padding:7px 2px 6px;color:var(--dim);font:600 10.5px Inter,sans-serif;cursor:pointer;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px}
+header{background:linear-gradient(120deg,#0b1f4b,#123a8f 60%,#1d54c7);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:8px}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto}.logo .mark{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.16);box-shadow:none}
+.logo b{font-size:16.5px;display:block;line-height:1.1;letter-spacing:-.02em}.logo small{opacity:.75;font-size:11.5px}
+header button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:11px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;transition:background .2s}header button:hover{background:rgba(255,255,255,.25)}
+#sy{display:none;font-size:11.5px;background:rgba(255,255,255,.16);padding:5px 10px;border-radius:99px;align-items:center;gap:6px}#sy.on{display:flex}#sy.off{background:#e5384f}
+.spin svg{animation:sp .9s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+nav{display:flex;background:var(--nav);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+nav button{flex:1;background:none;border:0;padding:7px 2px 6px;color:var(--dim);font:600 10.5px Inter,sans-serif;cursor:pointer;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s,border-color .2s}
 nav button.on{color:var(--bl);border-color:var(--bl)}
 main{flex:1;min-height:0;display:flex}
-.side{width:420px;overflow:auto;padding:12px;border-right:1px solid var(--bd)}
-.mapw{flex:1;position:relative;min-width:0}#map{position:absolute;inset:0;z-index:0}
-.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.sum div{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:9px 6px;text-align:center;box-shadow:var(--sh)}
-.sum b{display:block;font:700 17px "Space Grotesk",sans-serif}.sum span{font-size:11px;color:var(--dim)}
+.side{width:430px;overflow:auto;padding:14px;border-right:1px solid var(--bd);scroll-behavior:smooth}
+.mapw{flex:1;position:relative;min-width:0;background:var(--s2)}#map{position:absolute;inset:0;z-index:0}
+.ani .card,.ani .sum>div,.ani .chips{animation:up .38s cubic-bezier(.2,.8,.2,1) both}
+.ani .card:nth-child(2){animation-delay:.04s}.ani .card:nth-child(3){animation-delay:.08s}.ani .card:nth-child(4){animation-delay:.12s}.ani .card:nth-child(n+5){animation-delay:.16s}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.sum>div{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:10px 6px;text-align:center;box-shadow:var(--sh)}
+.sum b{display:block;font:800 18px Inter,sans-serif;letter-spacing:-.03em}.sum span{font-size:11px;color:var(--dim);font-weight:500}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.chip{background:var(--pn);border:1px solid var(--bd);border-radius:99px;padding:5px 11px;font-size:12.5px;display:flex;align-items:center;gap:6px;box-shadow:var(--sh)}.chip i{width:8px;height:8px;border-radius:50%}
 .flt{display:flex;gap:6px}.flt>*{margin:0 0 10px;min-width:0;flex:1}
-.card{background:var(--pn);border:1px solid var(--bd);border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:var(--sh)}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--sh);transition:box-shadow .25s,border-color .25s,transform .25s}
+@media(hover:hover){.card:hover{box-shadow:var(--shh);transform:translateY(-1px)}}
 .card.on{border-color:var(--bl);box-shadow:0 0 0 2px var(--bl)}
-.top{display:flex;align-items:center;gap:6px}.top .pill{margin-left:auto}
-.dot{width:12px;height:12px;border-radius:50%;flex:none}
-.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px}
-.pill.ok{background:rgba(22,163,74,.15);color:var(--ok)}.pill.kam{background:rgba(217,119,6,.16);color:var(--wr)}.pill.tugagan{background:rgba(225,29,72,.14);color:var(--dg)}
-.bar{height:8px;background:var(--s2);border-radius:5px;margin:9px 0 6px;overflow:hidden}
-.bar i{display:block;height:100%;border-radius:5px;background:var(--ok)}.bar i.kam{background:var(--wr)}.bar i.tugagan{background:var(--dg)}
-.mut{color:var(--dim)}.sm{font-size:13px}.row{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
-.ln{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:9px 0;border-top:1px solid var(--bd);font-size:13px}.ln .row{margin:4px 0 0;justify-content:flex-end}
-.warn{background:rgba(225,29,72,.1);color:var(--dg);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13px}
-#dbar{position:absolute;z-index:800;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:var(--pn);border:1px solid var(--bd);border-radius:18px;padding:12px;display:none;box-shadow:var(--sh)}
-#meter{font:700 24px "Space Grotesk",sans-serif}
+.top{display:flex;align-items:center;gap:7px}.top .pill{margin-left:auto}.top b{font-size:15.5px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(127,127,127,.15)}
+.pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+.pill.ok{background:rgba(18,161,80,.13);color:var(--ok)}.pill.kam{background:rgba(217,119,6,.15);color:var(--wr)}.pill.tugagan{background:rgba(229,56,79,.13);color:var(--dg)}
+.bar{height:8px;background:var(--s2);border-radius:5px;margin:10px 0 7px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ok),#4ade80);transition:width .7s cubic-bezier(.2,.8,.2,1)}.bar i.kam{background:linear-gradient(90deg,var(--wr),#fbbf24)}.bar i.tugagan{background:var(--dg)}
+.mut{color:var(--dim)}.sm{font-size:13px}.row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.warn{background:rgba(229,56,79,.1);color:var(--dg);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13px}
+.h{font-weight:700;margin:4px 2px 8px;font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px;max-width:1500px}.dash .card{margin:0}.dash .wide{grid-column:1/-1}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;grid-column:1/-1}
+.kpi>div{background:var(--pn);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}.kpi b{display:block;font:800 28px Inter;letter-spacing:-.04em}.kpi span{color:var(--dim);font-size:12.5px;font-weight:500}
+.br{display:grid;grid-template-columns:110px 1fr 74px;gap:10px;align-items:center;margin:9px 0;font-size:13px}.br span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.br b{text-align:right}
+.bt{height:10px;background:var(--s2);border-radius:6px;overflow:hidden}.bt i{display:block;height:100%;border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.cols{display:flex;align-items:flex-end;gap:6px;height:150px;margin-top:8px}.col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;font-size:10.5px;color:var(--dim)}.col i{width:100%;background:linear-gradient(180deg,var(--bl),var(--bl2));border-radius:6px 6px 2px 2px;min-height:2px;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.ev{padding:8px 0;border-top:1px solid var(--bd);font-size:13px}.ev:first-of-type{border:0}
+#dbar{position:absolute;z-index:800;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:var(--pn);border:1px solid var(--bd);border-radius:20px;padding:13px;display:none;box-shadow:var(--shh);animation:up .3s both}
+#meter{font:800 26px Inter;letter-spacing:-.03em}
 #gps{position:absolute;z-index:700;right:10px;top:84px;width:40px;height:40px;padding:0}
-#fab{position:fixed;z-index:800;right:16px;bottom:84px;width:54px;height:54px;border-radius:50%;padding:0;box-shadow:0 8px 20px rgba(10,74,158,.4);display:none}
-.vx{background:#e11d48;border:3px solid #fff;border-radius:50%;box-shadow:0 1px 5px rgba(0,0,0,.4)}
-.ov{position:fixed;inset:0;background:rgba(10,20,40,.55);display:flex;align-items:flex-end;justify-content:center;z-index:2000}
-.modal{background:var(--pn);width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:22px;max-height:90vh;overflow:auto}
-.modal h3{margin:0 0 12px}.ma{display:flex;gap:10px;margin-top:8px}.ma .btn{flex:1}
+#mb{position:absolute;z-index:700;left:10px;top:10px;display:none;padding:9px 13px}
+#fab{position:fixed;z-index:800;right:16px;bottom:84px;width:56px;height:56px;border-radius:50%;padding:0;box-shadow:0 10px 24px rgba(37,99,235,.45);display:none;animation:pop .35s both}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.vx{background:#e5384f;border:3px solid #fff;border-radius:50%;box-shadow:0 1px 6px rgba(0,0,0,.45)}
+.ov{position:fixed;inset:0;background:rgba(8,16,40,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;z-index:2000;animation:fd .2s both}@keyframes fd{from{opacity:0}}
+.modal{background:var(--pn);width:100%;max-width:450px;border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow:auto;animation:sheet .32s cubic-bezier(.2,.9,.3,1) both}@keyframes sheet{from{transform:translateY(60px);opacity:0}}
+.modal h3{margin-bottom:12px;font-size:19px}.ma{display:flex;gap:10px;margin-top:8px}.ma .btn{flex:1}
 #toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:3000;width:min(92%,380px);display:flex;flex-direction:column;gap:8px}
-.toast{padding:12px 16px;border-radius:12px;font-weight:600;font-size:13px;background:var(--pn);border:1px solid var(--bd);box-shadow:var(--sh)}.toast.err{color:var(--dg)}.toast.ok{color:var(--bl)}
-@keyframes sp{to{transform:rotate(360deg)}}.spin svg{animation:sp .9s linear infinite}
-.mo{display:none!important}
+.toast{padding:12px 16px;border-radius:14px;font-weight:600;font-size:13px;background:var(--pn);border:1px solid var(--bd);box-shadow:var(--shh);animation:tin .3s both}@keyframes tin{from{transform:translateY(-14px);opacity:0}}.toast.err{color:var(--dg)}.toast.ok{color:var(--bl)}
+.leaflet-popup-content-wrapper{border-radius:14px}
+.mo,.do{display:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media(max-width:899px){
- .side{width:100%;border:0;padding-bottom:96px}.mapw{display:none}
- body[data-t=xarita] .side{display:none}body[data-t=xarita] .mapw{display:block}
+ .side{width:100%;border:0;padding-bottom:100px}.mapw{display:none}
+ body[data-m="1"] .side{display:none}body[data-m="1"] .mapw{display:block}body[data-m="1"] #mb{display:flex}
  nav{position:fixed;left:0;right:0;bottom:0;z-index:900;border-top:1px solid var(--bd);border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
- #dbar{bottom:calc(74px + env(safe-area-inset-bottom))}.mo{display:flex!important}
+ #dbar{bottom:calc(74px + env(safe-area-inset-bottom))}.mo{display:flex!important}.br{grid-template-columns:90px 1fr 64px}
 }
-@media(min-width:900px){#fab{bottom:24px;left:350px;right:auto}.ov{align-items:center}.modal{border-radius:20px}}
+@media(min-width:900px){
+ .do{display:flex!important}#fab{bottom:24px;left:360px;right:auto}.ov{align-items:center}.modal{border-radius:22px}
+ nav{padding:0 14px;gap:2px}nav button{flex:none;flex-direction:row;padding:13px 16px;font-size:13.5px;gap:8px}
+ body[data-t=panel] .mapw{display:none}body[data-t=panel] .side{width:100%;border:0;padding:22px 28px}body[data-t=panel] #fab{display:none!important}
+}
 </style>
 </head>
-<body data-t="baraban">
+<body data-t="baraban" data-m="0">
 <form id="login" onsubmit="doLogin();return false">
- <div class="mark" id="lm"></div><h3>Kabel barabanlari</h3><p class="mut" style="margin:0 0 16px">Hisob va xaritada kabel yo'nalishi</p>
+ <div class="mark" id="lm"></div><h3>Kabel barabanlari</h3><p class="mut" style="margin:2px 0 18px">Hisob va xaritada kabel yo'nalishi</p>
  <label>Login<input id="lu" autocomplete="username" required></label>
  <label>Parol<input id="lp" type="password" autocomplete="current-password" required></label>
  <div id="err"></div><button class="btn" style="width:100%">Kirish</button>
 </form>
-<div id="ld" style="display:none;margin:auto;color:var(--dim)">Yuklanmoqda...</div>
+<div id="ld"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
 <div id="app">
  <header><div class="logo"><div class="mark" id="hm"></div><div><b>Kabel baraban</b><small id="who"></small></div></div>
-  <button id="rf" onclick="refresh(true)" title="Yangilash"></button><button id="th" onclick="theme()" title="Rejim"></button><button id="lo" onclick="logout()" title="Chiqish"></button></header>
+  <span id="sy"></span><button id="rf" onclick="refresh(true)" title="Yangilash"></button><button id="th" onclick="theme()" title="Rejim"></button><button id="lo" onclick="logout()" title="Chiqish"></button></header>
  <nav id="nav"></nav>
- <main><div class="side" id="side"></div>
-  <div class="mapw"><div id="map"></div><button id="gps" class="btn sec" onclick="locate()" title="Mening joyim"></button>
+ <main><div class="side ani" id="side"></div>
+  <div class="mapw"><div id="map"></div><button id="mb" class="btn sec s" onclick="backList()"></button><button id="gps" class="btn sec" onclick="locate()" title="Mening joyim"></button>
    <div id="dbar"><div id="dinfo" class="mut sm"></div><div id="meter">0 m</div>
     <div class="row"><button class="btn sec s" onclick="undo()">Orqaga</button><button class="btn sec s" onclick="clearPts()">Tozalash</button><button class="btn s" onclick="saveLine()">Saqlash</button><button class="btn dng s" onclick="stopDraw()">Bekor</button></div></div>
   </div></main>
  <button id="fab" class="btn" onclick="addD()" title="Baraban qo'shish"></button>
 </div>
 <div id="toasts"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const API="https://script.google.com/macros/s/AKfycbxf6t1ste_nj224GGKjQWZy6bqUhCMDUQ01TbFVlnYoc0CJ78kW-WCvOo39B4gBvRX9/exec";
-const IC={drum:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/>',cable:'<path d="M3 17c4 0 4-10 9-10s5 10 9 10"/><circle cx="3" cy="17" r="1.4"/><circle cx="21" cy="17" r="1.4"/>',map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',plus:'<path d="M12 5v14M5 12h14"/>',loc:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',ref:'<path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',back:'<path d="M4 12a8 8 0 1 1 3 6M4 12V7M4 12h5"/>'};
+const LJS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js",LCSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css";
+const IC={drum:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/>',cable:'<path d="M3 17c4 0 4-10 9-10s5 10 9 10"/><circle cx="3" cy="17" r="1.4"/><circle cx="21" cy="17" r="1.4"/>',map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',plus:'<path d="M12 5v14M5 12h14"/>',loc:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',ref:'<path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',back:'<path d="M4 12a8 8 0 1 1 3 6M4 12V7M4 12h5"/>',panel:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',done:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',arr:'<path d="M15 6l-6 6 6 6"/>'};
 const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
-let S=JSON.parse(localStorage.getItem("kb_s")||"null"),D={baraban:[],kabel:[],tuman:[],tarix:[],savat:[],tgerr:""},sel=null,drawing=false,ed=null,pts=[],tab="baraban",F={q:"",t:"",m:"",h:""},KF={q:"",t:"",b:"",from:"",to:""},TQ="",map,layer,me,hl,live;
-const $=id=>document.getElementById(id),adm=()=>S&&S.rol=="admin";
+const J=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+let S=J("kb_s"),D=Object.assign({baraban:[],kabel:[],tuman:[],tarix:[],savat:[],tgerr:""},J("kb_d")||{}),Q=J("kb_q")||[],tab="baraban",mv=0,sel=null,drawing=false,ed=null,pts=[],hl=null,F={q:"",t:"",m:"",h:""},KF={q:"",t:"",b:"",from:"",to:""},TQ="",TF="",map,layer,me,live,mapP,lastT="",running=false,need=false;
+const $=id=>document.getElementById(id),adm=()=>S&&S.rol=="admin",sv=()=>{try{localStorage.setItem("kb_q",JSON.stringify(Q))}catch(e){}};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const COL=["#0b6e8a","#c4410c","#6a8f1f","#8a3fa8","#b8860b","#d6336c","#2563eb","#0d9488"];
-const gp=l=>l._p||(l._p=JSON.parse(l.nuqtalar));
-const bd=id=>D.baraban.find(b=>b.id==id)||{},col=id=>COL[Math.max(0,D.baraban.findIndex(b=>b.id==id))%COL.length];
+const COL=["#2563eb","#e5701a","#12a150","#8b5cf6","#d4a017","#e11d74","#0891b2","#64748b"];
+const gp=l=>l._p||(l._p=JSON.parse(l.nuqtalar)),bd=id=>D.baraban.find(b=>b.id==id)||{},col=id=>COL[Math.max(0,D.baraban.findIndex(b=>b.id==id))%8];
+const fm=n=>Math.round(+n||0),sum=(A,k)=>A.reduce((a,b)=>a+(+b[k]||0),0),uid=()=>Math.random().toString(16).slice(2,10),sleep=t=>new Promise(r=>setTimeout(r,t));
+const isFin=b=>fm(b.left)<=0;
 function fmt(s){s=String(s||"");if(/^\d{4}-\d\d-\d\dT/.test(s)){const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Tashkent",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(s)).reduce((a,x)=>(a[x.type]=x.value,a),{});return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`}return s}
+const nowS=()=>fmt(new Date().toISOString());
 function tsv(s){const m=fmt(s).match(/(\d+)\.(\d+)\.(\d+) (\d+):(\d+)/);return m?new Date(+m[3],m[2]-1,+m[1],+m[4],+m[5]):new Date(0)}
 function toast(m,t){const e=document.createElement("div");e.className="toast "+(t||"ok");e.textContent=m;$("toasts").appendChild(e);setTimeout(()=>e.remove(),3200)}
-async function call(action,x={}){
- $("rf").classList.add("spin");
- try{const r=await fetch(API,{method:"POST",body:JSON.stringify({...x,action,u:S.u,p:S.p})});
-  const j=await r.json();if(j.err){if(S.rol&&/Login yoki parol/.test(j.err))logout();throw new Error(j.err)}
-  D=Object.assign(D,j);S.rol=j.rol;localStorage.setItem("kb_s",JSON.stringify(S));
-  try{localStorage.setItem("kb_d",JSON.stringify({baraban:D.baraban,kabel:D.kabel,tuman:D.tuman}))}catch(e){}
-  if(j.nt)fetch(API,{method:"POST",keepalive:true,body:JSON.stringify({action:"notify",nt:j.nt,u:S.u,p:S.p})}).catch(()=>{});
-  return j}
- finally{$("rf").classList.remove("spin")}}
-async function act(a,x,msg){try{await call(a,x);render();if(msg)toast(msg);return true}catch(e){toast(e.message,"err");return false}}
-async function refresh(m){try{await call("list",{full:tab=="tarix"||tab=="savat"?1:0});render();if(m)toast("Yangilandi")}catch(e){toast(e.message,"err")}}
+async function api(action,x={}){const r=await fetch(API,{method:"POST",body:JSON.stringify({...x,action,u:S.u,p:S.p})});const t=await r.text();return{j:JSON.parse(t),t}}
+function cache(){S.rol=D.rol||S.rol;try{localStorage.setItem("kb_s",JSON.stringify(S));localStorage.setItem("kb_d",JSON.stringify({baraban:D.baraban,kabel:D.kabel,tuman:D.tuman}))}catch(e){}}
+function adopt(j,same){D=Object.assign(D,j);cache();if(same)return;const a=document.activeElement;if(a&&a.tagName=="INPUT"&&a.closest("#side"))return;render()}
+function syncUI(off){const e=$("sy");e.className=Q.length||off?"on"+(off?" off":""):"";e.innerHTML=Q.length||off?`<span class="spin">${ic("ref",13)}</span>${off?"Oflayn, qayta uriniladi":"Saqlanmoqda"}`:""}
+async function run(){
+ if(running)return;running=true;syncUI();
+ while(Q.length){const it=Q[0];
+  try{const{j}=await api(it.a,it.x);
+   if(j.err){Q.shift();sv();toast(j.err,"err");need=true;if(/Login yoki parol/.test(j.err)){logout();return}syncUI();continue}
+   Q.shift();sv();if(j.nt)fetch(API,{method:"POST",keepalive:true,body:JSON.stringify({action:"notify",nt:j.nt,u:S.u,p:S.p})}).catch(()=>{});
+   if(!Q.length)adopt(j);syncUI()}
+  catch(e){syncUI(1);await sleep(4000)}}
+ running=false;syncUI();if(need){need=false;await refresh()}}
+async function refresh(m){
+ if(Q.length||running)return;$("rf").classList.add("spin");
+ try{const{j,t}=await api("list",{full:["tarix","savat","panel"].includes(tab)?1:0});if(j.err)throw new Error(j.err);const same=t===lastT;lastT=t;if(Q.length)return;adopt(j,same);if(m)toast("Yangilandi")}
+ catch(e){if(m)toast(e.message,"err")}finally{$("rf").classList.remove("spin")}}
+function rc(){const u={};D.kabel.forEach(l=>u[l.baraban]=(u[l.baraban]||0)+Number(l.metr));D.baraban.forEach(b=>{b.used=Math.round((u[b.id]||0)*10)/10;b.left=Math.round((b.metr-(u[b.id]||0))*10)/10})}
+function apply(a,x){
+ if(a=="addDrum")D.baraban.push({id:x.id,raqam:x.raqam,marka:x.marka,metr:+x.metr,tuman:x.tuman,tgmsg:"",sana:nowS()});
+ else if(a=="editDrum")Object.assign(bd(x.id),{raqam:x.raqam,marka:x.marka,metr:+x.metr,tuman:x.tuman});
+ else if(a=="delDrum"){const b=bd(x.id),n=D.kabel.filter(l=>l.baraban==x.id).length;D.kabel=D.kabel.filter(l=>l.baraban!=x.id);D.baraban=D.baraban.filter(b=>b.id!=x.id);D.savat.unshift({id:x.sid,tur:"baraban",info:`№${b.raqam} ${b.marka}, ${n} ta kabel`,kim:S.u,vaqt:nowS()})}
+ else if(a=="addLine")D.kabel.push({id:x.id,baraban:x.baraban,nuqtalar:JSON.stringify(x.nuqtalar),avto:x.avto,metr:+x.metr,kim:S.u,vaqt:nowS(),izoh:x.izoh||""});
+ else if(a=="editLine"){const l=D.kabel.find(k=>k.id==x.id);l.metr=+x.metr;l.izoh=x.izoh;if(x.nuqtalar){l.nuqtalar=JSON.stringify(x.nuqtalar);delete l._p}}
+ else if(a=="delLine"){const l=D.kabel.find(k=>k.id==x.id);D.kabel=D.kabel.filter(k=>k.id!=x.id);D.savat.unshift({id:x.sid,tur:"kabel",info:`${fm(l.metr)} m kabel, №${bd(l.baraban).raqam}`,kim:S.u,vaqt:nowS()})}
+ else if(a=="purge"||a=="restore")D.savat=D.savat.filter(s=>s.id!=x.id);
+ rc()}
+function enq(a,x,msg){if(a!="restore")apply(a,x);else need=true;Q.push({a,x});sv();cache();render();if(msg)toast(msg);run()}
 function modal(title,body,ok,fn){
  const o=document.createElement("div");o.className="ov";
  o.innerHTML=`<div class="modal"><h3>${title}</h3>${body}<div class="ma"><button class="btn sec" data-c>Bekor</button>${ok?`<button class="btn" data-ok>${ok}</button>`:""}</div></div>`;
  document.body.appendChild(o);const x=()=>o.remove();
  o.onclick=e=>{if(e.target==o)x()};o.querySelector("[data-c]").onclick=x;
- const b=o.querySelector("[data-ok]");
- if(b)b.onclick=async()=>{b.disabled=true;b.textContent="Saqlanmoqda...";if(await fn(o)!==false)x();else{b.disabled=false;b.textContent=ok}};
+ const b=o.querySelector("[data-ok]");if(b)b.onclick=()=>{if(fn(o)!==false)x()};
  const f=o.querySelector("input,select");f&&f.focus()}
 const val=(o,n)=>o.querySelector("[name="+n+"]").value.trim();
 async function doLogin(){
  S={u:$("lu").value.trim(),p:$("lp").value};$("err").textContent="Tekshirilmoqda...";
- try{await call("list");start()}catch(e){S=null;$("err").textContent=e.message}}
-function logout(){localStorage.removeItem("kb_s");localStorage.removeItem("kb_d");location.reload()}
+ try{const{j}=await api("list");if(j.err)throw new Error(j.err);D=Object.assign(D,j);cache();start()}catch(e){S=null;$("err").textContent=e.message}}
+function logout(){["kb_s","kb_d","kb_q"].forEach(k=>localStorage.removeItem(k));location.reload()}
 function theme(){const t=document.documentElement.dataset.theme=="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("kb_theme",t)}catch(e){}}
 $("lm").innerHTML=ic("drum",24);
 function start(){
  $("login").style.display="none";$("ld").style.display="none";$("app").style.display="flex";
  $("who").textContent=S.u+" · "+(adm()?"admin":"xodim");
- $("hm").innerHTML=ic("drum",20);$("rf").innerHTML=ic("ref");$("th").innerHTML=ic("moon");$("lo").innerHTML=ic("out");$("gps").innerHTML=ic("loc");$("fab").innerHTML=ic("plus",26);
- $("nav").innerHTML=[["baraban","drum","Barabanlar"],["kabel","cable","Kabellar"],["xarita","map","Xarita","mo"],["tarix","clock","Tarix","a"],["savat","trash","Savat","a"]].filter(n=>n[3]!="a"||adm()).map(n=>`<button data-t="${n[0]}" class="${n[3]=="mo"?"mo":""}">${ic(n[1],21)}<span>${n[2]}</span></button>`).join("");
- document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
- map=L.map("map",{maxZoom:20}).setView([39.77,64.42],11);
- const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:20,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
- const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:20,maxNativeZoom:17,attribution:"Esri"});
- L.control.layers({"Xarita":osm,"Yo'ldosh":sat}).addTo(map);
- layer=L.layerGroup().addTo(map);me=L.layerGroup().addTo(map);
- map.on("click",e=>{if(drawing){pts.push([e.latlng.lat,e.latlng.lng]);paint()}});
- render();setInterval(()=>{if(!drawing&&!document.querySelector(".ov")&&document.activeElement.tagName!="INPUT")refresh()},60000)}
-async function go(t){tab=t;if(t!="xarita")hl=null;if(drawing&&t!="xarita")stopDraw();document.body.dataset.t=t=="xarita"?"xarita":"baraban";render();setTimeout(()=>map.invalidateSize(),60);
- if(t=="tarix"||t=="savat")refresh()}
-function st(b){return b.left<=0?["Tugagan","tugagan"]:b.left<=b.metr*.1?["Kam qoldi","kam"]:["Yetarli","ok"]}
-function render(){
- document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==tab));
+ $("hm").innerHTML=ic("drum",20);$("rf").innerHTML=ic("ref");$("th").innerHTML=ic("moon");$("lo").innerHTML=ic("out");$("gps").innerHTML=ic("loc");$("fab").innerHTML=ic("plus",26);$("mb").innerHTML=ic("arr",16)+"Ro'yxat";
+ tab=adm()&&innerWidth>=900?"panel":"baraban";
+ $("nav").innerHTML=[["panel","panel","Panel","do",1],["baraban","drum","Baraban","",0],["kabel","cable","Kabel","",0],["tugagan","done","Tugagan","",0],["xarita","map","Xarita","mo",0],["tarix","clock","Tarix","",1],["savat","trash","Savat","",1]].filter(n=>!n[4]||adm()).map(n=>`<button data-t="${n[0]}" class="${n[3]}">${ic(n[1],21)}<span>${n[2]}</span></button>`).join("");
+ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>nv(b.dataset.t));
+ render(true);if(innerWidth>=900)setTimeout(needMap,250);
+ if(Q.length)run();setInterval(()=>{if(!drawing&&!Q.length&&!document.querySelector(".ov")&&!(document.activeElement&&document.activeElement.tagName=="INPUT"))refresh()},45000)}
+function needMap(){
+ if(mapP)return mapP;
+ return mapP=new Promise(res=>{
+  const l=document.createElement("link");l.rel="stylesheet";l.href=LCSS;document.head.appendChild(l);
+  const s=document.createElement("script");s.src=LJS;s.onload=()=>{
+   map=L.map("map",{maxZoom:20}).setView([39.77,64.42],11);
+   const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:20,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+   const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:20,maxNativeZoom:17,attribution:"Esri"});
+   L.control.layers({"Xarita":osm,"Yo'ldosh":sat}).addTo(map);
+   layer=L.layerGroup().addTo(map);me=L.layerGroup().addTo(map);
+   map.on("click",e=>{if(drawing){pts.push([e.latlng.lat,e.latlng.lng]);paint()}});
+   paint();res()};
+  document.body.appendChild(s)})}
+function onMap(fn){needMap().then(()=>setTimeout(()=>{map.invalidateSize();fn()},70))}
+function nv(t){if(t=="xarita"){mv=1;onMap(()=>{});render();return}
+ if(drawing)return toast("Avval chizishni tugating yoki bekor qiling","err");
+ tab=t;mv=0;hl=null;render(true);if(["tarix","savat","panel"].includes(t))refresh();if(innerWidth>=900)onMap(()=>{})}
+function backList(){mv=0;hl=null;render();paint()}
+const st=b=>isFin(b)?["Tugagan","tugagan"]:b.left<=b.metr*.1?["Kam qoldi","kam"]:["Yetarli","ok"];
+function render(anim){
+ document.body.dataset.t=tab;document.body.dataset.m=mv?1:0;
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==(mv?"xarita":tab)));
  $("fab").style.display=tab=="baraban"&&adm()?"flex":"none";
- const s=$("side"),opt=(a,v,all)=>`<option value="">${all}</option>`+a.map(x=>`<option ${v==x?"selected":""}>${esc(x)}</option>`).join("");
- if(tab=="tarix"){s.innerHTML=(D.tgerr?`<div class="warn"><b>Telegram xatosi:</b> ${esc(D.tgerr)}</div>`:"")+`<input placeholder="Qidirish: xodim, amal, baraban..." value="${esc(TQ)}" oninput="TQ=this.value;tarix()"><div id="lst"></div>`;tarix()}
- else if(tab=="savat"){savat()}
- else if(tab=="kabel"){
-  s.innerHTML=`<div class="sum" id="ks" style="grid-template-columns:repeat(3,1fr)"></div><input placeholder="Qidirish: baraban, xodim, joy" value="${esc(KF.q)}" oninput="KF.q=this.value;kabellar()">
-  <div class="flt"><select onchange="KF.t=this.value;kabellar()">${opt(D.tuman,KF.t,"Barcha tuman")}</select><select onchange="KF.b=this.value;kabellar()"><option value="">Barcha baraban</option>${D.baraban.map(b=>`<option value="${b.id}" ${KF.b==b.id?"selected":""}>№${esc(b.raqam)} ${esc(b.marka)}</option>`).join("")}</select></div>
-  <div class="flt"><label>Dan<input type="date" value="${KF.from}" onchange="KF.from=this.value;kabellar()"></label><label>Gacha<input type="date" value="${KF.to}" onchange="KF.to=this.value;kabellar()"></label></div><div id="lst"></div>`;kabellar()}
- else{
-  const A=D.baraban,sum=k=>Math.round(A.reduce((a,b)=>a+Number(b[k]),0));
-  s.innerHTML=`<div class="sum"><div><b>${A.length}</b><span>baraban</span></div><div><b>${sum("metr")}</b><span>jami m</span></div><div><b>${sum("used")}</b><span>ishlatildi</span></div><div><b>${sum("left")}</b><span>qoldi</span></div></div>
-  <input placeholder="Qidirish: raqam yoki marka" value="${esc(F.q)}" oninput="F.q=this.value;list()">
-  <div class="flt"><select onchange="F.t=this.value;list()">${opt(D.tuman,F.t,"Barcha tuman")}</select><select onchange="F.m=this.value;list()">${opt([...new Set(A.map(b=>b.marka))],F.m,"Barcha marka")}</select></div>
-  <select onchange="F.h=this.value;list()">${[["","Barcha holat"],["ok","Yetarli"],["kam","Kam qoldi"],["tugagan","Tugagan"]].map(o=>`<option value="${o[0]}" ${F.h==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select><div id="lst"></div>`;
-  list()}
- paint()}
+ const s=$("side");if(anim){s.classList.remove("ani");void s.offsetWidth;s.classList.add("ani")}
+ ({baraban:vBar,kabel:vKab,tugagan:vTug,tarix:vTar,savat:vSav,panel:vPan}[tab])(s);paint()}
+const opt=(a,v,all)=>`<option value="">${all}</option>`+a.map(x=>`<option ${v==x?"selected":""}>${esc(x)}</option>`).join("");
+const stat=(n,l)=>`<div><b>${n}</b><span>${l}</span></div>`;
+function vBar(s){
+ const A=D.baraban.filter(b=>!isFin(b)),mk={};A.forEach(b=>mk[b.marka]=(mk[b.marka]||0)+b.left);
+ s.innerHTML=`<div class="sum">${stat(A.length,"baraban")}${stat(fm(sum(A,"metr")),"jami m")}${stat(fm(sum(A,"used")),"ishlatildi")}${stat(fm(sum(A,"left")),"qoldi m")}</div>
+ <div class="chips">${Object.entries(mk).map(([k,v],i)=>`<span class="chip"><i style="background:${COL[i%8]}"></i>${esc(k||"Markasiz")} <b>${fm(v)} m</b></span>`).join("")}</div>
+ <input placeholder="Qidirish: raqam yoki marka" value="${esc(F.q)}" oninput="F.q=this.value;list()">
+ <div class="flt"><select onchange="F.t=this.value;list()">${opt(D.tuman,F.t,"Barcha tuman")}</select><select onchange="F.m=this.value;list()">${opt([...new Set(A.map(b=>b.marka))],F.m,"Barcha marka")}</select><select onchange="F.h=this.value;list()">${[["","Barcha holat"],["ok","Yetarli"],["kam","Kam qoldi"]].map(o=>`<option value="${o[0]}" ${F.h==o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></div><div id="lst"></div>`;list()}
 function list(){
- const q=F.q.toLowerCase(),A=D.baraban.filter(b=>(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))&&(!F.t||b.tuman==F.t)&&(!F.m||b.marka==F.m)&&(!F.h||st(b)[1]==F.h));
+ const q=F.q.toLowerCase(),A=D.baraban.filter(b=>!isFin(b)&&(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))&&(!F.t||b.tuman==F.t)&&(!F.m||b.marka==F.m)&&(!F.h||st(b)[1]==F.h));
  $("lst").innerHTML=A.map(card).join("")||'<p class="mut">Baraban topilmadi</p>'}
-function card(b){
- const s=st(b),on=sel==b.id,pct=Math.max(0,Math.min(100,b.left/b.metr*100));
- let h=`<div class="card ${on?"on":""}" onclick="pick('${b.id}')"><div class="top"><span class="dot" style="background:${col(b.id)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)}</span><span class="pill ${s[1]}">${s[0]}</span></div>
- <div class="mut sm">${esc(b.tuman)}</div><div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
- <div class="sm">Jami <b>${b.metr}</b> · ishlatildi <b>${b.used}</b> · qoldi <b>${b.left}</b> m</div>
- <div class="row"><button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">${ic("pin",15)}Kabel chizish</button><button class="btn sec s" onclick="event.stopPropagation();showL('${b.id}')">${ic("cable",15)}Kabellar (${D.kabel.filter(l=>l.baraban==b.id).length})</button>`;
- if(adm())h+=`<button class="btn sec s" onclick="event.stopPropagation();editD('${b.id}')">${ic("edit",15)}Tahrir</button><button class="btn dng s" onclick="event.stopPropagation();delD('${b.id}')">${ic("trash",15)}</button>`;
- h+="</div>";
- return h+"</div>"}
+const nk=id=>D.kabel.filter(l=>l.baraban==id).length;
+function card(b,fin){
+ const s=st(b),pct=Math.max(0,Math.min(100,b.left/b.metr*100));
+ return `<div class="card ${sel==b.id?"on":""}" onclick="pick('${b.id}')"><div class="top"><span class="dot" style="background:${col(b.id)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)}</span><span class="pill ${s[1]}">${s[0]}</span></div>
+ <div class="mut sm">${esc(b.tuman)} · qo'shilgan: ${b.sana?fmt(b.sana):"—"}</div><div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
+ <div class="sm">Jami <b>${fm(b.metr)}</b> · ishlatildi <b>${fm(b.used)}</b> · qoldi <b>${fm(b.left)}</b> m</div>
+ <div class="row">${fin?"":`<button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">${ic("pin",15)}Kabel chizish</button>`}<button class="btn sec s" onclick="event.stopPropagation();showL('${b.id}')">${ic("cable",15)}Kabellar (${nk(b.id)})</button>${adm()?`<button class="btn sec s" onclick="event.stopPropagation();editD('${b.id}')">${ic("edit",15)}</button><button class="btn dng s" onclick="event.stopPropagation();delD('${b.id}')">${ic("trash",15)}</button>`:""}</div></div>`}
+function vTug(s){
+ const A=D.baraban.filter(isFin);
+ s.innerHTML=`<p class="mut sm" style="margin:0 2px 10px">Kabeli to'liq ishlatilgan barabanlar (${A.length} ta).</p><input placeholder="Qidirish: raqam yoki marka" value="${esc(TF)}" oninput="TF=this.value;tug()"><div id="lst"></div>`;tug()}
+function tug(){const q=TF.toLowerCase();$("lst").innerHTML=D.baraban.filter(b=>isFin(b)&&(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))).map(b=>card(b,1)).join("")||'<p class="mut">Tugagan baraban yo\'q</p>'}
+function showL(id){KF={q:"",t:"",b:id,from:"",to:""};nv("kabel")}
 const can=l=>adm()||l.kim==S.u,lbtn=id=>`<button class="btn sec s" onclick="event.stopPropagation();startEdit('${id}')">${ic("edit",15)}</button><button class="btn dng s" onclick="event.stopPropagation();delL('${id}')">${ic("trash",15)}</button>`;
-function showL(id){KF={q:"",t:"",b:id,from:"",to:""};go("kabel")}
+function vKab(s){
+ s.innerHTML=`<div class="sum" id="ks" style="grid-template-columns:repeat(3,1fr)"></div><input placeholder="Qidirish: baraban, xodim, joy" value="${esc(KF.q)}" oninput="KF.q=this.value;kabellar()">
+ <div class="flt"><select onchange="KF.t=this.value;kabellar()">${opt(D.tuman,KF.t,"Barcha tuman")}</select><select onchange="KF.b=this.value;kabellar()"><option value="">Barcha baraban</option>${D.baraban.map(b=>`<option value="${b.id}" ${KF.b==b.id?"selected":""}>№${esc(b.raqam)} ${esc(b.marka)}</option>`).join("")}</select></div>
+ <div class="flt"><label>Dan<input type="date" value="${KF.from}" onchange="KF.from=this.value;kabellar()"></label><label>Gacha<input type="date" value="${KF.to}" onchange="KF.to=this.value;kabellar()"></label></div>
+ ${KF.q||KF.t||KF.b||KF.from||KF.to?`<button class="btn sec s" style="margin-bottom:10px" onclick="KF={q:'',t:'',b:'',from:'',to:''};render()">Filtrni tozalash</button>`:""}<div id="lst"></div>`;kabellar()}
 function kabellar(){
  const q=KF.q.toLowerCase(),a=KF.from?new Date(KF.from+"T00:00:00"):0,z=KF.to?new Date(KF.to+"T23:59:59"):0;
  const A=D.kabel.slice().reverse().filter(l=>{const b=bd(l.baraban),t=tsv(l.vaqt);return(!KF.t||b.tuman==KF.t)&&(!KF.b||l.baraban==KF.b)&&(!a||t>=a)&&(!z||t<=z)&&(!q||[b.raqam,b.marka,b.tuman,l.kim,l.izoh].join(" ").toLowerCase().includes(q))});
- $("ks").innerHTML=`<div><b>${A.length}</b><span>kabel</span></div><div><b>${Math.round(A.reduce((s,l)=>s+Number(l.metr),0)*10)/10}</b><span>jami metr</span></div><div><b>${new Set(A.map(l=>l.baraban)).size}</b><span>baraban</span></div>`;
+ $("ks").innerHTML=stat(A.length,"kabel")+stat(fm(sum(A,"metr")),"jami metr")+stat(new Set(A.map(l=>l.baraban)).size,"baraban");
  $("lst").innerHTML=A.map(l=>{const b=bd(l.baraban);
-  return `<div class="card"><div class="top"><span class="dot" style="background:${col(l.baraban)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.tuman)}</span><b style="margin-left:auto">${l.metr} m</b></div><div class="mut sm">${fmt(l.vaqt)} · ${esc(l.kim)}</div>${l.izoh?`<div class="sm">${esc(l.izoh)}</div>`:""}<div class="row"><button class="btn s" onclick="viewLine('${l.id}')">${ic("map",15)}Xaritada ko'rish</button>${can(l)?lbtn(l.id):""}</div></div>`}).join("")||'<p class="mut">Kabel topilmadi</p>'}
-function tarix(){
- const q=TQ.toLowerCase();
- $("lst").innerHTML=D.tarix.filter(h=>!q||Object.values(h).join(" ").toLowerCase().includes(q)).map(h=>`<div class="card"><span class="mut sm">${fmt(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||'<p class="mut">Amal topilmadi</p>'}
-function savat(){
- $("side").innerHTML=`<p class="mut sm">O'chirilgan baraban va kabellar shu yerga tushadi. Tiklash mumkin.</p>`+(D.savat.map(x=>`<div class="card"><div class="top"><b>${x.tur=="baraban"?"Baraban":"Kabel"}</b></div><div class="sm">${esc(x.info)}</div><div class="mut sm">${fmt(x.vaqt)} · ${esc(x.kim)} o'chirgan</div><div class="row"><button class="btn s" onclick="rest('${x.id}')">${ic("back",15)}Tiklash</button><button class="btn dng s" onclick="purge('${x.id}')">Butunlay o'chirish</button></div></div>`).join("")||'<p class="mut">Savat bo\'sh</p>')}
-const rest=id=>act("restore",{id},"Tiklandi").then(()=>refresh()),purge=id=>modal("Butunlay o'chirilsinmi?",'<p class="mut sm">Bu amalni qaytarib bo\'lmaydi.</p>',"O'chirish",async()=>{const r=await act("purge",{id},"O'chirildi");await refresh();return r||false});
-function pick(id){sel=sel==id?null:id;render();if(innerWidth>=900)fit()}
-function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(l=>gp(l));if(a.length)map.fitBounds(a,{padding:[30,30]})}
-function viewLine(id){const l=D.kabel.find(x=>x.id==id);sel=l.baraban;go("xarita");hl=id;setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(gp(l),{padding:[50,50],maxZoom:18})},200)}
-const dform=b=>`<label>Baraban raqami<input name="r" value="${esc(b?.raqam)}"></label><label>Marka<input name="m" value="${esc(b?.marka)}"></label><label>Kabel uzunligi (metr)<input name="l" type="number" min="1" value="${b?b.metr:""}"></label><label>Tuman<select name="t">${D.tuman.map(t=>`<option ${b&&b.tuman==t?"selected":""}>${esc(t)}</option>`).join("")}</select></label>`;
-function addD(){modal("Yangi baraban",dform(),"Qo'shish",async o=>await act("addDrum",{raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Baraban qo'shildi")||false)}
-function editD(id){const b=bd(id);modal("Barabanni tahrirlash",dform(b),"Saqlash",async o=>await act("editDrum",{id,raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Saqlandi")||false)}
-function delD(id){const b=bd(id),n=D.kabel.filter(l=>l.baraban==id).length;modal("Baraban №"+esc(b.raqam)+" o'chirilsinmi?",`<p class="mut sm">Baraban${n?" va uning "+n+" ta kabeli":""} savatga tushadi, keyin tiklash mumkin.</p>`,"O'chirish",async()=>{if(sel==id)sel=null;return await act("delDrum",{id},"Savatga tushdi")||false})}
-function lform(m,z,mx){return `<p class="mut sm">Ko'pi bilan <b>${mx} m</b> yozish mumkin (barabanda shuncha qolgan).</p><label>Ishlatilgan uzunlik (metr)<input name="m" type="number" step="0.1" min="0.1" max="${mx}" value="${m}"></label><label>Joy yoki izoh<input name="z" value="${esc(z)}"></label>`}
-const chk=(o,mx)=>{const m=Number(val(o,"m"));if(!(m>0&&m<=mx)){toast("Metr 0 dan katta va "+mx+" m dan oshmasligi kerak","err");return 0}return m};
-function delL(id){map&&map.closePopup();modal("Kabel o'chirilsinmi?",'<p class="mut sm">Savatga tushadi, admin tiklay oladi.</p>',"O'chirish",async()=>await act("delLine",{id},"Savatga tushdi")||false)}
-const dist=p=>{let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo(L.latLng(p[i]));return m},r1=x=>Math.round(x*10)/10;
+  return `<div class="card"><div class="top"><span class="dot" style="background:${col(l.baraban)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)} · ${esc(b.tuman)}</span><b style="margin-left:auto">${fm(l.metr)} m</b></div><div class="mut sm">${fmt(l.vaqt)} · ${esc(l.kim)}</div>${l.izoh?`<div class="sm">${esc(l.izoh)}</div>`:""}<div class="row"><button class="btn s" onclick="viewLine('${l.id}')">${ic("map",15)}Xaritada ko'rish</button>${can(l)?lbtn(l.id):""}</div></div>`}).join("")||'<p class="mut">Kabel topilmadi</p>'}
+function vTar(s){s.innerHTML=(D.tgerr?`<div class="warn"><b>Telegram xatosi:</b> ${esc(D.tgerr)}</div>`:"")+`<input placeholder="Qidirish: xodim, amal, baraban..." value="${esc(TQ)}" oninput="TQ=this.value;tarix()"><div id="lst"></div>`;tarix()}
+function tarix(){const q=TQ.toLowerCase();$("lst").innerHTML=D.tarix.filter(h=>!q||Object.values(h).join(" ").toLowerCase().includes(q)).map(h=>`<div class="card"><span class="mut sm">${fmt(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b><br>${esc(h.tafsilot)}</div>`).join("")||'<p class="mut">Amal topilmadi</p>'}
+function vSav(s){s.innerHTML=`<p class="mut sm" style="margin:0 2px 10px">O'chirilgan baraban va kabellar shu yerga tushadi. Tiklash mumkin.</p>`+(D.savat.map(x=>`<div class="card"><b>${x.tur=="baraban"?"Baraban":"Kabel"}</b><div class="sm">${esc(x.info)}</div><div class="mut sm">${fmt(x.vaqt)} · ${esc(x.kim)} o'chirgan</div><div class="row"><button class="btn s" onclick="rest('${x.id}')">${ic("back",15)}Tiklash</button><button class="btn dng s" onclick="purge('${x.id}')">Butunlay o'chirish</button></div></div>`).join("")||'<p class="mut">Savat bo\'sh</p>')}
+const rest=id=>enq("restore",{id},"Tiklanmoqda...");
+const purge=id=>modal("Butunlay o'chirilsinmi?",'<p class="mut sm">Bu amalni qaytarib bo\'lmaydi.</p>',"O'chirish",()=>{enq("purge",{id},"O'chirildi")});
+const bars=(a,u)=>{const mx=Math.max(1,...a.map(x=>x[1]));return a.map((x,i)=>`<div class="br"><span title="${esc(x[0])}">${esc(x[0]||"—")}</span><div class="bt"><i style="width:${x[1]/mx*100}%;background:${COL[i%8]}"></i></div><b>${fm(x[1])} ${u}</b></div>`).join("")||'<p class="mut sm">Ma\'lumot yo\'q</p>'};
+function vPan(s){
+ const A=D.baraban,act=A.filter(b=>!isFin(b)),G=(f)=>{const m={};A.forEach(b=>{const k=f(b);m[k]=(m[k]||0)+1});return m},by=(k,v,src=A)=>Object.entries(src.reduce((m,b)=>(m[b[k]]=(m[b[k]]||0)+b[v],m),{})).sort((a,b)=>b[1]-a[1]);
+ const us={};D.kabel.forEach(l=>us[l.kim]=(us[l.kim]||0)+ +l.metr);
+ const days=[];for(let i=13;i>=0;i--)days.push(fmt(new Date(Date.now()-i*864e5).toISOString()).slice(0,10));
+ const dm={};D.kabel.forEach(l=>{const k=fmt(l.vaqt).slice(0,10);dm[k]=(dm[k]||0)+ +l.metr});const mxd=Math.max(1,...days.map(k=>dm[k]||0));
+ const low=act.filter(b=>st(b)[1]=="kam");
+ s.innerHTML=`<div class="dash"><div class="kpi">${[[act.length,"faol baraban"],[fm(sum(A,"metr")),"jami metr"],[fm(sum(A,"used")),"ishlatilgan m"],[fm(sum(A,"left")),"qolgan m"],[D.kabel.length,"tortilgan kabel"],[A.length-act.length,"tugagan baraban"]].map(k=>`<div><b>${k[0]}</b><span>${k[1]}</span></div>`).join("")}</div>
+ <div class="card"><div class="h">Marka bo'yicha qoldiq</div>${bars(by("marka","left"),"m")}</div>
+ <div class="card"><div class="h">Tuman bo'yicha ishlatilgan</div>${bars(by("tuman","used"),"m")}</div>
+ <div class="card"><div class="h">Xodimlar (tortgan kabel)</div>${bars(Object.entries(us).sort((a,b)=>b[1]-a[1]),"m")}</div>
+ <div class="card wide"><div class="h">Oxirgi 14 kun (kunlik metr)</div><div class="cols">${days.map(k=>`<div class="col" title="${k}: ${fm(dm[k]||0)} m"><span>${fm(dm[k]||0)||""}</span><i style="height:${(dm[k]||0)/mxd*80}%"></i><span>${k.slice(0,5)}</span></div>`).join("")}</div></div>
+ <div class="card"><div class="h">Kam qolgan barabanlar</div>${low.map(b=>`<div class="ev"><b>№${esc(b.raqam)}</b> ${esc(b.marka)} · ${esc(b.tuman)} <b style="float:right;color:var(--wr)">${fm(b.left)} m</b></div>`).join("")||'<p class="mut sm">Hammasi yetarli</p>'}</div>
+ <div class="card"><div class="h">So'nggi amallar</div>${D.tarix.slice(0,8).map(h=>`<div class="ev"><span class="mut">${fmt(h.vaqt)} · ${esc(h.kim)}</span><br><b>${esc(h.amal)}</b> ${esc(h.tafsilot)}</div>`).join("")||'<p class="mut sm">Yuklanmoqda...</p>'}</div></div>`}
+function pick(id){sel=sel==id?null:id;render();if(map&&innerWidth>=900)fit()}
+function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(gp);if(a.length)map.fitBounds(a,{padding:[30,30]})}
+function viewLine(id){const l=D.kabel.find(x=>x.id==id);sel=null;hl=id;mv=1;render();onMap(()=>{paint();map.fitBounds(gp(l),{padding:[50,50],maxZoom:18})})}
+const dform=b=>`<label>Baraban raqami<input name="r" value="${esc(b?.raqam)}"></label><label>Marka<input name="m" value="${esc(b?.marka)}"></label><label>Kabel uzunligi (metr)<input name="l" type="number" min="1" step="1" value="${b?fm(b.metr):""}"></label><label>Tuman<select name="t">${D.tuman.map(t=>`<option ${b&&b.tuman==t?"selected":""}>${esc(t)}</option>`).join("")}</select></label>`;
+function dget(o,b){const r=val(o,"r"),m=Math.round(Number(val(o,"l")));if(!r||!(m>0)){toast("Raqam va metrni to'g'ri kiriting","err");return null}if(b&&m<fm(b.used)){toast("Metr ishlatilgan "+fm(b.used)+" m dan kam bo'lmasin","err");return null}return{raqam:r,marka:val(o,"m"),metr:m,tuman:val(o,"t")}}
+function addD(){modal("Yangi baraban",dform(),"Qo'shish",o=>{const x=dget(o);if(!x)return false;enq("addDrum",{id:uid(),...x},"Baraban qo'shildi")})}
+function editD(id){const b=bd(id);modal("Barabanni tahrirlash",dform(b),"Saqlash",o=>{const x=dget(o,b);if(!x)return false;enq("editDrum",{id,...x},"Saqlandi")})}
+function delD(id){const b=bd(id),n=nk(id);modal("Baraban №"+esc(b.raqam)+" o'chirilsinmi?",`<p class="mut sm">Baraban${n?" va uning "+n+" ta kabeli":""} savatga tushadi, keyin tiklash mumkin.</p>`,"O'chirish",()=>{if(sel==id)sel=null;enq("delDrum",{id,sid:uid()},"Savatga tushdi")})}
+const lform=(m,z,mx)=>`<p class="mut sm">Ko'pi bilan <b>${mx} m</b> yozish mumkin (barabanda shuncha qolgan).</p><label>Ishlatilgan uzunlik (metr)<input name="m" type="number" step="1" min="1" max="${mx}" value="${m}"></label><label>Joy yoki izoh<input name="z" value="${esc(z)}"></label>`;
+const chk=(o,mx)=>{const m=Math.round(Number(val(o,"m")));if(!(m>0&&m<=mx)){toast("Metr 1 dan katta va "+mx+" m dan oshmasligi kerak","err");return 0}return m};
+function delL(id){map&&map.closePopup();modal("Kabel o'chirilsinmi?",'<p class="mut sm">Savatga tushadi, admin tiklay oladi.</p>',"O'chirish",()=>{enq("delLine",{id,sid:uid()},"Savatga tushdi")})}
+const dist=p=>{let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo(L.latLng(p[i]));return m};
 function paint(){
  if(!layer)return;layer.clearLayers();
- D.kabel.filter(l=>(!sel||l.baraban==sel)&&l.id!=ed).forEach(l=>{
-  L.polyline(gp(l),{color:col(l.baraban),weight:l.id==hl?9:5,opacity:hl&&l.id!=hl?.45:1}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${fmt(l.vaqt)}<br>${esc(l.izoh)}`+(can(l)?`<br><button onclick="startEdit('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
- if(drawing){live=L.polyline(pts,{color:"#e11d48",weight:5,dashArray:"7"}).addTo(layer);
+ D.kabel.filter(l=>(!sel||l.baraban==sel||l.id==hl)&&l.id!=ed).forEach(l=>{
+  L.polyline(gp(l),{color:col(l.baraban),weight:l.id==hl?9:5,opacity:hl&&l.id!=hl?.4:1}).addTo(layer).bindPopup(`<b>${fm(l.metr)} m</b> · №${esc(bd(l.baraban).raqam)}<br>${esc(l.kim)} · ${fmt(l.vaqt)}<br>${esc(l.izoh)}`+(can(l)?`<br><button onclick="startEdit('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
+ if(drawing){live=L.polyline(pts,{color:"#e5384f",weight:5,dashArray:"7"}).addTo(layer);
   pts.forEach((p,i)=>{const m=L.marker(p,{draggable:true,icon:L.divIcon({className:"vx",iconSize:[18,18]})}).addTo(layer);
    m.on("drag",e=>{const c=e.target.getLatLng();pts[i]=[c.lat,c.lng];live.setLatLngs(pts);meter()})});meter()}}
-const meter=()=>$("meter").textContent=r1(dist(pts))+" m";
-function draw(id){sel=id;const b=bd(id);
- if(b.left<=0)return toast("Bu barabanda kabel qolmagan","err");
- pts=[];ed=null;drawing=true;$("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+b.left+" m. Xaritada yo'nalish bo'ylab bosing, nuqtani surish mumkin.";
- $("dbar").style.display="block";go("xarita");drawing=true;paint();setTimeout(locate,300)}
-function startEdit(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();sel=l.baraban;ed=id;pts=gp(l).map(p=>p.slice());drawing=true;
- $("dinfo").textContent="Kabelni tahrirlash: nuqtalarni suring yoki yangi nuqta qo'shing. Tugagach Saqlash.";$("dbar").style.display="block";go("xarita");drawing=true;
- setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(pts,{padding:[60,60],maxZoom:18})},200)}
-function stopDraw(){drawing=false;ed=null;pts=[];$("dbar").style.display="none";paint()}
+const meter=()=>$("meter").textContent=Math.round(dist(pts))+" m";
+function draw(id){const b=bd(id);
+ if(isFin(b))return toast("Bu barabanda kabel qolmagan","err");
+ sel=id;pts=[];ed=null;drawing=true;mv=1;$("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+fm(b.left)+" m. Xaritada yo'nalish bo'ylab bosing, nuqtani surish mumkin.";
+ $("dbar").style.display="block";render();onMap(()=>{paint();locate()})}
+function startEdit(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();sel=l.baraban;ed=id;pts=gp(l).map(p=>p.slice());drawing=true;mv=1;
+ $("dinfo").textContent="Kabelni tahrirlash: nuqtalarni suring yoki yangi nuqta qo'shing. Tugagach Saqlash.";$("dbar").style.display="block";render();
+ onMap(()=>{paint();map.fitBounds(pts,{padding:[60,60],maxZoom:18})})}
+function stopDraw(){drawing=false;ed=null;pts=[];mv=0;$("dbar").style.display="none";render()}
 const undo=()=>{pts.pop();paint()},clearPts=()=>{pts=[];paint()};
 function saveLine(){
  if(pts.length<2)return toast("Kamida 2 ta nuqta belgilang","err");
- const auto=r1(dist(pts)),id=sel,np=pts.map(p=>[+p[0].toFixed(6),+p[1].toFixed(6)]),l=ed&&D.kabel.find(x=>x.id==ed),mx=r1(bd(id).left+(l?Number(l.metr):0)),
-  old=l?JSON.stringify(gp(l)):"",moved=l&&old!=JSON.stringify(np),m0=l&&!moved?Number(l.metr):Math.min(auto,mx);
- modal(l?"Kabelni saqlash":"Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(m0,l?l.izoh:"",mx),"Saqlash",async o=>{
-  const m=chk(o,mx);if(!m)return false;
-  const ok=l?await act("editLine",{id:ed,metr:m,izoh:val(o,"z"),nuqtalar:np,avto:auto},"Saqlandi"):await act("addLine",{baraban:id,nuqtalar:np,avto:auto,metr:m,izoh:val(o,"z")},"Kabel saqlandi");
-  if(!ok)return false;stopDraw();go("baraban")})}
+ const auto=Math.round(dist(pts)),id=sel,np=pts.map(p=>[+p[0].toFixed(6),+p[1].toFixed(6)]),l=ed&&D.kabel.find(x=>x.id==ed),mx=Math.floor(bd(id).left+(l?Number(l.metr):0)+1e-6),
+  moved=l&&JSON.stringify(gp(l))!=JSON.stringify(np),m0=l&&!moved?fm(l.metr):Math.min(auto,mx);
+ modal("Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(m0,l?l.izoh:"",mx),"Saqlash",o=>{
+  const m=chk(o,mx);if(!m)return false;const z=val(o,"z");
+  if(l)enq("editLine",{id:ed,metr:m,izoh:z,nuqtalar:np,avto:auto},"Saqlandi");else enq("addLine",{id:uid(),baraban:id,nuqtalar:np,avto:auto,metr:m,izoh:z},"Kabel saqlandi");
+  stopDraw()})}
 function locate(){
  if(!navigator.geolocation)return toast("Brauzer joylashuvni aniqlay olmaydi","err");
- navigator.geolocation.getCurrentPosition(p=>{const c=[p.coords.latitude,p.coords.longitude];map.setView(c,17);me.clearLayers();L.circleMarker(c,{radius:8,color:"#fff",fillColor:"#2563eb",fillOpacity:1,weight:3}).addTo(me)},
- ()=>toast("Joylashuvni aniqlab bo'lmadi. GPS ruxsatini tekshiring","err"),{enableHighAccuracy:true,timeout:8000})}
+ onMap(()=>navigator.geolocation.getCurrentPosition(p=>{const c=[p.coords.latitude,p.coords.longitude];map.setView(c,17);me.clearLayers();L.circleMarker(c,{radius:8,color:"#fff",fillColor:"#2563eb",fillOpacity:1,weight:3}).addTo(me)},
+ ()=>toast("Joylashuvni aniqlab bo'lmadi. GPS ruxsatini tekshiring","err"),{enableHighAccuracy:true,timeout:8000}))}
 if(S){$("login").style.display="none";
- try{const c=JSON.parse(localStorage.getItem("kb_d")||"null");if(c)Object.assign(D,c)}catch(e){}
  if(D.baraban.length||D.tuman.length){start();refresh()}
- else{$("ld").style.display="block";call("list").then(start).catch(e=>{$("ld").style.display="none";$("login").style.display="";$("lu").value=S?S.u:"";$("err").textContent=/Login yoki parol/.test(e.message)?e.message:"Ulanib bo'lmadi. Qayta urinib ko'ring"})}}
+ else{$("ld").style.display="block";api("list").then(({j})=>{if(j.err)throw new Error(j.err);D=Object.assign(D,j);cache();start()}).catch(e=>{$("ld").style.display="none";$("login").style.display="";$("lu").value=S.u;$("err").textContent=/Login yoki parol/.test(e.message)?e.message:"Ulanib bo'lmadi. Qayta urinib ko'ring"})}}
 </script>
 </body>
 </html>
