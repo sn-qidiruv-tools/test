@@ -78,6 +78,7 @@ main{flex:1;min-height:0;display:flex}
  <label>Parol<input id="lp" type="password" autocomplete="current-password" required></label>
  <div id="err"></div><button class="btn" style="width:100%">Kirish</button>
 </form>
+<div id="ld" style="display:none;margin:auto;color:var(--dim)">Yuklanmoqda...</div>
 <div id="app">
  <header><div class="logo"><div class="mark" id="hm"></div><div><b>Kabel baraban</b><small id="who"></small></div></div>
   <button id="rf" onclick="refresh(true)" title="Yangilash"></button><button id="th" onclick="theme()" title="Rejim"></button><button id="lo" onclick="logout()" title="Chiqish"></button></header>
@@ -99,6 +100,7 @@ let S=JSON.parse(localStorage.getItem("kb_s")||"null"),D={baraban:[],kabel:[],tu
 const $=id=>document.getElementById(id),adm=()=>S&&S.rol=="admin";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const COL=["#0b6e8a","#c4410c","#6a8f1f","#8a3fa8","#b8860b","#d6336c","#2563eb","#0d9488"];
+const gp=l=>l._p||(l._p=JSON.parse(l.nuqtalar));
 const bd=id=>D.baraban.find(b=>b.id==id)||{},col=id=>COL[Math.max(0,D.baraban.findIndex(b=>b.id==id))%COL.length];
 function fmt(s){s=String(s||"");if(/^\d{4}-\d\d-\d\dT/.test(s)){const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Tashkent",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(s)).reduce((a,x)=>(a[x.type]=x.value,a),{});return `${p.day}.${p.month}.${p.year} ${p.hour}:${p.minute}`}return s}
 function tsv(s){const m=fmt(s).match(/(\d+)\.(\d+)\.(\d+) (\d+):(\d+)/);return m?new Date(+m[3],m[2]-1,+m[1],+m[4],+m[5]):new Date(0)}
@@ -106,8 +108,9 @@ function toast(m,t){const e=document.createElement("div");e.className="toast "+(
 async function call(action,x={}){
  $("rf").classList.add("spin");
  try{const r=await fetch(API,{method:"POST",body:JSON.stringify({...x,action,u:S.u,p:S.p})});
-  const j=await r.json();if(j.err)throw new Error(j.err);
+  const j=await r.json();if(j.err){if(S.rol&&/Login yoki parol/.test(j.err))logout();throw new Error(j.err)}
   D=Object.assign(D,j);S.rol=j.rol;localStorage.setItem("kb_s",JSON.stringify(S));
+  try{localStorage.setItem("kb_d",JSON.stringify({baraban:D.baraban,kabel:D.kabel,tuman:D.tuman}))}catch(e){}
   if(j.nt)fetch(API,{method:"POST",keepalive:true,body:JSON.stringify({action:"notify",nt:j.nt,u:S.u,p:S.p})}).catch(()=>{});
   return j}
  finally{$("rf").classList.remove("spin")}}
@@ -125,18 +128,18 @@ const val=(o,n)=>o.querySelector("[name="+n+"]").value.trim();
 async function doLogin(){
  S={u:$("lu").value.trim(),p:$("lp").value};$("err").textContent="Tekshirilmoqda...";
  try{await call("list");start()}catch(e){S=null;$("err").textContent=e.message}}
-function logout(){localStorage.removeItem("kb_s");location.reload()}
+function logout(){localStorage.removeItem("kb_s");localStorage.removeItem("kb_d");location.reload()}
 function theme(){const t=document.documentElement.dataset.theme=="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("kb_theme",t)}catch(e){}}
 $("lm").innerHTML=ic("drum",24);
 function start(){
- $("login").style.display="none";$("app").style.display="flex";
+ $("login").style.display="none";$("ld").style.display="none";$("app").style.display="flex";
  $("who").textContent=S.u+" · "+(adm()?"admin":"xodim");
  $("hm").innerHTML=ic("drum",20);$("rf").innerHTML=ic("ref");$("th").innerHTML=ic("moon");$("lo").innerHTML=ic("out");$("gps").innerHTML=ic("loc");$("fab").innerHTML=ic("plus",26);
  $("nav").innerHTML=[["baraban","drum","Barabanlar"],["kabel","cable","Kabellar"],["xarita","map","Xarita","mo"],["tarix","clock","Tarix","a"],["savat","trash","Savat","a"]].filter(n=>n[3]!="a"||adm()).map(n=>`<button data-t="${n[0]}" class="${n[3]=="mo"?"mo":""}">${ic(n[1],21)}<span>${n[2]}</span></button>`).join("");
  document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
- map=L.map("map").setView([39.77,64.42],11);
- const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
- const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri"});
+ map=L.map("map",{maxZoom:20}).setView([39.77,64.42],11);
+ const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:20,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+ const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:20,maxNativeZoom:17,attribution:"Esri"});
  L.control.layers({"Xarita":osm,"Yo'ldosh":sat}).addTo(map);
  layer=L.layerGroup().addTo(map);me=L.layerGroup().addTo(map);
  map.on("click",e=>{if(drawing){pts.push([e.latlng.lat,e.latlng.lng]);paint()}});
@@ -170,13 +173,12 @@ function card(b){
  let h=`<div class="card ${on?"on":""}" onclick="pick('${b.id}')"><div class="top"><span class="dot" style="background:${col(b.id)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)}</span><span class="pill ${s[1]}">${s[0]}</span></div>
  <div class="mut sm">${esc(b.tuman)}</div><div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
  <div class="sm">Jami <b>${b.metr}</b> · ishlatildi <b>${b.used}</b> · qoldi <b>${b.left}</b> m</div>
- <div class="row"><button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">${ic("pin",15)}Kabel chizish</button>`;
+ <div class="row"><button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">${ic("pin",15)}Kabel chizish</button><button class="btn sec s" onclick="event.stopPropagation();showL('${b.id}')">${ic("cable",15)}Kabellar (${D.kabel.filter(l=>l.baraban==b.id).length})</button>`;
  if(adm())h+=`<button class="btn sec s" onclick="event.stopPropagation();editD('${b.id}')">${ic("edit",15)}Tahrir</button><button class="btn dng s" onclick="event.stopPropagation();delD('${b.id}')">${ic("trash",15)}</button>`;
  h+="</div>";
- if(on){const L2=D.kabel.filter(l=>l.baraban==b.id);
-  h+=L2.map(l=>`<div class="ln"><span>${fmt(l.vaqt)} · ${esc(l.kim)}<br><span class="mut">${esc(l.izoh)}</span></span><span style="text-align:right"><b>${l.metr} m</b><div class="row"><button class="btn s" onclick="event.stopPropagation();viewLine('${l.id}')">${ic("map",15)}</button>${can(l)?lbtn(l.id):""}</div></span></div>`).join("")||'<p class="mut sm">Hali kabel chizilmagan</p>'}
  return h+"</div>"}
 const can=l=>adm()||l.kim==S.u,lbtn=id=>`<button class="btn sec s" onclick="event.stopPropagation();startEdit('${id}')">${ic("edit",15)}</button><button class="btn dng s" onclick="event.stopPropagation();delL('${id}')">${ic("trash",15)}</button>`;
+function showL(id){KF={q:"",t:"",b:id,from:"",to:""};go("kabel")}
 function kabellar(){
  const q=KF.q.toLowerCase(),a=KF.from?new Date(KF.from+"T00:00:00"):0,z=KF.to?new Date(KF.to+"T23:59:59"):0;
  const A=D.kabel.slice().reverse().filter(l=>{const b=bd(l.baraban),t=tsv(l.vaqt);return(!KF.t||b.tuman==KF.t)&&(!KF.b||l.baraban==KF.b)&&(!a||t>=a)&&(!z||t<=z)&&(!q||[b.raqam,b.marka,b.tuman,l.kim,l.izoh].join(" ").toLowerCase().includes(q))});
@@ -190,8 +192,8 @@ function savat(){
  $("side").innerHTML=`<p class="mut sm">O'chirilgan baraban va kabellar shu yerga tushadi. Tiklash mumkin.</p>`+(D.savat.map(x=>`<div class="card"><div class="top"><b>${x.tur=="baraban"?"Baraban":"Kabel"}</b></div><div class="sm">${esc(x.info)}</div><div class="mut sm">${fmt(x.vaqt)} · ${esc(x.kim)} o'chirgan</div><div class="row"><button class="btn s" onclick="rest('${x.id}')">${ic("back",15)}Tiklash</button><button class="btn dng s" onclick="purge('${x.id}')">Butunlay o'chirish</button></div></div>`).join("")||'<p class="mut">Savat bo\'sh</p>')}
 const rest=id=>act("restore",{id},"Tiklandi").then(()=>refresh()),purge=id=>modal("Butunlay o'chirilsinmi?",'<p class="mut sm">Bu amalni qaytarib bo\'lmaydi.</p>',"O'chirish",async()=>{const r=await act("purge",{id},"O'chirildi");await refresh();return r||false});
 function pick(id){sel=sel==id?null:id;render();if(innerWidth>=900)fit()}
-function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(l=>JSON.parse(l.nuqtalar));if(a.length)map.fitBounds(a,{padding:[30,30]})}
-function viewLine(id){const l=D.kabel.find(x=>x.id==id);sel=l.baraban;go("xarita");hl=id;setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(JSON.parse(l.nuqtalar),{padding:[50,50],maxZoom:19})},200)}
+function fit(){const a=D.kabel.filter(l=>!sel||l.baraban==sel).flatMap(l=>gp(l));if(a.length)map.fitBounds(a,{padding:[30,30]})}
+function viewLine(id){const l=D.kabel.find(x=>x.id==id);sel=l.baraban;go("xarita");hl=id;setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(gp(l),{padding:[50,50],maxZoom:18})},200)}
 const dform=b=>`<label>Baraban raqami<input name="r" value="${esc(b?.raqam)}"></label><label>Marka<input name="m" value="${esc(b?.marka)}"></label><label>Kabel uzunligi (metr)<input name="l" type="number" min="1" value="${b?b.metr:""}"></label><label>Tuman<select name="t">${D.tuman.map(t=>`<option ${b&&b.tuman==t?"selected":""}>${esc(t)}</option>`).join("")}</select></label>`;
 function addD(){modal("Yangi baraban",dform(),"Qo'shish",async o=>await act("addDrum",{raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Baraban qo'shildi")||false)}
 function editD(id){const b=bd(id);modal("Barabanni tahrirlash",dform(b),"Saqlash",async o=>await act("editDrum",{id,raqam:val(o,"r"),marka:val(o,"m"),metr:val(o,"l"),tuman:val(o,"t")},"Saqlandi")||false)}
@@ -203,7 +205,7 @@ const dist=p=>{let m=0;for(let i=1;i<p.length;i++)m+=L.latLng(p[i-1]).distanceTo
 function paint(){
  if(!layer)return;layer.clearLayers();
  D.kabel.filter(l=>(!sel||l.baraban==sel)&&l.id!=ed).forEach(l=>{
-  L.polyline(JSON.parse(l.nuqtalar),{color:col(l.baraban),weight:l.id==hl?9:5,opacity:hl&&l.id!=hl?.45:1}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${fmt(l.vaqt)}<br>${esc(l.izoh)}`+(can(l)?`<br><button onclick="startEdit('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
+  L.polyline(gp(l),{color:col(l.baraban),weight:l.id==hl?9:5,opacity:hl&&l.id!=hl?.45:1}).addTo(layer).bindPopup(`<b>${l.metr} m</b><br>${esc(l.kim)} · ${fmt(l.vaqt)}<br>${esc(l.izoh)}`+(can(l)?`<br><button onclick="startEdit('${l.id}')">Tahrir</button> <button onclick="delL('${l.id}')">O'chirish</button>`:""))});
  if(drawing){live=L.polyline(pts,{color:"#e11d48",weight:5,dashArray:"7"}).addTo(layer);
   pts.forEach((p,i)=>{const m=L.marker(p,{draggable:true,icon:L.divIcon({className:"vx",iconSize:[18,18]})}).addTo(layer);
    m.on("drag",e=>{const c=e.target.getLatLng();pts[i]=[c.lat,c.lng];live.setLatLngs(pts);meter()})});meter()}}
@@ -212,15 +214,15 @@ function draw(id){sel=id;const b=bd(id);
  if(b.left<=0)return toast("Bu barabanda kabel qolmagan","err");
  pts=[];ed=null;drawing=true;$("dinfo").textContent="Baraban №"+b.raqam+" · qoldi "+b.left+" m. Xaritada yo'nalish bo'ylab bosing, nuqtani surish mumkin.";
  $("dbar").style.display="block";go("xarita");drawing=true;paint();setTimeout(locate,300)}
-function startEdit(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();sel=l.baraban;ed=id;pts=JSON.parse(l.nuqtalar);drawing=true;
+function startEdit(id){const l=D.kabel.find(x=>x.id==id);map&&map.closePopup();sel=l.baraban;ed=id;pts=gp(l).map(p=>p.slice());drawing=true;
  $("dinfo").textContent="Kabelni tahrirlash: nuqtalarni suring yoki yangi nuqta qo'shing. Tugagach Saqlash.";$("dbar").style.display="block";go("xarita");drawing=true;
- setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(pts,{padding:[60,60],maxZoom:19})},200)}
+ setTimeout(()=>{map.invalidateSize();paint();map.fitBounds(pts,{padding:[60,60],maxZoom:18})},200)}
 function stopDraw(){drawing=false;ed=null;pts=[];$("dbar").style.display="none";paint()}
 const undo=()=>{pts.pop();paint()},clearPts=()=>{pts=[];paint()};
 function saveLine(){
  if(pts.length<2)return toast("Kamida 2 ta nuqta belgilang","err");
- const auto=r1(dist(pts)),id=sel,np=pts.slice(),l=ed&&D.kabel.find(x=>x.id==ed),mx=r1(bd(id).left+(l?Number(l.metr):0)),
-  old=l?JSON.stringify(JSON.parse(l.nuqtalar)):"",moved=l&&old!=JSON.stringify(np),m0=l&&!moved?Number(l.metr):Math.min(auto,mx);
+ const auto=r1(dist(pts)),id=sel,np=pts.map(p=>[+p[0].toFixed(6),+p[1].toFixed(6)]),l=ed&&D.kabel.find(x=>x.id==ed),mx=r1(bd(id).left+(l?Number(l.metr):0)),
+  old=l?JSON.stringify(gp(l)):"",moved=l&&old!=JSON.stringify(np),m0=l&&!moved?Number(l.metr):Math.min(auto,mx);
  modal(l?"Kabelni saqlash":"Kabelni saqlash",`<p class="mut sm">Xaritadan o'lchandi: <b>${auto} m</b>. Haqiqiy uzunlikni tekshiring.</p>`+lform(m0,l?l.izoh:"",mx),"Saqlash",async o=>{
   const m=chk(o,mx);if(!m)return false;
   const ok=l?await act("editLine",{id:ed,metr:m,izoh:val(o,"z"),nuqtalar:np,avto:auto},"Saqlandi"):await act("addLine",{baraban:id,nuqtalar:np,avto:auto,metr:m,izoh:val(o,"z")},"Kabel saqlandi");
@@ -229,7 +231,10 @@ function locate(){
  if(!navigator.geolocation)return toast("Brauzer joylashuvni aniqlay olmaydi","err");
  navigator.geolocation.getCurrentPosition(p=>{const c=[p.coords.latitude,p.coords.longitude];map.setView(c,17);me.clearLayers();L.circleMarker(c,{radius:8,color:"#fff",fillColor:"#2563eb",fillOpacity:1,weight:3}).addTo(me)},
  ()=>toast("Joylashuvni aniqlab bo'lmadi. GPS ruxsatini tekshiring","err"),{enableHighAccuracy:true,timeout:8000})}
-if(S)call("list").then(start).catch(()=>{localStorage.removeItem("kb_s");S=null});
+if(S){$("login").style.display="none";
+ try{const c=JSON.parse(localStorage.getItem("kb_d")||"null");if(c)Object.assign(D,c)}catch(e){}
+ if(D.baraban.length||D.tuman.length){start();refresh()}
+ else{$("ld").style.display="block";call("list").then(start).catch(e=>{$("ld").style.display="none";$("login").style.display="";$("lu").value=S?S.u:"";$("err").textContent=/Login yoki parol/.test(e.message)?e.message:"Ulanib bo'lmadi. Qayta urinib ko'ring"})}}
 </script>
 </body>
 </html>
