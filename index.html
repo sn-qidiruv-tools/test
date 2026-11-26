@@ -219,16 +219,18 @@ function list(){
  const q=F.q.toLowerCase(),A=D.baraban.filter(b=>!isFin(b)&&(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))&&(!F.t||b.tuman==F.t)&&(!F.m||b.marka==F.m)&&(!F.h||st(b)[1]==F.h));
  $("lst").innerHTML=A.map(card).join("")||'<p class="mut">Baraban topilmadi</p>'}
 const nk=id=>D.kabel.filter(l=>l.baraban==id).length;
+const finT=b=>{const L=D.kabel.filter(l=>l.baraban==b.id);return L.length?L.reduce((a,l)=>tsv(l.vaqt)>tsv(a.vaqt)?l:a).vaqt:""};
+function finLine(b){const t=finT(b);if(!t)return"";let d="";if(b.sana){const n=Math.round((tsv(t)-tsv(b.sana))/864e5);d=n>0?` · ${n} kunda`:" · shu kunning o'zida"}return `<div class="sm" style="color:var(--dg);margin-top:2px">Tugagan: <b>${fmt(t)}</b>${d}</div>`}
 function card(b,fin){
  const s=st(b),pct=Math.max(0,Math.min(100,b.left/b.metr*100));
  return `<div class="card ${sel==b.id?"on":""}" onclick="pick('${b.id}')"><div class="top"><span class="dot" style="background:${col(b.id)}"></span><b>№${esc(b.raqam)}</b><span class="mut">${esc(b.marka)}</span><span class="pill ${s[1]}">${s[0]}</span></div>
- <div class="mut sm">${esc(b.tuman)} · qo'shilgan: ${b.sana?fmt(b.sana):"—"}</div><div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
+ <div class="mut sm">${esc(b.tuman)} · qo'shilgan: ${b.sana?fmt(b.sana):"—"}</div>${fin?finLine(b):""}<div class="bar"><i class="${s[1]}" style="width:${pct}%"></i></div>
  <div class="sm">Jami <b>${fm(b.metr)}</b> · ishlatildi <b>${fm(b.used)}</b> · qoldi <b>${fm(b.left)}</b> m</div>
  <div class="row">${fin?"":`<button class="btn s" onclick="event.stopPropagation();draw('${b.id}')">${ic("pin",15)}Kabel chizish</button>`}<button class="btn sec s" onclick="event.stopPropagation();showL('${b.id}')">${ic("cable",15)}Kabellar (${nk(b.id)})</button>${adm()?`<button class="btn sec s" onclick="event.stopPropagation();editD('${b.id}')">${ic("edit",15)}</button><button class="btn dng s" onclick="event.stopPropagation();delD('${b.id}')">${ic("trash",15)}</button>`:""}</div></div>`}
 function vTug(s){
  const A=D.baraban.filter(isFin);
  s.innerHTML=`<p class="mut sm" style="margin:0 2px 10px">Kabeli to'liq ishlatilgan barabanlar (${A.length} ta).</p><input placeholder="Qidirish: raqam yoki marka" value="${esc(TF)}" oninput="TF=this.value;tug()"><div id="lst"></div>`;tug()}
-function tug(){const q=TF.toLowerCase();$("lst").innerHTML=D.baraban.filter(b=>isFin(b)&&(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))).map(b=>card(b,1)).join("")||'<p class="mut">Tugagan baraban yo\'q</p>'}
+function tug(){const q=TF.toLowerCase();$("lst").innerHTML=D.baraban.filter(b=>isFin(b)&&(!q||(b.raqam+" "+b.marka).toLowerCase().includes(q))).sort((a,b)=>tsv(finT(b))-tsv(finT(a))).map(b=>card(b,1)).join("")||'<p class="mut">Tugagan baraban yo\'q</p>'}
 function showL(id){KF={q:"",t:"",b:id,from:"",to:""};nv("kabel")}
 const can=l=>adm()||l.kim==S.u,lbtn=id=>`<button class="btn sec s" onclick="event.stopPropagation();startEdit('${id}')">${ic("edit",15)}</button><button class="btn dng s" onclick="event.stopPropagation();delL('${id}')">${ic("trash",15)}</button>`;
 function vKab(s){
